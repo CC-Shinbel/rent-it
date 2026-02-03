@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RentIt - Booking History. Track all your past videoke rentals and manage receipts.">
+    <title>Booking History - RentIt</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/images/rIT_logo_tp.png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../shared/css/theme.css">
+    <link rel="stylesheet" href="../../shared/css/globals.css">
+    <link rel="stylesheet" href="../../client/dashboard/dashboard.css">
+    <link rel="stylesheet" href="bookinghistory.css">
+    
+    <!-- Theme Script -->
+    <script src="../../shared/js/theme.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Container (Injected by JS) -->
+        <div id="sidebarContainer"></div>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar Container (Injected by JS) -->
+            <div id="topbarContainer"></div>
+            
+            <!-- Content Area -->
+            <div class="content-area" id="contentArea">
+                <!-- Page Header -->
+                <div class="page-header-dashboard">
+                    <div class="page-header-info">
+                        <h1 class="page-title">Booking History</h1>
+                        <p class="page-subtitle">Track all your past videoke rentals and manage receipts.</p>
+                    </div>
+                    <div class="page-header-actions">
+                        <button class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false" title="Open filters">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M3 5h18M7 12h10M10 19h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Filter
+                        </button>
+                        <a href="/client/dashboard.html" class="btn-new">
+                            New Rental
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="rentals-tabs">
+                    <a href="/client/myrentals/myrentals.html" class="tab-link">Active Rentals</a>
+                    <a href="/client/bookinghistory/bookinghistory.html" class="tab-link active">Booking History</a>
+                    <a href="/client/returns/returns.html" class="tab-link">Returns & Extensions</a>
+                </div>
+
+                <!-- KPI Cards -->
+                <section class="kpi-panel">
+                    <div class="kpi-row">
+                        <article class="kpi-card">
+                            <div class="kpi-icon-wrap blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                                    <path d="M6 3h10l2 2v14l-2 2H6V3z"/>
+                                    <path d="M8 8h8M8 12h6M8 16h4"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label">Lifetime Rentals</div>
+                                <div class="kpi-value" id="lifetimeRentals">24</div>
+                            </div>
+                        </article>
+
+                        <article class="kpi-card">
+                            <div class="kpi-icon-wrap orange">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                                    <rect x="2" y="6" width="20" height="12" rx="2"/>
+                                    <path d="M7 10h0"/>
+                                    <path d="M11 12c1.2 0 2 .6 2 1s-.8 1-2 1"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label">Total Spent</div>
+                                <div class="kpi-value" id="totalSpent">₱1,452.80</div>
+                            </div>
+                        </article>
+
+                        <article class="kpi-card">
+                            <div class="kpi-icon-wrap gold">
+                                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                                    <path d="M12 .8l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 15.8 6.6 17.5l1-6.1L3.2 7.1l6.1-.9L12 .8z"/>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <div class="kpi-label">Member Status</div>
+                                <div class="kpi-value" id="memberStatus">Gold</div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Booking History Table -->
+                <section class="history-section">
+                    <div class="history-panel">
+                        <table class="history-table" role="table" aria-label="Booking history">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Rental ID</th>
+                                    <th>Period</th>
+                                    <th>Total Paid</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- Row 1 - Completed -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <div class="item-img" aria-hidden="true">K</div>
+                                            <div class="item-info">
+                                                <div class="item-name">Karaoke Pro System X-100</div>
+                                                <div class="small-muted">Portable karaoke machine • 2 mic</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small-muted">#VDK-8921-01</td>
+                                    <td>
+                                        <div class="period">
+                                            <div class="date-start">Oct 12, 2023</div>
+                                            <div class="date-end">to Oct 15, 2023</div>
+                                        </div>
+                                    </td>
+                                    <td class="amount-cell"><strong>₱125.00</strong></td>
+                                    <td><span class="status-pill status-completed">Completed</span></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <a class="action-btn action-download" href="#" download aria-label="Download receipt" title="Download receipt">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 3v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M8 11l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M21 21H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                </svg>
+                                            </a>
+                                            <button class="action-btn action-review" aria-label="Rate & Review" title="Rate & Review" data-product-id="1" data-product-name="Karaoke Pro System X-100">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 2 - Completed -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <div class="item-img" aria-hidden="true">P</div>
+                                            <div class="item-info">
+                                                <div class="item-name">Party Box Master V2</div>
+                                                <div class="small-muted">Compact party speaker • bluetooth</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small-muted">#VDK-7742-05</td>
+                                    <td>
+                                        <div class="period">
+                                            <div class="date-start">Sep 20, 2023</div>
+                                            <div class="date-end">to Sep 21, 2023</div>
+                                        </div>
+                                    </td>
+                                    <td class="amount-cell"><strong>₱45.00</strong></td>
+                                    <td><span class="status-pill status-completed">Completed</span></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <a class="action-btn action-download" href="#" download aria-label="Download receipt" title="Download receipt">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 3v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M8 11l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M21 21H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                </svg>
+                                            </a>
+                                            <button class="action-btn action-review" aria-label="Rate & Review" title="Rate & Review" data-product-id="2" data-product-name="Party Box Master V2">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 3 - Cancelled (NO review button) -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <div class="item-img" aria-hidden="true">M</div>
+                                            <div class="item-info">
+                                                <div class="item-name">Mega Bass Bundle</div>
+                                                <div class="small-muted">Bass cabinet + amplifier</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small-muted">#VDK-3312-09</td>
+                                    <td>
+                                        <div class="period">
+                                            <div class="date-start">Aug 05, 2023</div>
+                                            <div class="date-end">to Aug 07, 2023</div>
+                                        </div>
+                                    </td>
+                                    <td class="amount-cell"><strong>₱0.00</strong></td>
+                                    <td><span class="status-pill status-cancelled">Cancelled</span></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <span class="action-disabled" title="Reviews only available for completed rentals">—</span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 4 - Refunded (NO review button) -->
+                                <tr>
+                                    <td>
+                                        <div class="item-cell">
+                                            <div class="item-img" aria-hidden="true">H</div>
+                                            <div class="item-info">
+                                                <div class="item-name">Home Studio Setup</div>
+                                                <div class="small-muted">Mic + stand + cables</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small-muted">#VDK-2101</td>
+                                    <td>
+                                        <div class="period">
+                                            <div class="date-start">Jul 12, 2023</div>
+                                            <div class="date-end">to Jul 14, 2023</div>
+                                        </div>
+                                    </td>
+                                    <td class="amount-cell"><strong>₱89.00</strong></td>
+                                    <td><span class="status-pill status-refunded">Refunded</span></td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <a class="action-btn action-download" href="#" download aria-label="Download receipt" title="Download receipt">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M12 3v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M8 11l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                    <path d="M21 21H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                                </svg>
+                                            </a>
+                                            <span class="action-disabled" title="Reviews only available for completed rentals">—</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <div class="pagination">
+                            <div class="pagination-info">Showing 1 to 4 of 24 results</div>
+                            <div class="pagination-buttons">
+                                <button class="pagination-btn" disabled>Previous</button>
+                                <button class="pagination-btn">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Promo CTA -->
+                <section class="promo-banner">
+                    <div class="promo-content">
+                        <div class="promo-text">
+                            <h3>Plan a party next weekend?</h3>
+                            <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
+                        </div>
+                        <a href="/client/dashboard.html" class="promo-cta">Claim 20% Discount</a>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="../../shared/js/components.js"></script>
+    <script src="bookinghistory.js"></script>
+</body>
+</html>

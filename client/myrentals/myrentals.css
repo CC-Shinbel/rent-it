@@ -1,0 +1,576 @@
+/* =====================================================
+   MY RENTALS PAGE STYLES
+   RentIt - Client Portal
+   ===================================================== */
+
+/* Page Header */
+.page-header-dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.page-header-info .page-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.page-header-info .page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Tabs Navigation */
+.rentals-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+}
+
+.tab-link {
+    padding: 10px 4px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s ease;
+    white-space: normal;
+    text-align: center;
+}
+
+.tab-link:hover {
+    color: var(--text);
+}
+
+.tab-link.active {
+    color: var(--text);
+}
+
+.tab-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -13px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border-radius: 3px;
+}
+
+/* Section Header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.units-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--info-bg);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* Rental Cards Grid */
+.rental-cards-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.rental-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.rental-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.rental-card.card-expiring {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.card-info {
+    flex: 1;
+}
+
+.badges-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-rented {
+    background: var(--accent);
+    color: white;
+}
+
+.status-expiring {
+    background: var(--danger);
+    color: white;
+    animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.rental-id {
+    color: var(--text-tertiary);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.card-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* Days Badge */
+.days-badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--nav-primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.days-badge .days-value {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.days-badge .days-label {
+    font-size: 10px;
+    opacity: 0.85;
+    text-transform: uppercase;
+}
+
+.days-badge.days-danger {
+    background: var(--danger);
+}
+
+/* Card Image */
+.card-image {
+    width: 100%;
+    height: 140px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-extend,
+.btn-return {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-extend {
+    background: var(--accent);
+    color: white;
+    border: none;
+}
+
+.btn-extend:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.btn-extend.btn-urgent {
+    background: var(--danger);
+}
+
+.btn-extend.btn-urgent:hover {
+    background: #dc2626;
+}
+
+.btn-return {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text);
+}
+
+.btn-return:hover {
+    background: var(--bg-elevated);
+    border-color: var(--text-tertiary);
+}
+
+/* Booking History Section */
+.history-section {
+    margin-top: 40px;
+}
+
+.view-all-link {
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* History Panel / Table */
+.history-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table thead {
+    background: var(--bg-elevated);
+}
+
+.history-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tbody tr:hover {
+    background: var(--bg-elevated);
+}
+
+/* History Item Cell */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--accent-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.history-info .history-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.history-info .history-id {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.period-dates {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.period-status {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 500;
+}
+
+.amount-cell {
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Status Pills */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status-completed {
+    background: rgba(5, 150, 105, 0.1);
+    color: var(--success);
+}
+
+.status-cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.status-refunded {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--text-secondary);
+}
+
+/* Action Buttons */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.action-btn.action-muted {
+    background: transparent;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+.action-btn.action-muted:hover {
+    background: var(--bg-elevated);
+}
+
+/* Promo Banner */
+.promo-banner {
+    margin-top: 40px;
+    background: linear-gradient(135deg, var(--accent) 0%, #ff9a3c 100%);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 8px 30px rgba(251, 112, 18, 0.25);
+}
+
+.promo-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.promo-text h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 6px;
+}
+
+.promo-text p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 500px;
+}
+
+.promo-cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 14px 28px;
+    background: white;
+    color: var(--accent);
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.promo-cta:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+/* New Rental Button */
+.btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-new:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rental-cards-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header-dashboard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .rentals-tabs {
+        gap: 16px;
+        overflow-x: auto;
+        padding-bottom: 16px;
+    }
+    
+    .history-table {
+        font-size: 13px;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 12px;
+    }
+    
+    .promo-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .promo-text p {
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .btn-extend,
+    .btn-return {
+        width: 100%;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    /* Hide some table columns on mobile */
+    .history-table th:nth-child(2),
+    .history-table td:nth-child(2) {
+        display: none;
+    }
+}
