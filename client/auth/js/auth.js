@@ -13,15 +13,29 @@ const Auth = {
     
     API_BASE_URL: '/rent-it/api/auth/',
     LOGIN_URL: 'login.php',
-    REGISTER_URL: 'register.php',
-
-    /**
+    REGISTER_URL: 'register.php',    /**
      * Initialize the auth page
      */
     init() {
-        if (Components.isAuthenticated()) {
-            window.location.href = '../dashboard.php';
-            return;
+        // Note: PHP handles the redirect if user is already logged in (via session)
+        // We don't redirect from JS because localStorage might be stale/invalid
+        // Clear any stale localStorage data to prevent confusion
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                // If localStorage has user but we're on login page, it means PHP session expired
+                // Clear the stale localStorage
+                if (!user || !user.user_id || !user.email) {
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user_role');
+                    localStorage.removeItem('user_name');
+                }
+            } catch (e) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+            }
         }
 
         this.handleUrlHash();
@@ -201,7 +215,7 @@ const Auth = {
 
             // Redirect to dashboard after delay
             setTimeout(() => {
-                window.location.href = '../dashboard.php';
+                window.location.href = '../dashboard/dashboard.php';
             }, 1500);
 
         } catch (error) {
@@ -287,7 +301,7 @@ const Auth = {
 
             // Redirect to dashboard after delay
             setTimeout(() => {
-                window.location.href = '../dashboard.php';
+                window.location.href = '../dashboard/dashboard.php';
             }, 1500);
 
         } catch (error) {

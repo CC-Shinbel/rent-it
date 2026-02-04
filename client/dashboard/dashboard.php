@@ -2,80 +2,83 @@
 session_start();
 include '../shared/php/db_connection.php'; 
 
-// 1. SECURITY CHECK
 if (!isset($_SESSION['user_id'])) {
-    header("Location: auth/login.php");
+    header("Location: ../auth/login.html");
     exit();
 }
 
 $user_id = $_SESSION['user_id']; 
 
-// --- INITIALIZE ALL VARIABLES (Iwas Undefined Variable Errors) ---
-$total_spent = 0;
-$active_count = 0;
-$upcoming_returns = 0;
-$member_status = 'Bronze';
-$full_name = 'User';
 
-// Initialize Results as NULL or Empty Objects
-$pending_result = null;
-$active_result = null;
-$history_result = null;
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    $order_id = intval($_POST['order_id']);
+    $action = $_POST['action'];
 
-// --- 2. FETCH USER DATA ---
+    if ($action == 'return') {
+        $update_query = "UPDATE RENTAL SET rental_status = 'Pending Return' WHERE order_id = $order_id AND user_id = $user_id";
+    } elseif ($action == 'extend') {
+        $update_query = "UPDATE RENTAL SET rental_status = 'Pending Extension' WHERE order_id = $order_id AND user_id = $user_id";
+    }
+
+    if (mysqli_query($conn, $update_query)) {
+        header("Location: dashboard.php");
+        exit();
+    }
+}
+
+
 $user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
-if ($user_query && mysqli_num_rows($user_query) > 0) {
-    $user_data = mysqli_fetch_assoc($user_query);
-    $full_name = $user_data['full_name'];
-    $member_status = $user_data['membership_level'] ?? 'Bronze';
-}
+$user_data = mysqli_fetch_assoc($user_query);
+$member_status = $user_data['membership_level'] ?? 'Bronze';
 
-// --- 3. FETCH KPI DATA ---
+// --- FETCH KPI DATA ---
 $res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
-if ($res_spent) {
-    $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
-}
+$total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
 $res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented'");
-if ($res_active) {
-    $active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
-}
+$active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
 
 $res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented' AND end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)");
-if ($res_upcoming) {
-    $upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
-}
+$upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
 
-// --- 4. FETCH PENDING REQUESTS ---
+// --- FETCH PENDING REQUESTS (Returns & Extensions) ---
 $pending_query = "SELECT r.*, i.item_name FROM RENTAL r 
                   LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                   LEFT JOIN ITEM i ON ri.item_id = i.item_id 
-                  WHERE r.user_id = $user_id AND r.rental_status IN ('Pending Return', 'Pending Extension')";
+                  WHERE r.user_id = $user_id 
+                  AND r.rental_status IN ('Pending Return', 'Pending Extension')";
 $pending_result = mysqli_query($conn, $pending_query);
 
-// --- 5. FETCH ACTIVE RENTALS ---
+// --- FETCH ACTIVE RENTALS (Currently In Possession) ---
 $active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
                          LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                          LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                          WHERE r.user_id = $user_id AND r.rental_status = 'Rented'";
 $active_result = mysqli_query($conn, $active_rentals_query);
 
-// --- 6. FETCH BOOKING HISTORY (Dito nanggagaling ang error mo kanina) ---
+// --- FETCH BOOKING HISTORY ---
 $history_query = "SELECT r.*, i.item_name FROM RENTAL r 
                   LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                   LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id ORDER BY r.start_date DESC LIMIT 5";
 $history_result = mysqli_query($conn, $history_query);
 
-// --- 7. AUTO-UPDATE MEMBERSHIP ---
-$new_status = 'Bronze';
-if ($total_spent >= 10000) $new_status = 'Platinum';
-elseif ($total_spent >= 5000) $new_status = 'Gold';
-elseif ($total_spent >= 1000) $new_status = 'Silver';
+$current_db_status = $user_data['membership_level'] ?? 'Bronze';
+$new_status = $current_db_status;
 
-if ($new_status != $member_status) {
+if ($total_spent >= 10000) {
+    $new_status = 'Platinum';
+} elseif ($total_spent >= 5000) {
+    $new_status = 'Gold';
+} elseif ($total_spent >= 1000) {
+    $new_status = 'Silver';
+}
+
+if ($new_status != $current_db_status) {
     mysqli_query($conn, "UPDATE USERS SET membership_level = '$new_status' WHERE id = $user_id");
     $member_status = $new_status; 
+} else {
+    $member_status = $current_db_status;
 }
 ?>
 

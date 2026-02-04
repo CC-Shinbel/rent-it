@@ -23,12 +23,12 @@ const Components = {
      * Navigation tabs for client dashboard
      */
     clientNavTabs: [
-        { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/rent-it/client/dashboard.php' },
+        { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/rent-it/client/dashboard/dashboard.php' },
         { id: 'catalog', icon: '📦', label: 'Browse Catalog', href: '/rent-it/client/catalog/catalog.php' },
         { id: 'favorites', icon: '❤️', label: 'Favorites', href: '/rent-it/client/favorites/favorites.php' },
         { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
         { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
-        { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.html' },
+        { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
         { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/pages/contactus.html' },
     ],
     /**
@@ -527,7 +527,7 @@ const Components = {
                                 </div>
                             </div>
                             <nav class="profile-menu">
-                                <a href="/rent-it/client/dashboard.html" class="profile-menu-item">
+                                <a href="/rent-it/client/dashboard/dashboard.php" class="profile-menu-item">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="3" y="3" width="7" height="9"/>
                                         <rect x="14" y="3" width="7" height="5"/>
@@ -768,14 +768,12 @@ const Components = {
      */
     isAuthenticated() {
         return !!localStorage.getItem('user');
-    },
-
-    /**
+    },    /**
      * Redirect to login if not authenticated
      */
     requireAuth() {
         if (!this.isAuthenticated()) {
-            window.location.href = '/client/auth/login.php';
+            window.location.href = '/rent-it/client/auth/login.php';
             return false;
         }
         return true;
@@ -849,9 +847,9 @@ const Components = {
                         <div class="footer-col">
                             <h4 class="footer-heading">Quick Links</h4>
                             <nav class="footer-nav">
-                                <a href="/client/catalog/catalog.html">Browse Catalog</a>
-                                <a href="/client/myrentals/myrentals.html">My Rentals</a>
-                                <a href="/client/bookinghistory/bookinghistory.html">Booking History</a>
+                                <a href="/rent-it/client/catalog/catalog.php">Browse Catalog</a>
+                                <a href="/rent-it/client/myrentals/myrentals.php">My Rentals</a>
+                                <a href="/rent-it/client/bookinghistory/bookinghistory.php">Booking History</a>
                             </nav>
                         </div>
                         <div class="footer-col">

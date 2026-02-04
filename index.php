@@ -79,7 +79,7 @@ $userName = $_SESSION['user_name'] ?? '';
                 </button>
 
                 <?php if ($isLoggedIn): ?>
-                    <a href="<?= BASE_URL ?>/client/dashboard.php" class="btn btn-primary">Dashboard</a>
+                    <a href="<?= BASE_URL ?>/client/dashboard/dashboard.php" class="btn btn-primary">Dashboard</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/client/auth/login.php#login" class="btn btn-outline">Login</a>
                     <a href="<?= BASE_URL ?>/client/auth/login.php#register" class="btn btn-primary">Register</a>
@@ -96,7 +96,7 @@ $userName = $_SESSION['user_name'] ?? '';
             <a href="<?= BASE_URL ?>/pages/contactus.html" class="mobile-link">Contact</a>
             <div class="mobile-actions">
                 <?php if ($isLoggedIn): ?>
-                    <a href="<?= BASE_URL ?>/client/dashboard.php" class="btn btn-primary" style="width: 100%;">Dashboard</a>
+                    <a href="<?= BASE_URL ?>/client/dashboard/dashboard.php" class="btn btn-primary" style="width: 100%;">Dashboard</a>
                 <?php else: ?>
                     <a href="<?= BASE_URL ?>/client/auth/login.php#login" class="btn btn-primary" style="width: 100%;">Login</a>
                 <?php endif; ?>
@@ -342,7 +342,7 @@ $userName = $_SESSION['user_name'] ?? '';
                             </p>
                             <div class="cta-actions">
                                 <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn btn-primary">Browse Catalog</a>
-                                <a href="<?= BASE_URL ?>/client/dashboard.php" class="btn btn-outline">Go to Dashboard</a>
+                                <a href="<?= BASE_URL ?>/client/dashboard/dashboard.php" class="btn btn-outline">Go to Dashboard</a>
                             </div>
                         <?php else: ?>
                             <h2 class="cta-title">Ready to Book Your Next Event?</h2>

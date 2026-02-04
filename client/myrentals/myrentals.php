@@ -1,3 +1,14 @@
+<?php
+// filepath: c:\xampp\htdocs\rent-it\client\myrentals\myrentals.php
+session_start();
+include '../../shared/php/db_connection.php';
+
+// Security: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: " . BASE_URL . "/client/auth/login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,18 +21,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/assets/images/rIT_logo_tp.png">
+      <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../../shared/css/theme.css">
-    <link rel="stylesheet" href="../../shared/css/globals.css">
-    <link rel="stylesheet" href="../../client/dashboard/dashboard.css">
-    <link rel="stylesheet" href="myrentals.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
     
     <!-- Theme Script -->
-    <script src="../../shared/js/theme.js"></script>
+    <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -39,10 +49,8 @@
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
                         <h1 class="page-title">My Rentals</h1>
-                        <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>
-                    </div>
-                    <div class="page-header-actions">
-                        <a href="/client/dashboard.html" class="btn-new">
+                        <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>                    </div>                    <div class="page-header-actions">
+                        <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn-new">
                             New Rental
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -50,13 +58,11 @@
                             </svg>
                         </a>
                     </div>
-                </div>
-
-                <!-- Tabs Navigation -->
+                </div><!-- Tabs Navigation -->
                 <div class="rentals-tabs">
-                    <a href="/client/myrentals/myrentals.html" class="tab-link active">Active Rentals</a>
-                    <a href="/client/bookinghistory/bookinghistory.html" class="tab-link">Booking History</a>
-                    <a href="/client/returns/returns.html" class="tab-link">Returns & Extensions</a>
+                    <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link active">Active Rentals</a>
+                    <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
+                    <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
                 </div>
 
                 <!-- Currently In Possession Section -->
@@ -140,14 +146,11 @@
                                 </button>
                             </div>
                         </article>
-                    </div>
-                </section>
-
-                <!-- Booking History Section -->
+                    </div>                </section>                <!-- Booking History Section -->
                 <section class="history-section">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
-                        <a href="/client/bookinghistory/bookinghistory.html" class="view-all-link">View All</a>
+                        <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
                     </div>
 
                     <div class="history-panel">
@@ -240,9 +243,8 @@
                     <div class="promo-content">
                         <div class="promo-text">
                             <h3>Plan a party next weekend?</h3>
-                            <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
-                        </div>
-                        <a href="/client/dashboard.html" class="promo-cta">Claim 20% Discount</a>
+                            <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>                        </div>
+                        <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
             </div>
@@ -253,7 +255,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="../../shared/js/components.js"></script>
-    <script src="myrentals.js"></script>
+    <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
+    <script src="<?= BASE_URL ?>/client/myrentals/myrentals.js"></script>
 </body>
 </html>
