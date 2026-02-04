@@ -5,7 +5,7 @@ include '../../shared/php/db_connection.php';
 
 // Security: Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
+    header("Location: " . BASE_URL . "/client/auth/login.php");
     exit();
 }
 
@@ -72,19 +72,18 @@ $extensions_count = mysqli_num_rows($extensions_result);
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
+      <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../../shared/css/theme.css">
-    <link rel="stylesheet" href="../../shared/css/globals.css">
-    <link rel="stylesheet" href="../dashboard/dashboard.css">
-    <link rel="stylesheet" href="../myrentals/myrentals.css">
-    <link rel="stylesheet" href="returns.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/client/returns/returns.css">
     
     <!-- Theme Script -->
-    <script src="../../shared/js/theme.js"></script>
+    <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -112,13 +111,11 @@ $extensions_count = mysqli_num_rows($extensions_result);
                             Filter
                         </button>
                     </div>
-                </div>
-
-                <!-- Tabs Navigation -->
+                </div>                <!-- Tabs Navigation -->
                 <div class="rentals-tabs">
-                    <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
-                    <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
-                    <a href="../returns/returns.php" class="tab-link active">Returns & Extensions</a>
+                    <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link">Active Rentals</a>
+                    <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
+                    <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link active">Returns & Extensions</a>
                 </div>
 
                 <!-- Stats Row -->
@@ -333,9 +330,8 @@ $extensions_count = mysqli_num_rows($extensions_result);
             </div>
         </main>
     </div>
-    
-    <!-- Scripts -->
-    <script src="../../shared/js/components.js"></script>
-    <script src="returns.js"></script>
+      <!-- Scripts -->
+    <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
+    <script src="<?= BASE_URL ?>/client/returns/returns.js"></script>
 </body>
 </html>
