@@ -782,8 +782,12 @@
 }
 
 .sidebar-header {
-    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    min-height: var(--topbar-height);
+    padding: 0 var(--spacing-xl);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: visible;
 }
 
 .sidebar-logo {
@@ -792,16 +796,26 @@
     gap: var(--spacing-sm);
     min-height: 56px;
     padding: var(--spacing-xs) 0;
-    margin-right: var(--spacing-lg);
+    margin-right: 24px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .sidebar-logo-icon {
     width: auto;
-    height: 52px;
+    height: 64px;
     max-width: 100%;
     object-fit: contain;
     flex-shrink: 0;
+    transition: transform 0.2s ease;
+    transform-origin: center;
 }
+
+.sidebar-logo:hover .sidebar-logo-icon {
+    transform: scale(1.08);
+}
+
 
 .sidebar-logo-text {
     font-size: var(--font-size-xl);
@@ -829,12 +843,22 @@
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
+     background: rgba(255, 255, 255, 0.2);
+     border-radius: 10px;
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.35);
+}
+@media (max-width: 1024px) {
+    .sidebar-logo-icon {
+        height: 56px;
+    }
+}
+@media (max-width: 768px) {
+    .sidebar-logo-icon {
+        height: 48px;
+    }
 }
 
 .nav-item {

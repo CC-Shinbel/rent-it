@@ -99,11 +99,11 @@ const Components = {
 
         container.innerHTML = `
             <aside class="sidebar${isCollapsed ? ' collapsed' : ''}" id="sidebar">
-                <div class="sidebar-header">
-                    <div class="sidebar-logo">
+                                <div class="sidebar-header">
+                                        <a class="sidebar-logo" href="/rent-it/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" title="View RentIT logo">
                                             <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon">
                                                 <span class="sidebar-logo-text">RentIT</span>
-                    </div>
+                                        </a>
                     <!-- Collapse Toggle Button -->
                     <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Toggle sidebar" title="Collapse/expand sidebar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">

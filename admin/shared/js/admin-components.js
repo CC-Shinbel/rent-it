@@ -162,8 +162,10 @@ const AdminComponents = {
         container.innerHTML = `
             <aside class="admin-sidebar ${isCollapsed ? 'collapsed' : ''}" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <img src="/assets/images/rIT_logo_tp.png" alt="RentIt Logo" class="sidebar-logo-icon" onerror="this.style.display='none'">
-                    <span class="sidebar-logo-text">RentIt</span>
+                    <a href="/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" class="sidebar-logo-link" title="View RentIT logo">
+                        <img src="/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon" onerror="this.style.display='none'">
+                        <span class="sidebar-logo-text">RentIT</span>
+                    </a>
                     <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse/expand sidebar" aria-label="Toggle sidebar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="15 18 9 12 15 6"/>
