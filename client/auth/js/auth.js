@@ -44,6 +44,7 @@ const Auth = {
         this.setupTabListeners();
         this.setupFormListeners();
         this.setupPasswordToggles();
+        this.setupPhoneFormatting();
 
         // Initialize animations
         Components.initStaggerAnimation('.auth-card');
@@ -145,13 +146,81 @@ const Auth = {
      * Setup password visibility toggles
      */
     setupPasswordToggles() {
-        document.querySelectorAll('.eye-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const input = e.currentTarget.parentElement.querySelector('input');
-                if (input) {
-                    Components.togglePasswordVisibility(input, e.currentTarget);
-                }
-            });
+        // Prevent multiple bindings if init() runs more than once
+        if (this._passwordToggleBound) return;
+        this._passwordToggleBound = true;
+
+        const eyeOpenSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>`;
+        const eyeClosedSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>`;
+
+        // Delegate to document to ensure buttons are always handled
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.eye-btn');
+            if (!btn) return;
+
+            e.preventDefault();
+            const wrapper = btn.closest('.password-wrapper');
+            const input = wrapper?.querySelector('input');
+            if (!input) return;
+
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.innerHTML = isPassword ? eyeClosedSvg : eyeOpenSvg;
+            btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        });
+    },
+
+    /**
+     * Setup phone number formatting for +63 format
+     */
+    setupPhoneFormatting() {
+        const phoneInput = document.getElementById('registerPhone');
+        if (!phoneInput) return;
+
+        phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            // Always start with 63 (Philippines country code)
+            if (!value.startsWith('63')) {
+                value = '63' + value.replace(/^63/, '');
+            }
+            
+            // Limit to 12 digits (63 + 10 digits)
+            value = value.substring(0, 12);
+            
+            // Format: +63 XXX XXX XXXX
+            let formatted = '+63';
+            if (value.length > 2) {
+                formatted += ' ' + value.substring(2, 5);
+            }
+            if (value.length > 5) {
+                formatted += ' ' + value.substring(5, 8);
+            }
+            if (value.length > 8) {
+                formatted += ' ' + value.substring(8, 12);
+            }
+            
+            e.target.value = formatted.trim();
+        });
+
+        // Set initial value
+        if (!phoneInput.value || phoneInput.value.trim() === '') {
+            phoneInput.value = '+63 ';
+        }
+
+        // Prevent deletion of +63 prefix
+        phoneInput.addEventListener('keydown', (e) => {
+            const value = e.target.value;
+            const cursorPosition = e.target.selectionStart;
+            
+            if ((e.key === 'Backspace' || e.key === 'Delete') && cursorPosition <= 4) {
+                e.preventDefault();
+            }
         });
     },
 

@@ -22,6 +22,11 @@ $favoritesCount = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentIt - My Favorites</title>
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="/rent-it/shared/css/theme.css">
 <link rel="stylesheet" href="/rent-it/shared/css/globals.css">
 <link rel="stylesheet" href="/rent-it/client/dashboard/dashboard.css">
@@ -36,8 +41,7 @@ $favoritesCount = $result->num_rows;
             <div class="content-area fade-in-up" id="contentArea">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">My Favorites</h1>
-                        <p class="page-subtitle">Machines you've saved for later.</p>
+                        <h1 class="page-title">Machines you've saved for later.</h1>
                     </div>
                     <div class="page-header-actions">
                         <span class="favorites-count">

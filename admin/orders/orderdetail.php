@@ -38,7 +38,7 @@
                 <!-- Page Header with Back Button -->
                 <div class="admin-page-header">
                     <div class="page-header-left">
-                        <a href="admin/orders/orders.html" class="back-link" title="Back to orders">
+                        <a href="admin/orders/orders.php" class="back-link" title="Back to orders">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                                 <line x1="19" y1="12" x2="5" y2="12"/>
                                 <polyline points="12 19 5 12 12 5"/>
@@ -71,7 +71,7 @@
                                     </svg>
                                     Customer Information
                                 </h2>
-                                <a href="admin/customers/customers.html" class="detail-card-link">View Profile</a>
+                                <a href="admin/customers/customers.php" class="detail-card-link">View Profile</a>
                             </div>
                             <div class="detail-card-body">
                                 <div class="customer-detail">

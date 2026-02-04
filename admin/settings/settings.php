@@ -41,7 +41,7 @@
                         <p class="admin-page-subtitle">Manage your account and preferences</p>
                     </div>
                     <div class="admin-page-actions">
-                        <a href="admin/dashboard/dashboard.html" class="btn btn-secondary" title="Go back to dashboard">
+                        <a href="admin/dashboard/dashboard.php" class="btn btn-secondary" title="Go back to dashboard">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <line x1="19" y1="12" x2="5" y2="12"/>
                                 <polyline points="12 19 5 12 12 5"/>

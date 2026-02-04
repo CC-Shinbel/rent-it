@@ -146,7 +146,7 @@
                             <span class="checkmark"></span>
                             <span>Remember me</span>
                         </label>
-                        <a href="pages/wip.html" class="forgot-link">Forgot password?</a>
+                        <a href="pages/wip.php" class="forgot-link">Forgot password?</a>
                     </div>
 
                     <!-- Error Message -->
