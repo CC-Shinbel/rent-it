@@ -18,6 +18,13 @@
 })();
 
 const AdminComponents = {
+    BASE_URL: '/rent-it',
+
+    baseUrl(path = '') {
+        const normalized = path.startsWith('/') ? path : `/${path}`;
+        return `${this.BASE_URL}${normalized}`;
+    },
+
     /**
      * Navigation items for admin sidebar
      */
@@ -150,7 +157,7 @@ const AdminComponents = {
         const isCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
 
         const navItems = this.navItems.map(item => `
-            <a href="${item.href}" 
+            <a href="${this.baseUrl(item.href)}" 
                class="sidebar-nav-item ${activePage === item.id ? 'active' : ''}" 
                title="${item.label}"
                data-page="${item.id}">
@@ -162,8 +169,8 @@ const AdminComponents = {
         container.innerHTML = `
             <aside class="admin-sidebar ${isCollapsed ? 'collapsed' : ''}" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <a href="/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" class="sidebar-logo-link" title="View RentIT logo">
-                        <img src="/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon" onerror="this.style.display='none'">
+                    <a href="${this.baseUrl('/assets/images/rIT_logo_tp.png')}" target="_blank" rel="noopener noreferrer" class="sidebar-logo-link" title="View RentIT logo">
+                        <img src="${this.baseUrl('/assets/images/rIT_logo_tp.png')}" alt="RentIT Logo" class="sidebar-logo-icon" onerror="this.style.display='none'">
                         <span class="sidebar-logo-text">RentIT</span>
                     </a>
                     <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse/expand sidebar" aria-label="Toggle sidebar">
@@ -390,7 +397,7 @@ const AdminComponents = {
                                 </div>
                             </div>
                             <div class="notification-footer">
-                                <a href="admin/notification/notification.php">View all notifications</a>
+                                <a href="${this.baseUrl('admin/notification/notification.php')}">View all notifications</a>
                             </div>
                         </div>
                     </div>
@@ -408,7 +415,7 @@ const AdminComponents = {
                                 </div>
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a href="admin/dashboard/dashboard.php" class="dropdown-item">
+                            <a href="${this.baseUrl('admin/dashboard/dashboard.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="9"/>
                                     <rect x="14" y="3" width="7" height="5"/>
@@ -417,14 +424,14 @@ const AdminComponents = {
                                 </svg>
                                 Dashboard
                             </a>
-                            <a href="admin/profile/profile.php" class="dropdown-item">
+                            <a href="${this.baseUrl('admin/profile/profile.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
                                 My Profile
                             </a>
-                            <a href="admin/settings/settings.php" class="dropdown-item">
+                            <a href="${this.baseUrl('admin/settings/settings.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -579,7 +586,7 @@ const AdminComponents = {
             onConfirm: () => {
                 localStorage.removeItem('admin-user');
                 localStorage.removeItem('admin-token');
-                window.location.href = 'admin/auth/login.php';
+                window.location.href = this.baseUrl('admin/auth/login.php');
             }
         });
     },

@@ -1,9 +1,9 @@
 <?php
 session_start();
-include '../shared/php/db_connection.php'; 
+include '../../shared/php/db_connection.php'; 
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.html");
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -93,9 +93,9 @@ if ($new_status != $current_db_status) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../shared/css/theme.css">
-    <link rel="stylesheet" href="../shared/css/globals.css">
-    <link rel="stylesheet" href="dashboard/dashboard.css">
+    <link rel="stylesheet" href="../../shared/css/theme.css">
+    <link rel="stylesheet" href="../../shared/css/globals.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <div class="app-container">
@@ -110,7 +110,7 @@ if ($new_status != $current_db_status) {
                         <h1 class="page-title">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</h1>
                     </div>
                     <div class="page-header-actions">
-                        <a href="../client/catalog/catalog.html" class="btn-new">Browse Catalog</a>
+                        <a href="../catalog/catalog.php" class="btn-new">Browse Catalog</a>
                     </div>
                 </div>
 
@@ -255,7 +255,7 @@ if ($new_status != $current_db_status) {
                             <h3>Plan a party next weekend?</h3>
                             <p>Get 20% off on your next rental if you book 3 days in advance.</p>
                         </div>
-                        <a href="../client/catalog/catalog.html" class="promo-cta">Claim 20% Discount</a>
+                        <a href="../catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
 
@@ -264,7 +264,7 @@ if ($new_status != $current_db_status) {
         </main>
     </div>
 
-    <script src="../shared/js/components.js"></script>
-    <script src="dashboard/dashboard.js"></script>
+    <script src="../../shared/js/components.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
