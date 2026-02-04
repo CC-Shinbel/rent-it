@@ -167,18 +167,18 @@ const Auth = {
         const submitBtn = e.target.querySelector('button[type="submit"]');
 
         // Clear previous errors
-        this.hideError();
+        this.hideError('loginError');
 
         // Validate
         if (!email || !password) {
-            this.showError('Please fill in all fields');
+            this.showError('Please fill in all fields', 'loginError');
             return;
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            this.showError('Please enter a valid email address');
+            this.showError('Please enter a valid email address', 'loginError');
             return;
         }
 
@@ -201,7 +201,27 @@ const Auth = {
             const data = await response.json();
 
             if (!data.success) {
-                throw new Error(data.message || 'Login failed');
+                // Check if it's an "Invalid email or password" error
+                if (data.message && data.message.toLowerCase().includes('invalid')) {
+                    // Show error with option to register
+                    const errorMsg = data.message + '<br><a href="#" class="register-link" style="color: var(--primary-color); text-decoration: underline;">Don\'t have an account? Register here</a>';
+                    this.showErrorHTML(errorMsg, 'loginError');
+                    
+                    // Add click handler to switch to register tab
+                    setTimeout(() => {
+                        const registerLink = document.querySelector('.register-link');
+                        if (registerLink) {
+                            registerLink.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                document.getElementById('registerTab')?.click();
+                            });
+                        }
+                    }, 100);
+                    
+                    throw new Error('LOGIN_ERROR_HANDLED');
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
             }
 
             // Store user data in localStorage
@@ -211,7 +231,7 @@ const Auth = {
             localStorage.setItem('user_name', data.user.full_name || data.user.email.split('@')[0]);
 
             // Show success message
-            this.showSuccess('Login successful! Redirecting...');
+            this.showSuccess('Login successful! Redirecting...', 'loginError');
 
             // Redirect to dashboard after delay
             setTimeout(() => {
@@ -219,7 +239,9 @@ const Auth = {
             }, 1500);
 
         } catch (error) {
-            this.showError(error.message || 'Login failed. Please try again.');
+            if (error.message !== 'LOGIN_ERROR_HANDLED') {
+                this.showError(error.message || 'Login failed. Please try again.', 'loginError');
+            }
         } finally {
             this.setLoading(false, submitBtn, 'Sign In  →');
         }
@@ -347,9 +369,10 @@ const Auth = {
     /**
      * Show error message
      * @param {string} message - Error message
+     * @param {string} elementId - ID of the error element (default: 'authError')
      */
-    showError(message) {
-        const errorEl = document.getElementById('authError');
+    showError(message, elementId = 'authError') {
+        const errorEl = document.getElementById(elementId);
         if (errorEl) {
             errorEl.textContent = message;
             errorEl.classList.remove('success');
@@ -358,9 +381,42 @@ const Auth = {
         }
     },
 
-    
-    hideError() {
-        const errorEl = document.getElementById('authError');
+    /**
+     * Show error message with HTML content
+     * @param {string} htmlMessage - Error message with HTML
+     * @param {string} elementId - ID of the error element (default: 'authError')
+     */
+    showErrorHTML(htmlMessage, elementId = 'authError') {
+        const errorEl = document.getElementById(elementId);
+        if (errorEl) {
+            errorEl.innerHTML = htmlMessage;
+            errorEl.classList.remove('success');
+            errorEl.classList.add('error');
+            errorEl.classList.remove('hidden');
+        }
+    },
+
+    /**
+     * Show success message
+     * @param {string} message - Success message
+     * @param {string} elementId - ID of the error element (default: 'authError')
+     */
+    showSuccess(message, elementId = 'authError') {
+        const errorEl = document.getElementById(elementId);
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.classList.remove('error');
+            errorEl.classList.add('success');
+            errorEl.classList.remove('hidden');
+        }
+    },
+
+    /**
+     * Hide error message
+     * @param {string} elementId - ID of the error element (default: 'authError')
+     */
+    hideError(elementId = 'authError') {
+        const errorEl = document.getElementById(elementId);
         if (errorEl) {
             errorEl.classList.add('hidden');
         }
