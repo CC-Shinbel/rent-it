@@ -1,13 +1,6 @@
 <?php 
 session_start();
-
-include '../../shared/php/db_connection.php';
-
-// If user is already logged in via PHP session, redirect to dashboard
-if (isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/client/dashboard/dashboard.php");
-    exit();
-}
+include '../../shared/php/db_connection.php'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +85,6 @@ if (isset($_SESSION['user_id'])) {
                 </div>
                 
                 <div class="form-wrapper fade-in" id="formWrapper">
-                    
                     <form id="loginForm">
                         <div class="auth-form-group stagger-child">
                             <label for="loginEmail">Email Address</label>
@@ -120,38 +112,46 @@ if (isset($_SESSION['user_id'])) {
                     </form>
 
                     <form id="registerForm" class="hidden">
-    <div class="form-row stagger-child">
-        <div class="auth-form-group">
-            <label for="registerFullname">Full Name</label>
-            <input type="text" id="registerFullname" placeholder="John Doe">
-        </div>
-        <div class="auth-form-group">
-            <label for="registerPhone">Phone Number</label>
-            <input type="tel" id="registerPhone" placeholder="+63 912 345 6789">
-        </div>
-    </div>
+                        <div class="form-row stagger-child">
+                            <div class="auth-form-group">
+                                <label for="registerFullname">Full Name</label>
+                                <input type="text" id="registerFullname" placeholder="John Doe">
+                            </div>
+                            <div class="auth-form-group">
+                                <label for="registerPhone">Phone Number</label>
+                                <input type="tel" id="registerPhone" placeholder="+63 912 345 6789">
+                            </div>
+                        </div>
 
-    <div class="auth-form-group stagger-child">
-        <label for="registerEmail">Email Address</label>
-        <input type="email" id="registerEmail" placeholder="name@company.com" required>
-    </div>
+                        <div class="auth-form-group stagger-child">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail" placeholder="name@company.com" required>
+                        </div>
 
-    <div class="form-row stagger-child">
-        <div class="auth-form-group">
-            <label for="registerPassword">Password</label>
-            <div class="password-wrapper">
-                <input type="password" id="registerPassword" 
-                       placeholder="••••••••" 
-                       required 
-                       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                       title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
-                <button type="button" class="eye-btn" aria-label="Show password">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
+                        <div class="form-row stagger-child">
+                            <div class="auth-form-group">
+                                <label for="registerPassword">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="registerPassword" 
+                                           placeholder="••••••••" 
+                                           required 
+                                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                           title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+                                    <button type="button" class="eye-btn" aria-label="Show password">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="password-requirements" id="passwordRequirements">
+                                    <p style="margin-top: 10px; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px;">Password must include:</p>
+                                    <ul style="list-style: none; padding-left: 5px; font-size: 0.8rem; margin: 0;">
+                                        <li id="reqLength" class="invalid">At least 8 characters</li>
+                                        <li id="reqUpper" class="invalid">At least one uppercase letter</li>
+                                        <li id="reqNumber" class="invalid">At least one number</li>
+                                    </ul>
+                                </div>
+                            </div>
 
         <div class="auth-form-group">
             <label for="registerConfirmPassword">Confirm Password</label>
@@ -167,30 +167,20 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <div class="password-requirements stagger-child" id="passwordRequirements">
-        <p>Password must include:</p>
-        <ul>
-            <li id="reqLength" class="invalid">At least 8 characters</li>
-            <li id="reqUpper" class="invalid">At least one uppercase letter</li>
-            <li id="reqNumber" class="invalid">At least one number</li>
-        </ul>
-    </div>
+                        <button type="submit" class="auth-btn stagger-child">Get Started  →</button>
+                    </form>
 
-    <div class="auth-message error hidden" id="authError"></div>
-
-    <button type="submit" class="auth-btn stagger-child">Get Started  →</button>
-</form>
                     <div class="auth-divider stagger-child">
                         <span>Or continue with</span>
                     </div>
                     
                     <div class="auth-social stagger-child">
-                    <a href="/rent-it/fb-login.php" class="auth-social-btn facebook-btn">
-    <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-    </svg>
-    Facebook
-</a>
+                        <a href="/rent-it/fb-login.php" class="auth-social-btn facebook-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px; height:18px;">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Facebook
+                        </a>
 
 <a href="/rent-it/google-login.php" class="auth-social-btn">
     <svg viewBox="0 0 24 24" width="20" height="20">
@@ -202,7 +192,7 @@ if (isset($_SESSION['user_id'])) {
     Google
 </a>
                     </div>
-                </div>
+                </div> <div class="auth-message error hidden" id="authError"></div>
                 
                 <div class="auth-footer stagger-child">
                     <div class="auth-footer-icon">🔒</div>

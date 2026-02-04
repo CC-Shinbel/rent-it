@@ -243,8 +243,12 @@ $result = mysqli_query($conn, $query);
                         </div>
 
                         <div class="products-grid">
-    <?php while($row = mysqli_fetch_assoc($result)): ?>
-    <article class="product-card" data-category="<?php echo strtolower($row['category'] ?? 'general'); ?>">
+                        <?php while($row = mysqli_fetch_assoc($result)) { ?>
+    <article class="product-card"
+        data-id="<?php echo $row['item_id']; ?>"
+        data-category="<?php echo htmlspecialchars($row['category']); ?>"
+        data-price="<?php echo $row['price_per_day']; ?>">
+                    
         <div class="product-image-wrap">
             <img src="../../assets/images/placeholder.jpg" 
                  alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
@@ -276,14 +280,19 @@ $result = mysqli_query($conn, $query);
             </p>
             
             <div class="product-actions">
-                <button class="product-cta-main" onclick="location.href='booking.php?id=<?php echo $row['item_id']; ?>'">
-                    Rent Now
-                </button>
+            <button class="product-cta-main"
+        onclick="location.href='../cart/add_to_cart.php?id=<?php echo $row['item_id']; ?>'">
+    Rent Now
+</button>
+
             </div>
         </div>
+        
     </article>
-    <?php endwhile; ?>
+    <?php } ?>
 </div>
+
+
 
                         <!-- Pagination -->
                         <nav class="pagination" aria-label="Catalog pagination">
@@ -307,8 +316,7 @@ $result = mysqli_query($conn, $query);
                 </div>
             </div>
             
-            <!-- Footer Container (Injected by JS) -->
-            <div id="footerContainer"></div>
+          
         </main>
     </div>
 

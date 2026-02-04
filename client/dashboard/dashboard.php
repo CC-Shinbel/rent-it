@@ -1,23 +1,23 @@
 <?php
-// filepath: c:\xampp\htdocs\rent-it\client\dashboard\dashboard.php
 session_start();
-include '../../shared/php/db_connection.php'; 
+include '../shared/php/db_connection.php'; 
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
+    header("Location: ../auth/login.html");
     exit();
 }
 
 $user_id = $_SESSION['user_id']; 
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     $order_id = intval($_POST['order_id']);
     $action = $_POST['action'];
 
     if ($action == 'return') {
-        $update_query = "UPDATE rental SET rental_status = 'Pending Return' WHERE order_id = $order_id AND user_id = $user_id";
+        $update_query = "UPDATE RENTAL SET rental_status = 'Pending Return' WHERE order_id = $order_id AND user_id = $user_id";
     } elseif ($action == 'extend') {
-        $update_query = "UPDATE rental SET rental_status = 'Pending Extension' WHERE order_id = $order_id AND user_id = $user_id";
+        $update_query = "UPDATE RENTAL SET rental_status = 'Pending Extension' WHERE order_id = $order_id AND user_id = $user_id";
     }
 
     if (mysqli_query($conn, $update_query)) {
@@ -26,39 +26,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     }
 }
 
-$user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM users WHERE id = $user_id");
+
+$user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
 $user_data = mysqli_fetch_assoc($user_query);
 $member_status = $user_data['membership_level'] ?? 'Bronze';
 
 // --- FETCH KPI DATA ---
-$res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM rental WHERE user_id = $user_id");
+$res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
 $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
-$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM rental WHERE user_id = $user_id AND rental_status = 'Rented'");
+$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented'");
 $active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
 
-$res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM rental WHERE user_id = $user_id AND rental_status = 'Rented' AND end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)");
+$res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented' AND end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)");
 $upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
 
 // --- FETCH PENDING REQUESTS (Returns & Extensions) ---
-$pending_query = "SELECT r.*, i.item_name FROM rental r 
-                  LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
-                  LEFT JOIN item i ON ri.item_id = i.item_id 
+$pending_query = "SELECT r.*, i.item_name FROM RENTAL r 
+                  LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
+                  LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
                   AND r.rental_status IN ('Pending Return', 'Pending Extension')";
 $pending_result = mysqli_query($conn, $pending_query);
 
 // --- FETCH ACTIVE RENTALS (Currently In Possession) ---
-$active_rentals_query = "SELECT r.*, i.item_name FROM rental r 
-                         LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
-                         LEFT JOIN item i ON ri.item_id = i.item_id 
+$active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
+                         LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
+                         LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                          WHERE r.user_id = $user_id AND r.rental_status = 'Rented'";
 $active_result = mysqli_query($conn, $active_rentals_query);
 
 // --- FETCH BOOKING HISTORY ---
-$history_query = "SELECT r.*, i.item_name FROM rental r 
-                  LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
-                  LEFT JOIN item i ON ri.item_id = i.item_id 
+$history_query = "SELECT r.*, i.item_name FROM RENTAL r 
+                  LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
+                  LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id ORDER BY r.start_date DESC LIMIT 5";
 $history_result = mysqli_query($conn, $history_query);
 
@@ -74,7 +75,7 @@ if ($total_spent >= 10000) {
 }
 
 if ($new_status != $current_db_status) {
-    mysqli_query($conn, "UPDATE users SET membership_level = '$new_status' WHERE id = $user_id");
+    mysqli_query($conn, "UPDATE USERS SET membership_level = '$new_status' WHERE id = $user_id");
     $member_status = $new_status; 
 } else {
     $member_status = $current_db_status;
@@ -92,17 +93,9 @@ if ($new_status != $current_db_status) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
-    
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="../../shared/css/theme.css">
-    <link rel="stylesheet" href="../../shared/css/globals.css">
-    <link rel="stylesheet" href="dashboard.css">
-    
-    <!-- Theme Script -->
-    <script src="../../shared/js/theme.js"></script>
+    <link rel="stylesheet" href="../shared/css/theme.css">
+    <link rel="stylesheet" href="../shared/css/globals.css">
+    <link rel="stylesheet" href="dashboard/dashboard.css">
 </head>
 <body>
     <div class="app-container">
@@ -117,7 +110,7 @@ if ($new_status != $current_db_status) {
                         <h1 class="page-title">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</h1>
                     </div>
                     <div class="page-header-actions">
-                        <a href="../catalog/catalog.php" class="btn-new">Browse Catalog</a>
+                        <a href="../client/catalog/catalog.html" class="btn-new">Browse Catalog</a>
                     </div>
                 </div>
 
@@ -207,16 +200,16 @@ if ($new_status != $current_db_status) {
                                     </div>
                                 </div>
                                 <div class="card-actions">
-                                    <form method="POST" action="dashboard.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-                                        <button type="submit" name="action" value="extend" class="btn-extend">Extend</button>
-                                    </form>
+    <form method="POST" action="dashboard.php" style="display:inline;">
+        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
+        <button type="submit" name="action" value="extend" class="btn-extend">Extend</button>
+    </form>
 
-                                    <form method="POST" action="dashboard.php" style="display:inline;">
-                                        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-                                        <button type="submit" name="action" value="return" class="btn-return">Return</button>
-                                    </form>
-                                </div>
+    <form method="POST" action="dashboard.php" style="display:inline;">
+        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
+        <button type="submit" name="action" value="return" class="btn-return">Return</button>
+    </form>
+</div>
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
@@ -228,7 +221,7 @@ if ($new_status != $current_db_status) {
                 <section class="history-section">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
-                        <a href="../bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
+                        <a href="../client/bookinghistory/bookinghistory.html" class="view-all-link">View All</a>
                     </div>
                     <div class="history-panel">
                         <table class="history-table">
@@ -262,7 +255,7 @@ if ($new_status != $current_db_status) {
                             <h3>Plan a party next weekend?</h3>
                             <p>Get 20% off on your next rental if you book 3 days in advance.</p>
                         </div>
-                        <a href="../catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
+                        <a href="../client/catalog/catalog.html" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
 
@@ -271,7 +264,7 @@ if ($new_status != $current_db_status) {
         </main>
     </div>
 
-    <script src="../../shared/js/components.js"></script>
-    <script src="dashboard.js"></script>
+    <script src="../shared/js/components.js"></script>
+    <script src="dashboard/dashboard.js"></script>
 </body>
 </html>
