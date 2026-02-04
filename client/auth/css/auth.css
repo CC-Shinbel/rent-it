@@ -392,6 +392,8 @@
     align-items: center;
     justify-content: center;
     transition: color 0.2s ease;
+    z-index: 10;
+    pointer-events: auto;
 }
 
 .eye-btn:hover {
