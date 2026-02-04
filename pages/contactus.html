@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/rent-it/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Contact RentIt - Get in touch with our support team.">
@@ -12,15 +13,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="../assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="assets/images/rIT_logo_tp.png">
 
     <!-- Stylesheets (Order: Theme → Layout → Pages) -->
-    <link rel="stylesheet" href="../shared/css/theme.css">
-    <link rel="stylesheet" href="../landingpage/css/index.css">
-    <link rel="stylesheet" href="pages-layout.css">
+    <link rel="stylesheet" href="shared/css/theme.css">
+    <link rel="stylesheet" href="landingpage/css/index.css">
+    <link rel="stylesheet" href="pages/pages-layout.css">
     
     <!-- Theme Script (Prevents flash of wrong theme) -->
-    <script src="../shared/js/theme.js"></script>
+    <script src="shared/js/theme.js"></script>
 </head>
 <body>
     <!-- ============================
@@ -32,20 +33,20 @@
             <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">☰</button>
             
             <!-- Brand -->
-            <a href="/" class="brand">
+            <a href="index.php" class="brand">
                 <div class="logo-drawer">
-                    <img src="../assets/images/rIT_logo_tp.png" alt="RentIt Logo">
+                    <img src="assets/images/rIT_logo_tp.png" alt="RentIt Logo">
                 </div>
                 <span class="brand-name">Rent<span class="accent">It</span></span>
             </a>
             
             <!-- Desktop Navigation -->
             <nav class="main-nav">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/#machines" class="nav-link">Rentals</a>
-                <a href="/#pricing" class="nav-link">Pricing</a>
-                <a href="/pages/aboutus.html" class="nav-link">About</a>
-                <a href="/pages/contactus.html" class="nav-link">Contact</a>
+                <a href="index.php" class="nav-link">Home</a>
+                <a href="index.php#machines" class="nav-link">Rentals</a>
+                <a href="index.php#pricing" class="nav-link">Pricing</a>
+                <a href="pages/aboutus.html" class="nav-link">About</a>
+                <a href="pages/contactus.html" class="nav-link active">Contact</a>
             </nav>
             
             <!-- Header Actions -->
@@ -66,22 +67,20 @@
                     <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                     </svg>
-                </button>
-
-                <a href="../client/auth/login.php#login" class="btn btn-outline">Login</a>
-                <a href="../client/auth/login.php#register" class="btn btn-primary">Register</a>
+                </button>                <a href="client/auth/login.php#login" class="btn btn-outline">Login</a>
+                <a href="client/auth/login.php#register" class="btn btn-primary">Register</a>
             </div>
         </div>
         
         <!-- Mobile Navigation -->
         <nav class="mobile-nav" id="mobileNav">
-            <a href="/" class="mobile-link">Home</a>
-            <a href="/#machines" class="mobile-link">Rentals</a>
-            <a href="/#pricing" class="mobile-link">Pricing</a>
-            <a href="/pages/aboutus.html" class="mobile-link">About</a>
-            <a href="/pages/contactus.html" class="mobile-link">Contact</a>
+            <a href="index.php" class="mobile-link">Home</a>
+            <a href="index.php#machines" class="mobile-link">Rentals</a>
+            <a href="index.php#pricing" class="mobile-link">Pricing</a>
+            <a href="pages/aboutus.html" class="mobile-link">About</a>
+            <a href="pages/contactus.html" class="mobile-link">Contact</a>
             <div class="mobile-actions">
-                <a href="/client/auth/login.html#login" class="btn btn-primary" style="width: 100%;">Login</a>
+                <a href="client/auth/login.html#login" class="btn btn-primary" style="width: 100%;">Login</a>
             </div>
         </nav>
     </header>
@@ -156,13 +155,11 @@
                                 123 Business Center<br>
                                 Manila, Philippines
                             </address>
-                        </div>
-
-                        <div class="info-card">
+                        </div>                        <div class="info-card">
                             <div class="info-icon">💬</div>
                             <h3>Live Chat</h3>
                             <p>Available 24/7 for premium users</p>
-                            <a href="/pages/wip.html" class="btn-outline">Start Chat</a>
+                            <a href="pages/wip.html" class="btn-outline">Start Chat</a>
                         </div>
                     </div>
                 </div>
@@ -204,10 +201,9 @@
     <footer class="site-footer">
         <div class="container">
             <div class="footer-inner">
-                <!-- Brand Column -->
-                <div class="footer-brand">
+                <!-- Brand Column -->                <div class="footer-brand">
                     <div class="logo-drawer">
-                        <img src="../assets/images/rIT_logo_tp.png" alt="RentIt Logo">
+                        <img src="assets/images/rIT_logo_tp.png" alt="RentIt Logo">
                     </div>
                     <div class="brand-text">
                         <h4 class="brand-title">RentIt</h4>
@@ -216,12 +212,12 @@
                         </p>
                         <p class="powered-by">Powered by <a href="https://certicode.com" target="_blank" rel="noopener">CertiCode</a></p>
                         <div class="social-links">
-                            <a href="/pages/wip.html" class="social" aria-label="Facebook">
+                            <a href="pages/wip.html" class="social" aria-label="Facebook">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                                 </svg>
                             </a>
-                            <a href="/pages/wip.html" class="social" aria-label="Share">
+                            <a href="pages/wip.html" class="social" aria-label="Share">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="18" cy="5" r="3"/>
                                     <circle cx="6" cy="12" r="3"/>
@@ -238,15 +234,13 @@
                             </a>
                         </div>
                     </div>
-                </div>
-
-                <!-- Company Links -->
+                </div><!-- Company Links -->
                 <div class="footer-col">
                     <h5>Company</h5>
                     <nav class="footer-nav">
-                        <a href="/pages/aboutus.html" class="footer-link">About Us</a>
-                        <a href="/pages/contactus.html" class="footer-link">Contact</a>
-                        <a href="/pages/terms.html" class="footer-link">Terms of Service</a>
+                        <a href="pages/aboutus.html" class="footer-link">About Us</a>
+                        <a href="pages/contactus.html" class="footer-link">Contact</a>
+                        <a href="pages/terms.html" class="footer-link">Terms of Service</a>
                     </nav>
                 </div>
 
@@ -254,10 +248,10 @@
                 <div class="footer-col">
                     <h5>Support</h5>
                     <nav class="footer-nav">
-                        <a href="/pages/wip.html" class="footer-link">How It Works</a>
-                        <a href="/#pricing" class="footer-link">Pricing Packages</a>
-                        <a href="/pages/wip.html" class="footer-link">Safety Guidelines</a>
-                        <a href="/pages/wip.html" class="footer-link">Delivery Areas</a>
+                        <a href="pages/wip.html" class="footer-link">How It Works</a>
+                        <a href="index.php#pricing" class="footer-link">Pricing Packages</a>
+                        <a href="pages/wip.html" class="footer-link">Safety Guidelines</a>
+                        <a href="pages/wip.html" class="footer-link">Delivery Areas</a>
                     </nav>
                 </div>
             </div>
@@ -267,15 +261,15 @@
             <div class="footer-bottom">
                 <p class="copyright">© 2026 RentIt Videoke Rentals • v2.4.0</p>
                 <div class="policy-links">
-                    <a href="/pages/privacy-policy.html" class="policy-link">Privacy Policy</a>
-                    <a href="/pages/cookie-policy.html" class="policy-link">Cookie Policy</a>
+                    <a href="pages/privacy-policy.html" class="policy-link">Privacy Policy</a>
+                    <a href="pages/cookie-policy.html" class="policy-link">Cookie Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="../landingpage/js/index.js"></script>
+    <script src="landingpage/js/index.js"></script>
     <script>
         // Contact form handler
         document.getElementById('contactForm').addEventListener('submit', function(e) {

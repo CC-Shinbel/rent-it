@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/rent-it/">
     <meta name="description" content="RentIt - Booking History. Track all your past videoke rentals and manage receipts.">
     <title>Booking History - RentIt</title>
     
@@ -10,18 +11,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/assets/images/rIT_logo_tp.png">
+      <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/rIT_logo_tp.png">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../../shared/css/theme.css">
-    <link rel="stylesheet" href="../../shared/css/globals.css">
-    <link rel="stylesheet" href="../../client/dashboard/dashboard.css">
-    <link rel="stylesheet" href="bookinghistory.css">
+    <link rel="stylesheet" href="shared/css/theme.css">
+    <link rel="stylesheet" href="shared/css/globals.css">
+    <link rel="stylesheet" href="client/dashboard/dashboard.css">
+    <link rel="stylesheet" href="client/bookinghistory/bookinghistory.css">
     
     <!-- Theme Script -->
-    <script src="../../shared/js/theme.js"></script>
+    <script src="shared/js/theme.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -47,8 +47,7 @@
                                 <path d="M3 5h18M7 12h10M10 19h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             Filter
-                        </button>
-                        <a href="/client/dashboard.html" class="btn-new">
+                        </button>                        <a href="client/dashboard.html" class="btn-new">
                             New Rental
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -60,9 +59,9 @@
 
                 <!-- Tabs Navigation -->
                 <div class="rentals-tabs">
-                    <a href="/client/myrentals/myrentals.html" class="tab-link">Active Rentals</a>
-                    <a href="/client/bookinghistory/bookinghistory.html" class="tab-link active">Booking History</a>
-                    <a href="/client/returns/returns.html" class="tab-link">Returns & Extensions</a>
+                    <a href="client/myrentals/myrentals.html" class="tab-link">Active Rentals</a>
+                    <a href="client/bookinghistory/bookinghistory.html" class="tab-link active">Booking History</a>
+                    <a href="client/returns/returns.html" class="tab-link">Returns & Extensions</a>
                 </div>
 
                 <!-- KPI Cards -->
@@ -280,8 +279,7 @@
                         <div class="promo-text">
                             <h3>Plan a party next weekend?</h3>
                             <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
-                        </div>
-                        <a href="/client/dashboard.html" class="promo-cta">Claim 20% Discount</a>
+                        </div>                        <a href="client/dashboard.html" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
             </div>
@@ -292,7 +290,7 @@
     </div>
     
     <!-- Scripts -->
-    <script src="../../shared/js/components.js"></script>
-    <script src="bookinghistory.js"></script>
+    <script src="shared/js/components.js"></script>
+    <script src="client/bookinghistory/bookinghistory.js"></script>
 </body>
 </html>

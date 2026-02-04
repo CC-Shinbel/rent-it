@@ -2,22 +2,39 @@
 
 > Complete guide to the folder structure and what each directory contains.
 
+**Author:** [Aki1104](https://github.com/Aki1104) (steevenparubrub@gmail.com)  
+**Last Updated:** February 4, 2026
+
+---
+
+## 📚 Related Documentation
+
+| Document | Description |
+|----------|-------------|
+| [FRONTEND_ARCHITECTURE.md](./FRONTEND_ARCHITECTURE.md) | Detailed frontend structure, components, and UI patterns |
+| [BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md) | API endpoints, database schema, and server-side logic |
+| [CSS-ARCHITECTURE.md](./CSS-ARCHITECTURE.md) | CSS design system and styling conventions |
+| [CHANGELOG.md](./CHANGELOG.md) | Version history and changes |
+
 ---
 
 ## 📁 Root Directory Structure
 
 ```
-rental_Sample/
-├── 📄 index.html           # Landing page (entry point for Vercel)
-├── pages/
-│   ├── 📄 wip.html             # Work in Progress placeholder page
+rent-it/
+├── 📄 index.html           # Landing page (entry point)
+├── 📄 config.php           # Main configuration (OAuth, DB)
 ├── 📄 vercel.json          # Vercel deployment configuration
 ├── 📄 README.md            # Project overview
 │
+├── 📁 api/                 # RESTful API endpoints
 ├── 📁 client/              # Client-side application
 ├── 📁 admin/               # Admin-side application
-├── 📁 shared/              # Shared resources (CSS, JS)
+├── 📁 shared/              # Shared resources (CSS, JS, PHP)
 ├── 📁 assets/              # Static assets (images, icons)
+├── 📁 pages/               # Static pages (about, contact, etc.)
+├── 📁 landingpage/         # Landing page specific assets
+├── 📁 libs/                # Third-party libraries (PHPMailer)
 ├── 📁 docs/                # Documentation
 ├── 📁 notes/               # Development notes
 └── 📁 reference/           # Reference materials
@@ -31,16 +48,21 @@ rental_Sample/
 ```
 client/
 ├── 📁 auth/                # Authentication pages
-│   ├── 📄 login.html       # Login & Register page
+│   ├── 📄 login.php        # Login & Register page
 │   ├── 📁 css/
 │   │   └── auth.css        # Auth-specific styles
 │   └── 📁 js/
 │       └── auth.js         # Auth functionality
 │
+├── 📁 catalog/             # Product browsing
+├── 📁 cart/                # Shopping cart
+├── 📁 checkout/            # Checkout process
+├── 📁 favorites/           # Saved items
+├── 📁 myrentals/           # Active rentals
+├── 📁 bookinghistory/      # Past bookings
 └── 📁 dashboard/           # Client dashboard
-    ├── 📄 index.html       # Dashboard page
-    ├── 📄 dashboard.css    # Dashboard styles
-    └── 📄 dashboard.js     # Dashboard functionality
+    ├── 📄 loggedin.php     # Post-login page
+    └── 📄 dashboard.css    # Dashboard styles
 ```
 
 **Purpose:** Contains all customer-facing pages and functionality.
