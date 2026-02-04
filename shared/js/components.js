@@ -23,13 +23,13 @@ const Components = {
      * Navigation tabs for client dashboard
      */
     clientNavTabs: [
-        { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/RENTAL_SAMPLE/client/dashboard.php' },
-        { id: 'catalog', icon: '📦', label: 'Browse Catalog', href: '/RENTAL_SAMPLE/client/catalog/catalog.php' },
-        { id: 'favorites', icon: '❤️', label: 'Favorites', href: '/RENTAL_SAMPLE/client/favorites/favorites.php' },
-        { id: 'cart', icon: '🛒', label: 'My Cart', href: '/RENTAL_SAMPLE/client/cart/cart.php' },
-        { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/RENTAL_SAMPLE/client/myrentals/myrentals.php' },
-        { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/RENTAL_SAMPLE/client/bookinghistory/bookinghistory.html' },
-        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/RENTAL_SAMPLE/pages/contactus.html' },
+        { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/rent-it/client/dashboard.php' },
+        { id: 'catalog', icon: '📦', label: 'Browse Catalog', href: '/rent-it/client/catalog/catalog.php' },
+        { id: 'favorites', icon: '❤️', label: 'Favorites', href: '/rent-it/client/favorites/favorites.php' },
+        { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
+        { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
+        { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.html' },
+        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/pages/contactus.html' },
     ],
     /**
      * Get current user from localStorage
@@ -101,7 +101,7 @@ const Components = {
             <aside class="sidebar${isCollapsed ? ' collapsed' : ''}" id="sidebar">
                 <div class="sidebar-header">
                     <div class="sidebar-logo">
-                      <img src="/RENTAL_SAMPLE/assets/images/rIT_logo_tp.png" alt="RentIt Logo" class="sidebar-logo-icon">
+                      <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIt Logo" class="sidebar-logo-icon">
                         <span class="sidebar-logo-text">RentIt</span>
                     </div>
                     <!-- Collapse Toggle Button -->
@@ -392,7 +392,7 @@ const Components = {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('activeTab');
-        window.location.href = '/RENTAL_SAMPLE/client/auth/login.php';
+        window.location.href = '/rent-it/client/auth/login.php';
     },
 
     /**
@@ -527,7 +527,7 @@ const Components = {
                                 </div>
                             </div>
                             <nav class="profile-menu">
-                                <a href="/RENTAL_SAMPLE/client/dashboard.html" class="profile-menu-item">
+                                <a href="/rent-it/client/dashboard.html" class="profile-menu-item">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <rect x="3" y="3" width="7" height="9"/>
                                         <rect x="14" y="3" width="7" height="5"/>

@@ -33,11 +33,11 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
         sessionStorage.clear();
         
         // Call logout API
-        fetch('/RENTAL_SAMPLE/api/auth/logout.php', {
+        fetch('/rent-it/api/auth/logout.php', {
             method: 'POST'
         }).finally(() => {
             // Always redirect even if API fails
-            window.location.href = '/RENTAL_SAMPLE/client/auth/login.php';
+            window.location.href = '/rent-it/client/auth/login.php';
         });
     }
 });

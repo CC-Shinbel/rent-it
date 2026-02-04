@@ -22,9 +22,9 @@ $favoritesCount = $result->num_rows;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentIt - My Favorites</title>
     
-    <link rel="stylesheet" href="/RENTAL_SAMPLE/shared/css/theme.css">
-<link rel="stylesheet" href="/RENTAL_SAMPLE/shared/css/globals.css">
-<link rel="stylesheet" href="/RENTAL_SAMPLE/client/dashboard/dashboard.css">
+    <link rel="stylesheet" href="/rent-it/shared/css/theme.css">
+<link rel="stylesheet" href="/rent-it/shared/css/globals.css">
+<link rel="stylesheet" href="/rent-it/client/dashboard/dashboard.css">
 <link rel="stylesheet" href="favorites.css">
 </head>
 <body>

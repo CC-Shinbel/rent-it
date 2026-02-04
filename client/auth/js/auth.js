@@ -11,7 +11,7 @@ const Auth = {
     isTransitioning: false,
     loading: false,
     
-    API_BASE_URL: '/RENTAL_SAMPLE/api/auth/',
+    API_BASE_URL: '/rent-it/api/auth/',
     LOGIN_URL: 'login.php',
     REGISTER_URL: 'register.php',
 

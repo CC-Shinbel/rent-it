@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once($_SERVER['DOCUMENT_ROOT'] . '/RENTAL_SAMPLE/shared/php/db_connection.php');
+include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
 
 // 1. Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
