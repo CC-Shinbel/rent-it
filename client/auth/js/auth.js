@@ -353,10 +353,10 @@ const Auth = {
     }
 };
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    Auth.init();
-
+    if (typeof Auth !== 'undefined') {
+        Auth.init();
+    }
     const passwordInput = document.getElementById('registerPassword');
     const reqLength = document.getElementById('reqLength');
     const reqUpper = document.getElementById('reqUpper');

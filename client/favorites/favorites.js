@@ -44,7 +44,8 @@ function attachRemoveListeners() {
  */
 function removeFavorite(itemId) {
     if(confirm('Remove this from your favorites?')) {
-        fetch('remove_favorite.php', {
+        fetch('/rent-it/client/favorites/remove_favorite.php',
+            {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'item_id=' + itemId

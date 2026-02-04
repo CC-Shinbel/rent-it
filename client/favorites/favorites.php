@@ -2,12 +2,12 @@
 include '../../shared/php/db_connection.php';
 session_start();
 
-$user_id = $_SESSION['id'] ?? 1; 
+$user_id = $_SESSION['user_id'];
 
 $query = "SELECT f.favorite_id, i.* FROM favorites f 
           JOIN item i ON f.item_id = i.item_id 
-          WHERE f.id = ?"; 
-          
+          WHERE f.id = ?";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -89,7 +89,7 @@ $favoritesCount = $result->num_rows;
                 </div>
             </div>
 
-            <div id="footerContainer"></div>
+           
         </main>
     </div>
     
