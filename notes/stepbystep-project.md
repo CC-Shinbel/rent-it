@@ -13,9 +13,9 @@ This is a **Vanilla HTML/CSS/JavaScript** project for managing videoke equipment
 ## 📚 Step 1: Understand the Project Structure
 
 ```
-rental_Sample/
+rent-it/
 │
-├── 📄 index.html          ← Landing page (what visitors see first)
+├── 📄 index.php           ← Landing page (what visitors see first)
 ├── 📄 vercel.json         ← Deployment configuration
 │
 ├── 📁 client/             ← Customer-facing app
@@ -43,21 +43,22 @@ rental_Sample/
 
 ```bash
 # Navigate to project folder
-cd rental_Sample
+cd rent-it
 
-# Start server on port 3000
-python -m http.server 3000
+# Start server with XAMPP
+# Make sure XAMPP Apache is running
 
 # Visit in browser
-# http://localhost:3000
+# http://localhost/rent-it
 ```
 
 ### Option B: VS Code Live Server
 
 1. Install "Live Server" extension in VS Code
-2. Right-click on `index.html`
+2. Right-click on `index.php`
 3. Select "Open with Live Server"
 4. Browser opens automatically
+5. Note: For PHP functionality, use XAMPP instead
 
 ### Option C: Node.js (if you have it)
 

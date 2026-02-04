@@ -4,8 +4,8 @@
 
 | Remote Name | Repository URL | Purpose |
 |-------------|----------------|---------|
-| **origin** | https://github.com/CertiCodeIntern/rental_Sample.git | Organization repo (team collaboration & main work) |
-| **vercel** | https://github.com/Aki1104/ccintern_rentalsystem.git | Personal repo (connected to Vercel deployment) |
+| **origin** | https://github.com/Aki1104/rent-it.git | Main repository (development & production) |
+| **upstream** | https://github.com/CertiCodeIntern/rent-it.git | Organization repo (team collaboration) |
 
 ---
 
@@ -32,11 +32,11 @@ git remote remove origin
 git remote remove upstream
 git remote remove vercel
 
-# Add the organization repo as origin (your main work repo)
-git remote add origin https://github.com/CertiCodeIntern/rental_Sample.git
+# Add your personal repo as origin (main development repo)
+git remote add origin https://github.com/Aki1104/rent-it.git
 
-# Add your personal repo as vercel (for deployment)
-git remote add vercel https://github.com/Aki1104/ccintern_rentalsystem.git
+# Add the organization repo as upstream (team collaboration)
+git remote add upstream https://github.com/CertiCodeIntern/rent-it.git
 
 # Set up branch tracking
 git fetch origin
@@ -48,10 +48,10 @@ git remote -v
 
 Expected output:
 ```
-origin  https://github.com/CertiCodeIntern/rental_Sample.git (fetch)
-origin  https://github.com/CertiCodeIntern/rental_Sample.git (push)
-vercel  https://github.com/Aki1104/ccintern_rentalsystem.git (fetch)
-vercel  https://github.com/Aki1104/ccintern_rentalsystem.git (push)
+origin    https://github.com/Aki1104/rent-it.git (fetch)
+origin    https://github.com/Aki1104/rent-it.git (push)
+upstream  https://github.com/CertiCodeIntern/rent-it.git (fetch)
+upstream  https://github.com/CertiCodeIntern/rent-it.git (push)
 ```
 
 ---

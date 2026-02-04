@@ -3,7 +3,7 @@
 ## Quick Steps
 1) Open terminal in project root
 ```bash
-cd "c:\\Users\\Mac\\Desktop\\Coding Projects\\2026\\Projects Intern\\rental_Sample\\rental-react"
+cd "c:\\xampp\\htdocs\\rent-it"
 ```
 2) Install deps (first time or after pull)
 ```bash
