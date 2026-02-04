@@ -93,7 +93,7 @@ const Dashboard = {
         if (!AdminSession.isAuthenticated()) {
             // Prevent redirect loop by checking if we're already on login page
             if (!window.location.pathname.includes('/admin/auth/')) {
-                window.location.href = 'admin/auth/login.html';
+                window.location.href = 'admin/auth/login.php';
             }
             return false;
         }
@@ -236,7 +236,7 @@ const Dashboard = {
         } else {
             localStorage.removeItem('certicode_admin_session');
             sessionStorage.removeItem('certicode_admin_session');
-            window.location.href = 'admin/auth/login.html';
+            window.location.href = 'admin/auth/login.php';
         }
     },
 

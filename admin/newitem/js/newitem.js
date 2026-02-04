@@ -143,7 +143,7 @@ function initFormValidation() {
 
             // Redirect to dashboard after short delay
             setTimeout(() => {
-                window.location.href = 'admin/dashboard/dashboard.html';
+                window.location.href = 'admin/dashboard/dashboard.php';
             }, 1500);
 
         } catch (error) {
