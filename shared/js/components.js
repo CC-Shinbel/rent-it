@@ -29,7 +29,7 @@ const Components = {
         { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
         { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
         { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
-        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/pages/contactus.html' },
+        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/client/contactusloggedin/contactusloggedin.php' },
     ],
     /**
      * Get current user from localStorage
