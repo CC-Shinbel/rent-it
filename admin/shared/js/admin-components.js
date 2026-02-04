@@ -25,7 +25,7 @@ const AdminComponents = {
         { 
             id: 'dashboard', 
             label: 'Dashboard', 
-            href: '/admin/dashboard/dashboard.html',
+            href: '/admin/dashboard/dashboard.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="9"/>
                 <rect x="14" y="3" width="7" height="5"/>
@@ -36,7 +36,7 @@ const AdminComponents = {
         { 
             id: 'newitem', 
             label: 'New Item', 
-            href: '/admin/newitem/newitem.html',
+            href: '/admin/newitem/newitem.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -45,7 +45,7 @@ const AdminComponents = {
         { 
             id: 'orders', 
             label: 'Orders', 
-            href: '/admin/orders/orders.html',
+            href: '/admin/orders/orders.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
@@ -57,7 +57,7 @@ const AdminComponents = {
         { 
             id: 'dispatch', 
             label: 'Dispatch', 
-            href: '/admin/dispatch/dispatch.html',
+            href: '/admin/dispatch/dispatch.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="1" y="3" width="15" height="13"/>
                 <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
@@ -68,7 +68,7 @@ const AdminComponents = {
         { 
             id: 'customers', 
             label: 'Customers', 
-            href: '/admin/customers/customers.html',
+            href: '/admin/customers/customers.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
@@ -79,7 +79,7 @@ const AdminComponents = {
         { 
             id: 'calendar', 
             label: 'Calendar', 
-            href: '/admin/calendar/calendar.html',
+            href: '/admin/calendar/calendar.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
@@ -90,7 +90,7 @@ const AdminComponents = {
         { 
             id: 'repairs', 
             label: 'Repairs', 
-            href: '/admin/repairs/repairs.html',
+            href: '/admin/repairs/repairs.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>`
@@ -98,7 +98,7 @@ const AdminComponents = {
         { 
             id: 'latefees', 
             label: 'Late Fees', 
-            href: '/admin/latefees/latefees.html',
+            href: '/admin/latefees/latefees.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <text x="12" y="16" text-anchor="middle" font-size="18" font-weight="bold" fill="currentColor">₱</text>
             </svg>`
@@ -106,7 +106,7 @@ const AdminComponents = {
         { 
             id: 'settings', 
             label: 'Settings', 
-            href: '/admin/settings/settings.html',
+            href: '/admin/settings/settings.php',
             icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -390,7 +390,7 @@ const AdminComponents = {
                                 </div>
                             </div>
                             <div class="notification-footer">
-                                <a href="admin/notification/notification.html">View all notifications</a>
+                                <a href="admin/notification/notification.php">View all notifications</a>
                             </div>
                         </div>
                     </div>
@@ -408,7 +408,7 @@ const AdminComponents = {
                                 </div>
                             </div>
                             <div class="dropdown-divider"></div>
-                            <a href="admin/dashboard/dashboard.html" class="dropdown-item">
+                            <a href="admin/dashboard/dashboard.php" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="9"/>
                                     <rect x="14" y="3" width="7" height="5"/>
@@ -417,14 +417,14 @@ const AdminComponents = {
                                 </svg>
                                 Dashboard
                             </a>
-                            <a href="admin/profile/profile.html" class="dropdown-item">
+                            <a href="admin/profile/profile.php" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                     <circle cx="12" cy="7" r="4"/>
                                 </svg>
                                 My Profile
                             </a>
-                            <a href="admin/settings/settings.html" class="dropdown-item">
+                            <a href="admin/settings/settings.php" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
                                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -579,7 +579,7 @@ const AdminComponents = {
             onConfirm: () => {
                 localStorage.removeItem('admin-user');
                 localStorage.removeItem('admin-token');
-                window.location.href = 'admin/auth/login.html';
+                window.location.href = 'admin/auth/login.php';
             }
         });
     },
