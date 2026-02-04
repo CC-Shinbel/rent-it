@@ -41,7 +41,7 @@
                         <p class="admin-page-subtitle">Create a new rental item to display in the catalog</p>
                     </div>
                     <div class="admin-page-actions">
-                        <a href="admin/dashboard/dashboard.html" class="btn btn-secondary" title="Cancel and go back">
+                        <a href="admin/dashboard/dashboard.php" class="btn btn-secondary" title="Cancel and go back">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <line x1="19" y1="12" x2="5" y2="12"/>
                                 <polyline points="12 19 5 12 12 5"/>

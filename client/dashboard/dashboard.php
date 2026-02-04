@@ -88,6 +88,11 @@ if ($new_status != $current_db_status) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentIt - Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../shared/css/theme.css">
     <link rel="stylesheet" href="../shared/css/globals.css">
     <link rel="stylesheet" href="dashboard/dashboard.css">
@@ -102,8 +107,7 @@ if ($new_status != $current_db_status) {
             <div class="content-area">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Dashboard</h1>
-                        <p class="page-subtitle">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</p>
+                        <h1 class="page-title">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</h1>
                     </div>
                     <div class="page-header-actions">
                         <a href="../client/catalog/catalog.html" class="btn-new">Browse Catalog</a>

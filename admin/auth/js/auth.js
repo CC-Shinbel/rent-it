@@ -198,7 +198,7 @@ const AdminAuth = {
      */
     logout() {
         AdminSession.destroy();
-        window.location.href = 'admin/auth/login.html';
+        window.location.href = 'admin/auth/login.php';
     },
 
     /**
@@ -206,7 +206,7 @@ const AdminAuth = {
      */
     requireAuth() {
         if (!AdminSession.isAuthenticated()) {
-            window.location.href = 'admin/auth/login.html';
+            window.location.href = 'admin/auth/login.php';
             return false;
         }
         return true;
@@ -217,7 +217,7 @@ const AdminAuth = {
      */
     redirectIfAuthenticated() {
         if (AdminSession.isAuthenticated()) {
-            window.location.href = 'admin/dashboard/dashboard.html';
+            window.location.href = 'admin/dashboard/dashboard.php';
             return true;
         }
         return false;
@@ -298,7 +298,7 @@ const LoginUI = {
                 
                 // Redirect to admin dashboard
                 setTimeout(() => {
-                    window.location.href = 'admin/dashboard/dashboard.html';
+                    window.location.href = 'admin/dashboard/dashboard.php';
                 }, 500);
             } else {
                 this.showError(result.message);

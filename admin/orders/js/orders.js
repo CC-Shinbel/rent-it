@@ -189,7 +189,7 @@ function renderOrderRow(order) {
     return `
         <tr data-order-id="${order.id}">
             <td>
-                <a href="admin/orders/orderdetail.html?id=${order.id}" class="order-id">${order.id}</a>
+                <a href="admin/orders/orderdetail.php?id=${order.id}" class="order-id">${order.id}</a>
             </td>
             <td>
                 <div class="customer-cell">
@@ -358,7 +358,7 @@ function filterOrders() {
  * View order details
  */
 function viewOrder(orderId) {
-    window.location.href = `/admin/orders/orderdetail.html?id=${orderId}`;
+    window.location.href = `/admin/orders/orderdetail.php?id=${orderId}`;
 }
 
 /**

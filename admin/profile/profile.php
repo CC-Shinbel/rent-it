@@ -32,7 +32,7 @@
                     <p class="page-subtitle">Manage your account information and preferences</p>
                 </div>
                 <div class="page-header-actions">
-                    <a href="admin/dashboard/dashboard.html" class="btn-secondary">
+                    <a href="admin/dashboard/dashboard.php" class="btn-secondary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="19" y1="12" x2="5" y2="12"/>
                             <polyline points="12 19 5 12 12 5"/>

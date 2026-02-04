@@ -73,8 +73,7 @@ $total_records = mysqli_num_rows($history_result);
                 <!-- Page Header -->
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Booking History</h1>
-                        <p class="page-subtitle">Track all your past videoke rentals and manage receipts.</p>
+                        <h1 class="page-title">Track all your past videoke rentals and manage receipts.</h1>
                     </div>
                     <div class="page-header-actions">
                         <button class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false" title="Open filters">

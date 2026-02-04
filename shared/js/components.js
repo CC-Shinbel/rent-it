@@ -99,11 +99,11 @@ const Components = {
 
         container.innerHTML = `
             <aside class="sidebar${isCollapsed ? ' collapsed' : ''}" id="sidebar">
-                <div class="sidebar-header">
-                    <div class="sidebar-logo">
-                      <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIt Logo" class="sidebar-logo-icon">
-                        <span class="sidebar-logo-text">RentIt</span>
-                    </div>
+                                <div class="sidebar-header">
+                                        <a class="sidebar-logo" href="/rent-it/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" title="View RentIT logo">
+                                            <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon">
+                                                <span class="sidebar-logo-text">RentIT</span>
+                                        </a>
                     <!-- Collapse Toggle Button -->
                     <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Toggle sidebar" title="Collapse/expand sidebar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -837,8 +837,8 @@ const Components = {
                 <div class="footer-content">
                     <div class="footer-main">
                         <div class="footer-brand">
-                            <img src="/assets/images/rIT_logo_tp.png" alt="RentIt Logo" class="footer-logo">
-                            <span class="footer-brand-name">RentIt</span>
+                            <img src="/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="footer-logo">
+                            <span class="footer-brand-name">RentIT</span>
                         </div>
                         <p class="footer-tagline">Premium karaoke equipment rentals for your perfect event.</p>
                     </div>
@@ -871,7 +871,7 @@ const Components = {
                 </div>
                 
                 <div class="footer-bottom">
-                    <p class="footer-copyright">&copy; ${currentYear} RentIt. All rights reserved.</p>
+                    <p class="footer-copyright">&copy; ${currentYear} RentIT. All rights reserved.</p>
                     <div class="footer-socials">
                         <a href="#" class="social-link" aria-label="Facebook">
                             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">

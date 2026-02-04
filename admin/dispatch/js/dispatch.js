@@ -326,7 +326,7 @@ function filterDispatches() {
  * View order detail
  */
 function viewOrder(orderId) {
-    window.location.href = `/admin/orders/orderdetail.html?id=${orderId}`;
+    window.location.href = `/admin/orders/orderdetail.php?id=${orderId}`;
 }
 
 /**

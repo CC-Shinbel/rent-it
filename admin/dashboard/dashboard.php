@@ -167,7 +167,7 @@ function formatCurrency($amount) {
                             </svg>
                             Export Report
                         </button>
-                        <a href="admin/calendar/calendar.html" class="btn btn-primary" title="View booking calendar">
+                        <a href="admin/calendar/calendar.php" class="btn btn-primary" title="View booking calendar">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                                 <line x1="16" y1="2" x2="16" y2="6"/>
@@ -265,7 +265,7 @@ function formatCurrency($amount) {
                     <section class="admin-card bookings-section animate-fadeInUp">
                         <div class="admin-card-header">
                             <h2 class="admin-card-title">Recent Bookings</h2>
-                            <a href="admin/calendar/calendar.html" class="btn btn-ghost btn-sm" title="View all bookings in calendar">
+                            <a href="admin/calendar/calendar.php" class="btn btn-ghost btn-sm" title="View all bookings in calendar">
                                 View All
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="9 18 15 12 9 6"/>
@@ -389,7 +389,7 @@ function formatCurrency($amount) {
                                         </div>
                                     <?php endif; ?>
                                 </div>
-                                <a href="admin/dispatch/dispatch.html" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: var(--admin-spacing-lg);" title="View full dispatch schedule">
+                                <a href="admin/dispatch/dispatch.php" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: var(--admin-spacing-lg);" title="View full dispatch schedule">
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                         <circle cx="12" cy="10" r="3"/>
                                         <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
@@ -403,7 +403,7 @@ function formatCurrency($amount) {
                         <section class="admin-card inventory-card animate-fadeInUp">
                             <div class="admin-card-header">
                                 <h2 class="admin-card-title">Inventory Health</h2>
-                                <a href="admin/repairs/repairs.html" class="btn btn-ghost btn-sm" title="Manage inventory and repairs">
+                                <a href="admin/repairs/repairs.php" class="btn btn-ghost btn-sm" title="Manage inventory and repairs">
                                     Manage
                                 </a>
                             </div>
@@ -460,7 +460,7 @@ function formatCurrency($amount) {
                             </div>
                             <div class="admin-card-body">
                                 <div class="quick-actions-grid">
-                                    <a href="admin/calendar/calendar.html" class="quick-action-btn" title="View calendar master view">
+                                    <a href="admin/calendar/calendar.php" class="quick-action-btn" title="View calendar master view">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                                             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -469,20 +469,20 @@ function formatCurrency($amount) {
                                         </svg>
                                         <span>Calendar</span>
                                     </a>
-                                    <a href="admin/repairs/repairs.html" class="quick-action-btn" title="Manage repairs and maintenance">
+                                    <a href="admin/repairs/repairs.php" class="quick-action-btn" title="Manage repairs and maintenance">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
                                         </svg>
                                         <span>Repairs</span>
                                     </a>
-                                    <a href="admin/latefees/latefees.html" class="quick-action-btn" title="Track late fees and penalties">
+                                    <a href="admin/latefees/latefees.php" class="quick-action-btn" title="Track late fees and penalties">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <line x1="12" y1="1" x2="12" y2="23"/>
                                             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                         </svg>
                                         <span>Late Fees</span>
                                     </a>
-                                    <a href="admin/customers/customers.html" class="quick-action-btn" title="Manage customer database">
+                                    <a href="admin/customers/customers.php" class="quick-action-btn" title="Manage customer database">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                             <circle cx="9" cy="7" r="4"/>
