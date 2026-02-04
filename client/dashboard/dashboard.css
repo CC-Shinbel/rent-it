@@ -782,7 +782,7 @@
 }
 
 .sidebar-header {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-lg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -790,13 +790,14 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    min-height: 48px;
+    min-height: 56px;
     padding: var(--spacing-xs) 0;
+    margin-right: var(--spacing-lg);
 }
 
 .sidebar-logo-icon {
     width: auto;
-    height: 44px;
+    height: 52px;
     max-width: 100%;
     object-fit: contain;
     flex-shrink: 0;
