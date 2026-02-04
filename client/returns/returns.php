@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
 
     if ($action == 'cancel_return') {
-        $update_query = "UPDATE RENTAL SET rental_status = 'Rented' WHERE order_id = $order_id AND user_id = $user_id AND rental_status = 'Pending Return'";
+        $update_query = "UPDATE rental SET rental_status = 'Rented' WHERE order_id = $order_id AND user_id = $user_id AND rental_status = 'Pending Return'";
         mysqli_query($conn, $update_query);
     } elseif ($action == 'cancel_extension') {
-        $update_query = "UPDATE RENTAL SET rental_status = 'Rented' WHERE order_id = $order_id AND user_id = $user_id AND rental_status = 'Pending Extension'";
+        $update_query = "UPDATE rental SET rental_status = 'Rented' WHERE order_id = $order_id AND user_id = $user_id AND rental_status = 'Pending Extension'";
         mysqli_query($conn, $update_query);
     }
     
@@ -29,20 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 // --- FETCH KPI DATA ---
-$res_pending = mysqli_query($conn, "SELECT COUNT(*) AS pending_count FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Pending Return'");
+$res_pending = mysqli_query($conn, "SELECT COUNT(*) AS pending_count FROM rental WHERE user_id = $user_id AND rental_status = 'Pending Return'");
 $pending_returns = mysqli_fetch_assoc($res_pending)['pending_count'] ?? 0;
 
-$res_extensions = mysqli_query($conn, "SELECT COUNT(*) AS ext_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Pending Extension', 'Extension Approved')");
+$res_extensions = mysqli_query($conn, "SELECT COUNT(*) AS ext_count FROM rental WHERE user_id = $user_id AND rental_status IN ('Pending Extension', 'Extension Approved')");
 $active_extensions = mysqli_fetch_assoc($res_extensions)['ext_count'] ?? 0;
 
-$res_completed = mysqli_query($conn, "SELECT COUNT(*) AS comp_count FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Completed' AND MONTH(end_date) = MONTH(CURDATE()) AND YEAR(end_date) = YEAR(CURDATE())");
+$res_completed = mysqli_query($conn, "SELECT COUNT(*) AS comp_count FROM rental WHERE user_id = $user_id AND rental_status = 'Completed' AND MONTH(end_date) = MONTH(CURDATE()) AND YEAR(end_date) = YEAR(CURDATE())");
 $completed_this_month = mysqli_fetch_assoc($res_completed)['comp_count'] ?? 0;
 
 // --- FETCH PENDING RETURNS ---
 $returns_query = "SELECT r.*, i.item_name, i.image, i.category 
-                  FROM RENTAL r 
-                  LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
-                  LEFT JOIN ITEM i ON ri.item_id = i.item_id 
+                  FROM rental r 
+                  LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
+                  LEFT JOIN item i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
                   AND r.rental_status = 'Pending Return'
                   ORDER BY r.end_date ASC";
@@ -51,9 +51,9 @@ $returns_count = mysqli_num_rows($returns_result);
 
 // --- FETCH EXTENSION REQUESTS ---
 $extensions_query = "SELECT r.*, i.item_name, i.image, i.category 
-                     FROM RENTAL r 
-                     LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
-                     LEFT JOIN ITEM i ON ri.item_id = i.item_id 
+                     FROM rental r 
+                     LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
+                     LEFT JOIN item i ON ri.item_id = i.item_id 
                      WHERE r.user_id = $user_id 
                      AND r.rental_status IN ('Pending Extension', 'Extension Approved')
                      ORDER BY r.end_date ASC";

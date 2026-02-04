@@ -16,19 +16,19 @@ $user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS
 $user_data = mysqli_fetch_assoc($user_query);
 
 // --- FETCH KPI DATA ---
-$res_lifetime = mysqli_query($conn, "SELECT COUNT(*) AS lifetime_count FROM RENTAL WHERE user_id = $user_id");
+$res_lifetime = mysqli_query($conn, "SELECT COUNT(*) AS lifetime_count FROM rental WHERE user_id = $user_id");
 $lifetime_rentals = mysqli_fetch_assoc($res_lifetime)['lifetime_count'] ?? 0;
 
-$res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
+$res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM rental WHERE user_id = $user_id");
 $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
 $member_status = $user_data['membership_level'] ?? 'Bronze';
 
 // --- FETCH BOOKING HISTORY (All rentals) ---
 $history_query = "SELECT r.*, i.item_name, i.category, i.image 
-                  FROM RENTAL r 
-                  LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
-                  LEFT JOIN ITEM i ON ri.item_id = i.item_id 
+                  FROM rental r 
+                  LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
+                  LEFT JOIN item i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
                   ORDER BY r.start_date DESC";
 $history_result = mysqli_query($conn, $history_query);
