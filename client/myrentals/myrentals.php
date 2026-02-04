@@ -1,3 +1,14 @@
+<?php
+// filepath: c:\xampp\htdocs\rent-it\client\myrentals\myrentals.php
+session_start();
+include '../../shared/php/db_connection.php';
+
+// Security: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,9 +51,8 @@
                     <div class="page-header-info">
                         <h1 class="page-title">My Rentals</h1>
                         <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>
-                    </div>
-                    <div class="page-header-actions">
-                        <a href="/client/dashboard.html" class="btn-new">
+                    </div>                    <div class="page-header-actions">
+                        <a href="/rent-it/client/catalog/catalog.php" class="btn-new">
                             New Rental
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <line x1="12" y1="5" x2="12" y2="19"/>
@@ -50,13 +60,11 @@
                             </svg>
                         </a>
                     </div>
-                </div>
-
-                <!-- Tabs Navigation -->
+                </div><!-- Tabs Navigation -->
                 <div class="rentals-tabs">
-                    <a href="/client/myrentals/myrentals.html" class="tab-link active">Active Rentals</a>
-                    <a href="/client/bookinghistory/bookinghistory.html" class="tab-link">Booking History</a>
-                    <a href="/client/returns/returns.html" class="tab-link">Returns & Extensions</a>
+                    <a href="/rent-it/client/myrentals/myrentals.php" class="tab-link active">Active Rentals</a>
+                    <a href="/rent-it/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
+                    <a href="/rent-it/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
                 </div>
 
                 <!-- Currently In Possession Section -->
@@ -141,13 +149,11 @@
                             </div>
                         </article>
                     </div>
-                </section>
-
-                <!-- Booking History Section -->
+                </section>                <!-- Booking History Section -->
                 <section class="history-section">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
-                        <a href="/client/bookinghistory/bookinghistory.html" class="view-all-link">View All</a>
+                        <a href="/rent-it/client/bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
                     </div>
 
                     <div class="history-panel">
@@ -242,7 +248,7 @@
                             <h3>Plan a party next weekend?</h3>
                             <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
                         </div>
-                        <a href="/client/dashboard.html" class="promo-cta">Claim 20% Discount</a>
+                        <a href="/rent-it/client/catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
             </div>

@@ -1,14 +1,14 @@
 <?php
+// filepath: c:\xampp\htdocs\rent-it\client\dashboard\dashboard.php
 session_start();
-include '../shared/php/db_connection.php'; 
+include '../../shared/php/db_connection.php'; 
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.html");
+    header("Location: ../auth/login.php");
     exit();
 }
 
 $user_id = $_SESSION['user_id']; 
-
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     $order_id = intval($_POST['order_id']);
@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         exit();
     }
 }
-
 
 $user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
 $user_data = mysqli_fetch_assoc($user_query);
@@ -88,9 +87,17 @@ if ($new_status != $current_db_status) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentIt - Dashboard</title>
-    <link rel="stylesheet" href="../shared/css/theme.css">
-    <link rel="stylesheet" href="../shared/css/globals.css">
-    <link rel="stylesheet" href="dashboard/dashboard.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../shared/css/theme.css">
+    <link rel="stylesheet" href="../../shared/css/globals.css">
+    <link rel="stylesheet" href="dashboard.css">
+    
+    <!-- Theme Script -->
+    <script src="../../shared/js/theme.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -106,7 +113,7 @@ if ($new_status != $current_db_status) {
                         <p class="page-subtitle">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</p>
                     </div>
                     <div class="page-header-actions">
-                        <a href="../client/catalog/catalog.html" class="btn-new">Browse Catalog</a>
+                        <a href="../catalog/catalog.php" class="btn-new">Browse Catalog</a>
                     </div>
                 </div>
 
@@ -196,16 +203,16 @@ if ($new_status != $current_db_status) {
                                     </div>
                                 </div>
                                 <div class="card-actions">
-    <form method="POST" action="dashboard.php" style="display:inline;">
-        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-        <button type="submit" name="action" value="extend" class="btn-extend">Extend</button>
-    </form>
+                                    <form method="POST" action="dashboard.php" style="display:inline;">
+                                        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
+                                        <button type="submit" name="action" value="extend" class="btn-extend">Extend</button>
+                                    </form>
 
-    <form method="POST" action="dashboard.php" style="display:inline;">
-        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-        <button type="submit" name="action" value="return" class="btn-return">Return</button>
-    </form>
-</div>
+                                    <form method="POST" action="dashboard.php" style="display:inline;">
+                                        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
+                                        <button type="submit" name="action" value="return" class="btn-return">Return</button>
+                                    </form>
+                                </div>
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
@@ -217,7 +224,7 @@ if ($new_status != $current_db_status) {
                 <section class="history-section">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
-                        <a href="../client/bookinghistory/bookinghistory.html" class="view-all-link">View All</a>
+                        <a href="../bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
                     </div>
                     <div class="history-panel">
                         <table class="history-table">
@@ -251,7 +258,7 @@ if ($new_status != $current_db_status) {
                             <h3>Plan a party next weekend?</h3>
                             <p>Get 20% off on your next rental if you book 3 days in advance.</p>
                         </div>
-                        <a href="../client/catalog/catalog.html" class="promo-cta">Claim 20% Discount</a>
+                        <a href="../catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
                     </div>
                 </section>
 
@@ -260,7 +267,7 @@ if ($new_status != $current_db_status) {
         </main>
     </div>
 
-    <script src="../shared/js/components.js"></script>
-    <script src="dashboard/dashboard.js"></script>
+    <script src="../../shared/js/components.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>

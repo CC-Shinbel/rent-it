@@ -20,7 +20,7 @@ const Auth = {
      */
     init() {
         if (Components.isAuthenticated()) {
-            window.location.href = '../dashboard.php';
+            window.location.href = '../dashboard/dashboard.php';
             return;
         }
 
@@ -201,7 +201,7 @@ const Auth = {
 
             // Redirect to dashboard after delay
             setTimeout(() => {
-                window.location.href = '../dashboard.php';
+                window.location.href = '../dashboard/dashboard.php';
             }, 1500);
 
         } catch (error) {
@@ -287,7 +287,7 @@ const Auth = {
 
             // Redirect to dashboard after delay
             setTimeout(() => {
-                window.location.href = '../dashboard.php';
+                window.location.href = '../dashboard/dashboard.php';
             }, 1500);
 
         } catch (error) {

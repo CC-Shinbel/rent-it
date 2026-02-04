@@ -21,7 +21,7 @@ include '../../shared/php/db_connection.php'; ?>
 </head>
 <body>
     <div class="auth-section">
-        <a href="/" class="back-to-home" title="Back to home">← Home</a>
+        <a href="/rent-it/index.php" class="back-to-home" title="Back to home">← Home</a>
         
         <div class="auth-left">
             <div class="auth-left-content">
