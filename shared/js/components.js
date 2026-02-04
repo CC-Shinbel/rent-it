@@ -768,14 +768,12 @@ const Components = {
      */
     isAuthenticated() {
         return !!localStorage.getItem('user');
-    },
-
-    /**
+    },    /**
      * Redirect to login if not authenticated
      */
     requireAuth() {
         if (!this.isAuthenticated()) {
-            window.location.href = '/client/auth/login.php';
+            window.location.href = '/rent-it/client/auth/login.php';
             return false;
         }
         return true;

@@ -178,15 +178,14 @@ include '../../shared/php/db_connection.php'; ?>
             </div>
         </div>
     </div>
-    <script>
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof Auth !== 'undefined') {
-            Auth.init();
-        }
-    });
-</script>
-    <script src="../../shared/js/components.js"></script>
+        <script src="../../shared/js/components.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Auth !== 'undefined') {
+                Auth.init();
+            }
+        });
+    </script>
 </body>
 </html>
