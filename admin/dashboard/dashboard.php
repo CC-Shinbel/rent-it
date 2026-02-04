@@ -513,12 +513,12 @@ function formatCurrency($amount) {
         
         // View booking details
         function viewBooking(orderId) {
-            window.location.href = 'admin/orders/orderdetail.html?id=' + orderId;
+            window.location.href = 'admin/orders/orderdetail.php?id=' + orderId;
         }
         
         // Edit booking
         function editBooking(orderId) {
-            window.location.href = 'admin/orders/orderdetail.html?id=' + orderId + '&edit=true';
+            window.location.href = 'admin/orders/orderdetail.php?id=' + orderId + '&edit=true';
         }
     </script>
 </body>
