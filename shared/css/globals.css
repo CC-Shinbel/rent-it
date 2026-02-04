@@ -460,6 +460,79 @@ img {
     flex: 0 0 280px;
 }
 
+
+/* Footer Responsive Tweaks */
+@media (max-width: 960px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .footer-links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-footer {
+        padding: 1.5rem 1.25rem 1rem;
+    }
+
+    .footer-content {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .footer-main {
+        flex: 0 0 auto;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .footer-bottom {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .footer-brand-name {
+        font-size: 1.05rem;
+    }
+
+    .footer-tagline,
+    .footer-nav a,
+    .footer-heading,
+    .footer-copyright {
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .footer-heading {
+        letter-spacing: 0.04em;
+    }
+
+    .footer-nav {
+        gap: 0.35rem;
+    }
+
+    .social-link {
+        width: 32px;
+        height: 32px;
+    }
+}
 .footer-brand {
     display: flex;
     align-items: center;

@@ -29,6 +29,20 @@
     margin-top: clamp(18px, 2vw, 28px);
 }
 
+@media (max-width: 768px) {
+    .content-area {
+        padding: clamp(16px, 4vw, 22px);
+    }
+
+    .content-area > * + * {
+        margin-top: clamp(14px, 3vw, 20px);
+    }
+
+    .page-header-dashboard {
+        margin-bottom: clamp(18px, 4vw, 26px);
+    }
+}
+
 /* =====================================================
    PAGE HEADER (Dashboard)
    ===================================================== */
@@ -77,6 +91,12 @@
     background: var(--accent-hover);
     transform: translateY(-1px);
     text-decoration: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-new svg {
@@ -111,6 +131,22 @@
 .kpi-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .kpi-row {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .kpi-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .kpi-icon-wrap {
+        margin-bottom: 8px;
+    }
 }
 
 .kpi-icon-wrap {
@@ -563,6 +599,20 @@
         display: grid;
         gap: 8px;
         justify-items: center;
+    }
+    .loader-state {
+        padding: 18px 12px;
+    }
+    .loader-spinner {
+        width: 44px;
+        height: 44px;
+        border: 4px solid rgba(0, 0, 0, 0.08);
+        border-top-color: var(--accent, #ff6b00);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
     .empty-state-icon {
         font-size: 26px;
@@ -1958,6 +2008,22 @@
 .logout-modal-confirm:hover {
     background: #dc2626;
     transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+    .logout-modal {
+        padding: 24px 20px;
+        width: 94%;
+        max-width: 420px;
+    }
+
+    .logout-modal-actions {
+        flex-direction: column;
+    }
+
+    .logout-modal-btn {
+        width: 100%;
+    }
 }
 
 /* Pulse animation for notification badge */

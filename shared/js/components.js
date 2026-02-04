@@ -350,10 +350,11 @@ const Components = {
      */
     generateEmptyState() {
         return `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h3 class="empty-state-title">No data found</h3>
-                <p class="empty-state-text">Add your first item to get started.</p>
+            <div class="empty-state loader-state" role="status" aria-live="polite">
+                <div class="loader-spinner" aria-hidden="true"></div>
+                <h3 class="empty-state-title">Loading content…</h3>
+                <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
+                <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
             </div>
         `;
     },
