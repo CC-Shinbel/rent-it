@@ -837,7 +837,7 @@ const Components = {
                 <div class="footer-content">
                     <div class="footer-main">
                         <div class="footer-brand">
-                            <img src="/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="footer-logo">
+                            <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="footer-logo">
                             <span class="footer-brand-name">RentIT</span>
                         </div>
                         <p class="footer-tagline">Premium karaoke equipment rentals for your perfect event.</p>

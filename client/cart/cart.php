@@ -153,7 +153,9 @@ $result = mysqli_query($conn, $cart_query);
                         </div>
                         <button class="btn-checkout-full" id="btnCheckout" disabled>Proceed to Checkout</button>
                     </aside>
-                </div> </div>
+                </div>
+            </div>
+            <div id="footerContainer"></div>
         </main>
     </div>
 

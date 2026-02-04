@@ -38,7 +38,7 @@ $favoritesCount = $result->num_rows;
         <main class="main-content">
             <div id="topbarContainer"></div>
             
-            <div class="content-area fade-in-up" id="contentArea">
+            <div class="content-area fade-in-up favorites-page" id="contentArea">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
                         <h1 class="page-title">Machines you've saved for later.</h1>
@@ -53,47 +53,48 @@ $favoritesCount = $result->num_rows;
                     </div>
                 </div>
 
-                <div class="favorites-grid" id="favoritesGrid" style="<?php echo ($favoritesCount == 0) ? 'display: none;' : 'display: grid;'; ?>">
-                    <?php while($row = $result->fetch_assoc()): ?>
-                    <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
-                        <div class="favorite-image-wrap">
-                            <img src="../../assets/images/placeholder.jpg" alt="<?php echo $row['item_name']; ?>" class="favorite-image">
+                <section class="favorites-section">
+                    <div class="favorites-grid <?php echo ($favoritesCount == 0) ? 'is-hidden' : ''; ?>" id="favoritesGrid">
+                        <?php while($row = $result->fetch_assoc()): ?>
+                        <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
+                            <div class="favorite-image-wrap">
+                                <img src="../../assets/images/placeholder.jpg" alt="<?php echo $row['item_name']; ?>" class="favorite-image">
+                                
+                                <span class="favorite-badge <?php echo strtolower($row['status']); ?>">
+                                    <?php echo $row['status']; ?>
+                                </span>
+                                
+                                <button class="btn-remove-favorite" onclick="removeFavorite(<?php echo $row['item_id']; ?>)">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
                             
-                            <span class="favorite-badge <?php echo strtolower($row['status']); ?>">
-                                <?php echo $row['status']; ?>
-                            </span>
-                            
-                            <button class="btn-remove-favorite" onclick="removeFavorite(<?php echo $row['item_id']; ?>)">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="favorite-content">
-                            <h3 class="favorite-name"><?php echo $row['item_name']; ?></h3>
-                            <div class="favorite-price">₱<?php echo number_format($row['price_per_day'], 2); ?> <span>/ day</span></div>
-                            
-                            <div class="favorite-actions">
-    <button class="btn-move-to-cart" onclick="moveToCart(<?php echo $row['item_id']; ?>, <?php echo $row['favorite_id']; ?>)">
-        Move to Cart
-    </button>
-    <a href="details.php?id=<?php echo $row['item_id']; ?>" class="btn-view-details">View Details</a>
-</div>
-                        </div>
-                    </article>
-                    <?php endwhile; ?>
-                </div>
+                            <div class="favorite-content">
+                                <h3 class="favorite-name"><?php echo $row['item_name']; ?></h3>
+                                <div class="favorite-price">₱<?php echo number_format($row['price_per_day'], 2); ?> <span>/ day</span></div>
+                                
+                                <div class="favorite-actions">
+                                    <button class="btn-move-to-cart" onclick="moveToCart(<?php echo $row['item_id']; ?>, <?php echo $row['favorite_id']; ?>)">
+                                        Move to Cart
+                                    </button>
+                                    <a href="details.php?id=<?php echo $row['item_id']; ?>" class="btn-view-details">View Details</a>
+                                </div>
+                            </div>
+                        </article>
+                        <?php endwhile; ?>
+                    </div>
 
-                <div class="empty-favorites" id="emptyFavorites" style="<?php echo ($favoritesCount > 0) ? 'display: none;' : 'display: flex;'; ?>">
-                    <div class="empty-icon">💔</div>
-                    <h2 class="empty-title">No Favorites Yet</h2>
-                    <p class="empty-text">Start exploring our catalog and save machines you love!</p>
-                    <a href="../catalog/catalog.php" class="btn-browse-catalog">Browse Catalog</a>
-                </div>
+                    <div class="empty-favorites <?php echo ($favoritesCount > 0) ? 'is-hidden' : ''; ?>" id="emptyFavorites">
+                        <div class="empty-icon">💔</div>
+                        <h2 class="empty-title">No Favorites Yet</h2>
+                        <p class="empty-text">Start exploring our catalog and save machines you love!</p>
+                        <a href="../catalog/catalog.php" class="btn-browse-catalog">Browse Catalog</a>
+                    </div>
+                </section>
             </div>
-
-           
+            <div id="footerContainer"></div>
         </main>
     </div>
     

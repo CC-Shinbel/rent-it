@@ -3,7 +3,17 @@
    Grid layout for saved/favorited items
    ===================================================== */
 
-/* Favorites Count Badge */
+/* Page Layout */
+.favorites-page {
+    padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+.favorites-section {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 2vw, 28px);
+}
+
 .favorites-count {
     display: flex;
     align-items: center;
@@ -25,9 +35,10 @@
 /* Favorites Grid */
 .favorites-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(16px, 2vw, 24px);
     animation: fadeInUp 0.4s ease-out;
+    align-items: stretch;
 }
 
 /* Favorite Card */
@@ -119,7 +130,10 @@
 
 /* Favorite Content */
 .favorite-content {
-    padding: 16px;
+    padding: 18px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .favorite-name {
@@ -179,6 +193,7 @@
 .favorite-actions {
     display: flex;
     gap: 8px;
+    margin-top: auto;
 }
 
 .btn-move-to-cart {
@@ -228,7 +243,16 @@
 /* Empty State */
 .empty-favorites {
     text-align: center;
-    padding: 60px 20px;
+    padding: clamp(32px, 4vw, 56px);
+    animation: fadeIn 0.4s ease-out;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -278,12 +302,24 @@
     }
 }
 
+@media (max-width: 960px) {
+    .favorites-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .favorites-grid {
         grid-template-columns: 1fr;
     }
-    
+}
+
+@media (max-width: 640px) {
     .favorite-actions {
         flex-direction: column;
     }
+}
+
+.is-hidden {
+    display: none !important;
 }

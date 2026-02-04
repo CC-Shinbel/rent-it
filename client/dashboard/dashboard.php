@@ -221,7 +221,7 @@ if ($new_status != $current_db_status) {
                 <section class="history-section">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
-                        <a href="../client/bookinghistory/bookinghistory.html" class="view-all-link">View All</a>
+                        <a href="../bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
                     </div>
                     <div class="history-panel">
                         <table class="history-table">
@@ -235,15 +235,28 @@ if ($new_status != $current_db_status) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php while($row = mysqli_fetch_assoc($history_result)): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['item_name']); ?> <br> <small>#ORD-<?php echo $row['order_id']; ?></small></td>
-                                    <td><?php echo date('M d', strtotime($row['start_date'])) . " - " . date('M d', strtotime($row['end_date'])); ?></td>
-                                    <td>₱<?php echo number_format($row['total_price'], 2); ?></td>
-                                    <td><span class="status-pill status-<?php echo strtolower($row['rental_status']); ?>"><?php echo $row['rental_status']; ?></span></td>
-                                    <td><button class="action-btn">Receipt</button></td>
-                                </tr>
-                                <?php endwhile; ?>
+                                <?php if (mysqli_num_rows($history_result) > 0): ?>
+                                    <?php while($row = mysqli_fetch_assoc($history_result)): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row['item_name']); ?> <br> <small>#ORD-<?php echo $row['order_id']; ?></small></td>
+                                        <td><?php echo date('M d', strtotime($row['start_date'])) . " - " . date('M d', strtotime($row['end_date'])); ?></td>
+                                        <td>₱<?php echo number_format($row['total_price'], 2); ?></td>
+                                        <td><span class="status-pill status-<?php echo strtolower($row['rental_status']); ?>"><?php echo $row['rental_status']; ?></span></td>
+                                        <td><button class="action-btn">Receipt</button></td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <tr class="history-empty">
+                                        <td colspan="5">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">📭</div>
+                                                <p class="empty-state-title">No bookings yet</p>
+                                                <p class="empty-state-text">When you rent equipment, your history will show here.</p>
+                                                <a class="empty-state-link" href="../catalog/catalog.php">Browse catalog</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

@@ -402,25 +402,11 @@ img {
     background: linear-gradient(135deg, var(--page-header-start, #013A63) 0%, var(--page-header-end, #014F86) 100%);
     border-top: none;
     margin-top: 3rem;
-    padding: 2rem 1.5rem 1rem;
-    /* Fix: Ensure footer spans full width, compensating for sidebar offset */
-    margin-left: calc(-1 * var(--sidebar-width, 240px));
-    width: calc(100% + var(--sidebar-width, 240px));
+    padding: 2rem clamp(1.5rem, 4vw, 2.5rem) 1.2rem;
+    width: 100%;
     box-sizing: border-box;
-}
-
-/* Fix footer positioning when sidebar is collapsed */
-.sidebar-collapsed .app-footer {
-    margin-left: calc(-1 * var(--sidebar-collapsed-width, 72px));
-    width: calc(100% + var(--sidebar-collapsed-width, 72px));
-}
-
-/* Fix footer on mobile when sidebar is hidden */
-@media (max-width: 768px) {
-    .app-footer {
-        margin-left: 0;
-        width: 100%;
-    }
+    position: relative;
+    z-index: 1;
 }
 
 /* Footer text colors for blueish background */

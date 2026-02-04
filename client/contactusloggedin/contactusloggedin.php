@@ -140,6 +140,7 @@ $membership = $user_data['membership_level'] ?? 'Customer';
                     </article>
                 </section>
             </div>
+            <div id="footerContainer"></div>
         </main>
     </div>
 
@@ -156,6 +157,7 @@ $membership = $user_data['membership_level'] ?? 'Customer';
             Components.injectSidebar('sidebarContainer', 'contact', 'client');
             Components.injectTopbar('topbarContainer', 'Contact Support');
             Components.initStaggerAnimation('.contact-grid');
+            Components.injectFooter('footerContainer');
 
             if (!localStorage.getItem('user')) {
                 localStorage.setItem('user', JSON.stringify(userData));

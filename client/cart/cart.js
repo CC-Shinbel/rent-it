@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Components !== 'undefined') {
         Components.injectSidebar('sidebarContainer', 'cart', 'client');
         Components.injectTopbar('topbarContainer', 'My Cart');
+        Components.injectFooter('footerContainer');
     }
 
     // 2. Initialize functionalities

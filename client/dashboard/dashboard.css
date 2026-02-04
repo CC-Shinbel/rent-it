@@ -24,6 +24,11 @@
     background: var(--bg-primary);
 }
 
+/* Consistent vertical rhythm for stacked sections */
+.content-area > * + * {
+    margin-top: clamp(18px, 2vw, 28px);
+}
+
 /* =====================================================
    PAGE HEADER (Dashboard)
    ===================================================== */
@@ -548,6 +553,35 @@
     width: 100%;
     border-collapse: collapse;
 }
+    .history-empty td {
+        padding: 28px 20px;
+        background: var(--bg-secondary);
+    }
+    .empty-state {
+        text-align: center;
+        color: var(--text-secondary);
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+    }
+    .empty-state-icon {
+        font-size: 26px;
+    }
+    .empty-state-title {
+        margin: 0;
+        color: var(--heading-primary);
+        font-weight: 700;
+    }
+    .empty-state-text {
+        margin: 0;
+        color: var(--text-secondary);
+    }
+    .empty-state-link {
+        color: var(--brand-primary-light);
+        font-weight: 700;
+        text-decoration: none;
+    }
+    .empty-state-link:hover { text-decoration: underline; }
 
 .history-table th,
 .history-table td {

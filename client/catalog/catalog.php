@@ -315,8 +315,7 @@ $result = mysqli_query($conn, $query);
                     </section>
                 </div>
             </div>
-            
-          
+            <div id="footerContainer"></div>
         </main>
     </div>
 
@@ -424,5 +423,13 @@ $result = mysqli_query($conn, $query);
     <!-- Scripts -->
     <script src="../../shared/js/components.js"></script>
     <script src="catalog.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Components.injectSidebar('sidebarContainer', 'catalog', 'client');
+                Components.injectTopbar('topbarContainer', 'Catalog');
+                Components.injectFooter('footerContainer');
+                Components.initStaggerAnimation('.catalog-grid');
+            });
+        </script>
 </body>
 </html>
