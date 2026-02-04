@@ -84,6 +84,9 @@ include '../../shared/php/db_connection.php'; ?>
                             <label><input type="checkbox" id="rememberMe"> Remember me</label>
                             <a href="../../forgot-password.php">Forgot password?</a>
                         </div>
+                        
+                        <div class="auth-message error hidden" id="loginError"></div>
+                        
                         <button type="submit" class="auth-btn stagger-child">Sign In  →</button>
                     </form>
 
