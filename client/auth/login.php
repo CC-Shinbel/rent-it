@@ -21,7 +21,7 @@ include '../../shared/php/db_connection.php'; ?>
     <!-- Theme Script (Prevents flash of wrong theme) -->
     <script src="../../shared/js/theme.js"></script>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❝</text></svg>">
+    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
 </head>
 <body>
     <div class="auth-section">
