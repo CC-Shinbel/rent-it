@@ -48,8 +48,8 @@ if (!isset($_SESSION['user_id'])) {
                 <!-- Page Header -->
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">My Rentals</h1>
-                        <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>                    </div>                    <div class="page-header-actions">
+                        <h1 class="page-title">Manage your active videoke equipment and view your rental history.</h1>                 
+                        </div>                    <div class="page-header-actions">
                         <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn-new">
                             New Rental
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

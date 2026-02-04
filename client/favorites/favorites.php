@@ -41,8 +41,7 @@ $favoritesCount = $result->num_rows;
             <div class="content-area fade-in-up" id="contentArea">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">My Favorites</h1>
-                        <p class="page-subtitle">Machines you've saved for later.</p>
+                        <h1 class="page-title">Machines you've saved for later.</h1>
                     </div>
                     <div class="page-header-actions">
                         <span class="favorites-count">

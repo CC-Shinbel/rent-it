@@ -49,8 +49,7 @@ $result = mysqli_query($conn, $query);
                 <!-- Page Header -->
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Browse Catalog</h1>
-                        <p class="page-subtitle">Discover our videoke and karaoke equipment for rent.</p>
+                        <h1 class="page-title">Discover our videoke and karaoke equipment for rent.</h1>
                     </div>
                     <div class="page-header-actions">
                         <div class="catalog-search-wrap">

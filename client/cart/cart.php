@@ -43,8 +43,7 @@ $result = mysqli_query($conn, $cart_query);
             <div class="content-area fade-in-up" id="contentArea">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">My Cart</h1>
-                        <p class="page-subtitle">Review and complete your rental booking.</p>
+                        <h1 class="page-title">Review and complete your rental booking.</h1>
                     </div>
                 </div>
 

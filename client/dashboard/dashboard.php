@@ -114,8 +114,7 @@ if ($new_status != $current_db_status) {
             <div class="content-area">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Dashboard</h1>
-                        <p class="page-subtitle">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</p>
+                        <h1 class="page-title">Welcome back, <?php echo htmlspecialchars($user_data['full_name']); ?>!</h1>
                     </div>
                     <div class="page-header-actions">
                         <a href="../catalog/catalog.php" class="btn-new">Browse Catalog</a>
