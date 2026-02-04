@@ -464,7 +464,8 @@ img {
 /* Footer Responsive Tweaks */
 @media (max-width: 960px) {
     .footer-content {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: flex-start;
         gap: 1.25rem;
         padding-bottom: 1.25rem;
@@ -474,6 +475,7 @@ img {
         width: 100%;
         justify-content: space-between;
         gap: 1.5rem;
+        flex-wrap: wrap;
     }
 
     .footer-bottom {
@@ -489,7 +491,11 @@ img {
     }
 
     .footer-content {
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: flex-start;
+        gap: 1.25rem;
+        padding-bottom: 1.25rem;
         text-align: left;
     }
 
@@ -498,13 +504,17 @@ img {
     }
 
     .footer-links {
-        flex-direction: column;
-        align-items: flex-start;
+        width: 100%;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
         text-align: left;
     }
 
     .footer-bottom {
+        flex-direction: column;
         align-items: flex-start;
+        gap: 0.5rem;
         text-align: left;
     }
 

@@ -15,11 +15,12 @@
     margin-left: var(--sidebar-width);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: auto;
 }
 
 .content-area {
-    flex: 1;
+    flex: 0 0 auto;
+    min-height: auto;
     padding: var(--spacing-xl);
     background: var(--bg-primary);
 }
@@ -937,7 +938,7 @@
 @media (max-width: 1024px) {
     .sidebar-logo-icon {
         height: 56px;
-    }
+}
 }
 @media (max-width: 768px) {
     .sidebar-logo-icon {
@@ -1527,9 +1528,37 @@
 /* =====================================================
    RESPONSIVE
    ===================================================== */
-@media (max-width: 768px) {
+@media (max-width: 850px) and (min-width: 769px) {
+    /* Keep sidebar labels visible in the tablet band so icons aren't alone */
+    .sidebar.collapsed {
+        width: var(--sidebar-width);
+    }
+
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .sidebar-user-info,
+    .sidebar.collapsed .logout-text,
+    .sidebar.collapsed .sidebar-logo-text {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        white-space: nowrap;
+    }
+
+    .sidebar.collapsed .nav-item {
+        justify-content: flex-start;
+    }
+}
+@media (max-width: 850px) {
     .main-content {
         margin-left: 0;
+        overflow-x: hidden;
+    }
+
+    /* When sidebar is collapsed in this range, keep content full width */
+    .app-container.sidebar-collapsed .main-content,
+    .app-container.sidebar-collapsed .topbar {
+        margin-left: 0;
+        left: 0;
     }
     
     .sidebar {

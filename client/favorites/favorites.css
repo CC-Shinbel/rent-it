@@ -4,7 +4,9 @@
    ===================================================== */
 
 /* Page Layout */
-.favorites-page {
+.content-area.favorites-page {
+    flex: 0 0 auto;
+    min-height: auto;
     padding-bottom: clamp(32px, 4vw, 56px);
 }
 
