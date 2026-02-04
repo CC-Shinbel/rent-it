@@ -119,14 +119,6 @@ include '../../shared/php/db_connection.php'; ?>
                     </svg>
                 </button>
             </div>
-            <div class="password-requirements" id="passwordRequirements">
-                <p style="margin-top: 10px; font-weight: 600; font-size: 0.85rem; margin-bottom: 5px;">Password must include:</p>
-                <ul style="list-style: none; padding-left: 5px; font-size: 0.8rem; margin: 0;">
-                    <li id="reqLength" class="invalid">At least 8 characters</li>
-                    <li id="reqUpper" class="invalid">At least one uppercase letter</li>
-                    <li id="reqNumber" class="invalid">At least one number</li>
-                </ul>
-            </div>
         </div>
 
         <div class="auth-form-group">
@@ -142,6 +134,17 @@ include '../../shared/php/db_connection.php'; ?>
             <div id="passwordMatchMessage" style="font-size: 0.8rem; margin-top: 5px;"></div>
         </div>
     </div>
+
+    <div class="password-requirements stagger-child" id="passwordRequirements">
+        <p>Password must include:</p>
+        <ul>
+            <li id="reqLength" class="invalid">At least 8 characters</li>
+            <li id="reqUpper" class="invalid">At least one uppercase letter</li>
+            <li id="reqNumber" class="invalid">At least one number</li>
+        </ul>
+    </div>
+
+    <div class="auth-message error hidden" id="authError"></div>
 
     <button type="submit" class="auth-btn stagger-child">Get Started  →</button>
 </form>
@@ -163,7 +166,7 @@ include '../../shared/php/db_connection.php'; ?>
     Google
 </a>
                     </div>
-                </div> <div class="auth-message error hidden" id="authError"></div>
+                </div>
                 
                 <div class="auth-footer stagger-child">
                     <div class="auth-footer-icon">🔒</div>
