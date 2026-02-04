@@ -1,7 +1,14 @@
 <?php 
 session_start();
 
-include '../../shared/php/db_connection.php'; ?>
+include '../../shared/php/db_connection.php';
+
+// If user is already logged in via PHP session, redirect to dashboard
+if (isset($_SESSION['user_id'])) {
+    header("Location: " . BASE_URL . "/client/dashboard/dashboard.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,15 +213,14 @@ include '../../shared/php/db_connection.php'; ?>
             </div>
         </div>
     </div>
-    <script>
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof Auth !== 'undefined') {
-            Auth.init();
-        }
-    });
-</script>
-    <script src="../../shared/js/components.js"></script>
+        <script src="../../shared/js/components.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Auth !== 'undefined') {
+                Auth.init();
+            }
+        });
+    </script>
 </body>
 </html>
