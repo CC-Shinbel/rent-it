@@ -5,136 +5,8 @@
  * =====================================================
  */
 
-// Sample dispatch data
-const sampleDispatches = [
-    {
-        id: 'DSP-001',
-        orderId: 'ORD-2025-0142',
-        type: 'delivery',
-        status: 'scheduled',
-        scheduledTime: '10:00 AM - 12:00 PM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'John Doe',
-            phone: '+63 912 345 6789',
-            avatar: null
-        },
-        address: '123 Main Street, Makati City, Metro Manila 1200',
-        items: ['Canon EOS R5', '50mm Lens'],
-        driver: {
-            name: 'Mike Johnson',
-            avatar: null
-        }
-    },
-    {
-        id: 'DSP-002',
-        orderId: 'ORD-2025-0141',
-        type: 'delivery',
-        status: 'in_transit',
-        scheduledTime: '9:00 AM - 11:00 AM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'Maria Santos',
-            phone: '+63 917 234 5678',
-            avatar: null
-        },
-        address: '456 Rizal Avenue, Quezon City, Metro Manila 1100',
-        items: ['Sony A7 IV'],
-        driver: {
-            name: 'Carlos Rivera',
-            avatar: null
-        }
-    },
-    {
-        id: 'DSP-003',
-        orderId: 'ORD-2025-0138',
-        type: 'pickup',
-        status: 'scheduled',
-        scheduledTime: '2:00 PM - 4:00 PM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'Pedro Cruz',
-            phone: '+63 918 345 6789',
-            avatar: null
-        },
-        address: '789 Ayala Boulevard, Taguig City, Metro Manila 1630',
-        items: ['Sound System', 'Stage Lights (4x)'],
-        driver: {
-            name: 'Mike Johnson',
-            avatar: null
-        }
-    },
-    {
-        id: 'DSP-004',
-        orderId: 'ORD-2025-0145',
-        type: 'delivery',
-        status: 'pending',
-        scheduledTime: '1:00 PM - 3:00 PM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'Ana Reyes',
-            phone: '+63 919 456 7890',
-            avatar: null
-        },
-        address: '321 EDSA, Mandaluyong City, Metro Manila 1550',
-        items: ['DJ Equipment Set'],
-        driver: null
-    },
-    {
-        id: 'DSP-005',
-        orderId: 'ORD-2025-0140',
-        type: 'pickup',
-        status: 'completed',
-        scheduledTime: '9:00 AM - 11:00 AM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'Lisa Wong',
-            phone: '+63 920 567 8901',
-            avatar: null
-        },
-        address: '567 Ortigas Avenue, Pasig City, Metro Manila 1600',
-        items: ['Projector HD'],
-        driver: {
-            name: 'Carlos Rivera',
-            avatar: null
-        }
-    },
-    {
-        id: 'DSP-006',
-        orderId: 'ORD-2025-0147',
-        type: 'delivery',
-        status: 'pending',
-        scheduledTime: '3:00 PM - 5:00 PM',
-        scheduledDate: '2025-01-30',
-        customer: {
-            name: 'Mark Johnson',
-            phone: '+63 921 678 9012',
-            avatar: null
-        },
-        address: '890 Shaw Boulevard, Mandaluyong City, Metro Manila 1550',
-        items: ['Videoke System', 'Wireless Mic (2x)'],
-        driver: null
-    },
-    {
-        id: 'DSP-007',
-        orderId: 'ORD-2025-0146',
-        type: 'pickup',
-        status: 'scheduled',
-        scheduledTime: '4:00 PM - 6:00 PM',
-        scheduledDate: '2025-01-31',
-        customer: {
-            name: 'Sarah Lee',
-            phone: '+63 922 789 0123',
-            avatar: null
-        },
-        address: '234 Bonifacio High Street, Taguig City, Metro Manila 1630',
-        items: ['Camera Drone', 'Extra Batteries'],
-        driver: {
-            name: 'Mike Johnson',
-            avatar: null
-        }
-    }
-];
+// Store dispatches data from API
+let dispatchesData = [];
 
 /**
  * Get initial for avatar
@@ -188,7 +60,7 @@ function renderDispatchCard(dispatch) {
             </div>
             <div class="dispatch-card-body">
                 <div class="dispatch-order-info">
-                    <span class="dispatch-order-id">${dispatch.orderId}</span>
+                    <span class="dispatch-order-id">ORD-${dispatch.orderId}</span>
                     <span class="dispatch-time">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
@@ -276,22 +148,13 @@ function renderDispatches(dispatches) {
 }
 
 /**
- * Update stats
+ * Update stats from API response or calculate from data
  */
-function updateStats(dispatches) {
-    const today = new Date().toISOString().split('T')[0];
-    
-    const todayDispatches = dispatches.filter(d => d.scheduledDate === '2025-01-30'); // Using sample date
-    
-    const deliveries = todayDispatches.filter(d => d.type === 'delivery' && d.status !== 'completed').length;
-    const pickups = todayDispatches.filter(d => d.type === 'pickup' && d.status !== 'completed').length;
-    const pending = dispatches.filter(d => d.status === 'pending').length;
-    const completed = todayDispatches.filter(d => d.status === 'completed').length;
-
-    document.getElementById('deliveryCount').textContent = deliveries;
-    document.getElementById('pickupCount').textContent = pickups;
-    document.getElementById('pendingCount').textContent = pending;
-    document.getElementById('completedCount').textContent = completed;
+function updateStats(stats) {
+    document.getElementById('deliveryCount').textContent = stats.deliveries || 0;
+    document.getElementById('pickupCount').textContent = stats.pickups || 0;
+    document.getElementById('pendingCount').textContent = stats.pending || 0;
+    document.getElementById('completedCount').textContent = stats.completed || 0;
 }
 
 /**
@@ -302,7 +165,7 @@ function filterDispatches() {
     const filterType = activeTab?.dataset.filter || 'all';
     const searchTerm = document.getElementById('dispatchSearchInput')?.value.toLowerCase() || '';
 
-    let filtered = sampleDispatches;
+    let filtered = dispatchesData;
 
     // Filter by type
     if (filterType !== 'all') {
@@ -312,7 +175,8 @@ function filterDispatches() {
     // Filter by search term
     if (searchTerm) {
         filtered = filtered.filter(d =>
-            d.orderId.toLowerCase().includes(searchTerm) ||
+            String(d.orderId).toLowerCase().includes(searchTerm) ||
+            d.id.toLowerCase().includes(searchTerm) ||
             d.customer.name.toLowerCase().includes(searchTerm) ||
             d.address.toLowerCase().includes(searchTerm) ||
             d.items.some(item => item.toLowerCase().includes(searchTerm))
@@ -326,7 +190,7 @@ function filterDispatches() {
  * View order detail
  */
 function viewOrder(orderId) {
-    window.location.href = `/admin/orders/orderdetail.php?id=${orderId}`;
+    window.location.href = `/rent-it/admin/orders/orderdetail.php?id=${orderId}`;
 }
 
 /**
@@ -348,12 +212,58 @@ function getDirections(address) {
  * Mark dispatch as complete
  */
 function markComplete(dispatchId) {
-    const dispatch = sampleDispatches.find(d => d.id === dispatchId);
+    const dispatch = dispatchesData.find(d => d.id === dispatchId);
     if (dispatch && confirm(`Mark ${dispatch.type} for ${dispatch.customer.name} as complete?`)) {
+        // In production, this would make an API call to update the status
         dispatch.status = 'completed';
         filterDispatches();
-        updateStats(sampleDispatches);
+        // Recalculate stats
+        const stats = {
+            deliveries: dispatchesData.filter(d => d.type === 'delivery' && d.status !== 'completed').length,
+            pickups: dispatchesData.filter(d => d.type === 'pickup' && d.status !== 'completed').length,
+            pending: dispatchesData.filter(d => d.status === 'pending').length,
+            completed: dispatchesData.filter(d => d.status === 'completed').length
+        };
+        updateStats(stats);
         alert(`${dispatch.type.charAt(0).toUpperCase() + dispatch.type.slice(1)} marked as complete!`);
+    }
+}
+
+/**
+ * Fetch dispatches from API
+ */
+async function fetchDispatches(range = 'week') {
+    const grid = document.getElementById('dispatchGrid');
+    const empty = document.getElementById('dispatchEmpty');
+    
+    try {
+        // Show loading state
+        if (grid) {
+            grid.innerHTML = '<div class="dispatch-loading">Loading dispatches...</div>';
+            grid.style.display = 'block';
+        }
+        if (empty) {
+            empty.style.display = 'none';
+        }
+        
+        const response = await fetch(`/rent-it/admin/api/get_dispatches.php?range=${range}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            dispatchesData = data.dispatches || [];
+            updateStats(data.stats || {});
+            filterDispatches();
+        } else {
+            console.error('API error:', data.error);
+            if (grid) {
+                grid.innerHTML = '<div class="dispatch-error">Failed to load dispatches. Please try again.</div>';
+            }
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        if (grid) {
+            grid.innerHTML = '<div class="dispatch-error">Error connecting to server.</div>';
+        }
     }
 }
 
@@ -361,9 +271,9 @@ function markComplete(dispatchId) {
  * Initialize page
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial render
-    renderDispatches(sampleDispatches);
-    updateStats(sampleDispatches);
+    // Fetch data from API
+    const dateRange = document.getElementById('dateRangeSelect')?.value || 'week';
+    fetchDispatches(dateRange);
 
     // Filter tab click handlers
     document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -384,9 +294,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Date range handler
+    // Date range handler - refetch data when changed
     document.getElementById('dateRangeSelect')?.addEventListener('change', function() {
-        // In production, this would filter by actual dates
-        filterDispatches();
+        fetchDispatches(this.value);
     });
 });
