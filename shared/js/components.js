@@ -35,6 +35,7 @@ const Components = {
      * Get current user from localStorage
      * @returns {Object} User object with name and role
      */
+    
     getCurrentUser() {
         const userStr = localStorage.getItem('user');
         if (userStr) {
@@ -428,105 +429,97 @@ const Components = {
         const user = this.getCurrentUser();
         const initial = this.getUserInitial(user.name);
 
-        container.innerHTML = `
-            <header class="topbar">
-                <button class="menu-btn" id="menuBtn" title="Toggle sidebar menu">☰</button>
-                <h1 class="topbar-title" id="pageTitle">${title}</h1>
-                <div class="topbar-actions">
-                
-                        
-                   
-                    
-                    <!-- Theme Toggle -->
-                    <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
-                        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="5"/>
-                            <line x1="12" y1="1" x2="12" y2="3"/>
-                            <line x1="12" y1="21" x2="12" y2="23"/>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                            <line x1="1" y1="12" x2="3" y2="12"/>
-                            <line x1="21" y1="12" x2="23" y2="12"/>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                        </svg>
-                        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                        </svg>
-                    </button>
-                    
-                    <!-- User Profile -->
-                    <div class="topbar-user profile-wrapper">
-                        <button class="btn-icon profile-btn" id="profileBtn" aria-label="User menu" title="Profile & settings">
-                            <div class="topbar-user-avatar">${initial}</div>
-                        </button>
-                        
-                        <!-- Profile Dropdown -->
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <div class="profile-header">
-                                <div class="profile-info">
-                                    <div class="name">${user.name || 'User'}</div>
-                                    <div class="email">${user.email || 'user@example.com'}</div>
-                                </div>
-                            </div>
-                            <nav class="profile-menu">
-                                <a href="/rent-it/client/dashboard/dashboard.php" class="profile-menu-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="7" height="9"/>
-                                        <rect x="14" y="3" width="7" height="5"/>
-                                        <rect x="14" y="12" width="7" height="9"/>
-                                        <rect x="3" y="16" width="7" height="5"/>
-                                    </svg>
-                                    Dashboard
-                                </a>
-                                <a href="#" class="profile-menu-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="12" cy="7" r="4"/>
-                                    </svg>
-                                    My Profile
-                                </a>
-                                <a href="#" class="profile-menu-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3"/>
-                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                                    </svg>
-                                    Settings
-                                </a>
-                                <div class="profile-divider"></div>
-                                <button class="profile-menu-item danger" id="profileLogoutBtn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                        <polyline points="16 17 21 12 16 7"/>
-                                        <line x1="21" y1="12" x2="9" y2="12"/>
-                                    </svg>
-                                    Sign Out
-                                </button>
-                            </nav>
-                        </div>
+     // Logic para sa Avatar Content (Image vs Initial)
+const avatarContent = user.profile_picture 
+? `<img src="/rent-it/assets/profile/${user.profile_picture}" 
+        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`
+: initial;
+
+container.innerHTML = `
+<header class="topbar">
+    <button class="menu-btn" id="menuBtn" title="Toggle sidebar menu">☰</button>
+    <h1 class="topbar-title" id="pageTitle">${title}</h1>
+    <div class="topbar-actions">
+        
+        <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+            <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+        
+        <div class="topbar-user profile-wrapper">
+            <button class="btn-icon profile-btn" id="profileBtn" aria-label="User menu" title="Profile & settings">
+                <div class="topbar-user-avatar">${avatarContent}</div>
+            </button>
+            
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-header">
+                    <div class="profile-info">
+                       <div class="name">${user.full_name || 'User'}</div>
+                        <div class="email">${user.email || 'user@example.com'}</div>
                     </div>
                 </div>
-            </header>
-            
-            <!-- Logout Confirmation Modal -->
-            <div class="logout-modal-overlay" id="logoutModal">
-                <div class="logout-modal">
-                    <div class="logout-modal-icon">
+                <nav class="profile-menu">
+                    <a href="/rent-it/client/dashboard/dashboard.php" class="profile-menu-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="9"/>
+                            <rect x="14" y="3" width="7" height="5"/>
+                            <rect x="14" y="12" width="7" height="9"/>
+                            <rect x="3" y="16" width="7" height="5"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/rent-it/shared/js/myprofile.php" class="profile-menu-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        My Profile
+                    </a>
+                    <div class="profile-divider"></div>
+                    <button class="profile-menu-item danger" id="profileLogoutBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                             <polyline points="16 17 21 12 16 7"/>
                             <line x1="21" y1="12" x2="9" y2="12"/>
                         </svg>
-                    </div>
-                    <h3 class="logout-modal-title">Sign Out</h3>
-                    <p class="logout-modal-text">Are you sure you want to sign out of your account?</p>
-                    <div class="logout-modal-actions">
-                        <button class="logout-modal-btn logout-modal-cancel" id="logoutCancelBtn">Cancel</button>
-                        <button class="logout-modal-btn logout-modal-confirm" id="logoutConfirmBtn">Sign Out</button>
-                    </div>
-                </div>
+                        Sign Out
+                    </button>
+                </nav>
             </div>
-        `;
+        </div>
+    </div>
+</header>
+
+<div class="logout-modal-overlay" id="logoutModal">
+    <div class="logout-modal">
+        <div class="logout-modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+        </div>
+        <h3 class="logout-modal-title">Sign Out</h3>
+        <p class="logout-modal-text">Are you sure you want to sign out of your account?</p>
+        <div class="logout-modal-actions">
+            <button class="logout-modal-btn logout-modal-cancel" id="logoutCancelBtn">Cancel</button>
+            <button class="logout-modal-btn logout-modal-confirm" id="logoutConfirmBtn">Sign Out</button>
+        </div>
+    </div>
+</div>
+`;
 
         // Attach menu button event
         const menuBtn = document.getElementById('menuBtn');

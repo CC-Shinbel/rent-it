@@ -154,40 +154,8 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
                     </div>
                 </section>
 
-                <section class="requests-section" style="margin-top: 40px;">
-                    <div class="section-header">
-                        <h2 class="section-title">Returns & Extensions</h2>
-                   
-                    </div>
-                    <div class="history-panel">
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Request Type</th>
-                                    <th>Reference Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (mysqli_num_rows($pending_result) > 0): ?>
-                                    <?php while($row = mysqli_fetch_assoc($pending_result)): ?>
-                                    <tr>
-                                        <td><strong><?php echo htmlspecialchars($row['item_name']); ?></strong></td>
-                                        <td>
-                                            <span class="request-type-label">
-                                                <?php echo ($row['rental_status'] == 'Pending Return') ? '🔄 Return' : '📅 Extension'; ?>
-                                            </span>
-                                        </td>
-                                        <td><?php echo date('M d, Y', strtotime($row['end_date'])); ?></td>
-                                    </tr>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="3" style="text-align:center; opacity: 0.6; padding: 20px;">No pending requests.</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+           
+                  
 
                 <section class="history-section" style="margin-top: 40px;">
                     <div class="section-header">

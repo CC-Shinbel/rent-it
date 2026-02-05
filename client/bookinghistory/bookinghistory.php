@@ -163,7 +163,7 @@ $total_records = mysqli_num_rows($history_result);
                                     <th>Period</th>
                                     <th>Total Paid</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                   
                                 </tr>
                             </thead>
                             <tbody id="historyTableBody">
@@ -194,26 +194,7 @@ $total_records = mysqli_num_rows($history_result);
                                             <span class="status-pill <?php echo $status_class; ?>"><?php echo htmlspecialchars($row['rental_status']); ?></span>
                                         </td>
                                         <td>
-                                            <div class="actions-cell">
-                                                <a class="action-btn action-download" href="#" download aria-label="Download receipt" title="Download receipt">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-                                                        <path d="M12 3v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                                        <path d="M8 11l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                                        <path d="M21 21H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                                                    </svg>
-                                                </a>
-                                                <?php if ($row['rental_status'] === 'Completed'): ?>
-                                                <button class="action-btn action-review" aria-label="Rate & Review" title="Rate & Review" data-order-id="<?php echo $row['order_id']; ?>" data-product-name="<?php echo htmlspecialchars($row['item_name']); ?>">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-                                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                </button>
-                                                <?php else: ?>
-                                                <span class="action-disabled" title="Reviews only available for completed rentals">—</span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                           
                                     <?php endwhile; ?>
                                 <?php else: ?>
                                     <tr>
@@ -237,15 +218,7 @@ $total_records = mysqli_num_rows($history_result);
                     </div>
                 </section>
 
-                <!-- Promo CTA -->
-                <section class="promo-banner">
-                    <div class="promo-content">
-                        <div class="promo-text">
-                            <h3>Plan a party next weekend?</h3>
-                            <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
-                        </div>                        <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
-                    </div>
-                </section>
+              
             </div>
 
             <!-- Footer Container (Injected by JS) -->
