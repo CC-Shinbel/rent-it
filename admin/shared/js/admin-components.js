@@ -190,7 +190,6 @@ const AdminComponents = {
                         </svg>
                     </button>
                 </div>
-                
                 <nav class="sidebar-nav">
                     ${navItems}
                 </nav>
