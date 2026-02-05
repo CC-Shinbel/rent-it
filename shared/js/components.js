@@ -29,7 +29,7 @@ const Components = {
         { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
         { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
         { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
-        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/pages/contactus.html' },
+        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/client/contactusloggedin/contactusloggedin.php' },
     ],
     /**
      * Get current user from localStorage
@@ -350,10 +350,11 @@ const Components = {
      */
     generateEmptyState() {
         return `
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h3 class="empty-state-title">No data found</h3>
-                <p class="empty-state-text">Add your first item to get started.</p>
+            <div class="empty-state loader-state" role="status" aria-live="polite">
+                <div class="loader-spinner" aria-hidden="true"></div>
+                <h3 class="empty-state-title">Loading content…</h3>
+                <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
+                <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
             </div>
         `;
     },
@@ -837,7 +838,7 @@ const Components = {
                 <div class="footer-content">
                     <div class="footer-main">
                         <div class="footer-brand">
-                            <img src="/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="footer-logo">
+                            <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="footer-logo">
                             <span class="footer-brand-name">RentIT</span>
                         </div>
                         <p class="footer-tagline">Premium karaoke equipment rentals for your perfect event.</p>

@@ -727,6 +727,8 @@ function goToPage(pageNum) {
 function initProductModal() {
     const modal = document.getElementById('productModal');
     const closeBtn = document.getElementById('closeProductModal');
+    const toggleReviewsBtn = document.getElementById('toggleReviewsBtn');
+    const reviewsSection = document.getElementById('modalReviewsSection');
     
     if (!modal) return;
     
@@ -742,11 +744,28 @@ function initProductModal() {
             closeProductModal();
         }
     });
+
+    if (toggleReviewsBtn && reviewsSection) {
+        toggleReviewsBtn.addEventListener('click', () => {
+            const collapsed = reviewsSection.classList.toggle('collapsed');
+            toggleReviewsBtn.textContent = collapsed ? 'Show reviews' : 'Hide reviews';
+            toggleReviewsBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        });
+    }
     
     // Add click handlers to product cards (make whole card clickable)
     document.querySelectorAll('.product-card').forEach(card => {
         // Make the card clickable for viewing details
         card.style.cursor = 'pointer';
+        const cardImg = card.querySelector('.product-image img');
+        if (cardImg) {
+            cardImg.style.cursor = 'zoom-in';
+            cardImg.title = 'Open image in new tab';
+            cardImg.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (cardImg.src) window.open(cardImg.src, '_blank');
+            });
+        }
         card.addEventListener('click', (e) => {
             // Don't open modal if clicking on action buttons
             if (e.target.closest('.product-actions') || e.target.closest('button')) {
@@ -805,12 +824,29 @@ function openProductModal(card) {
 
     // ✅ PRODUCT DETAILS
     const productName = card.querySelector('.product-name')?.textContent || 'Product';
-    const productImage = card.querySelector('.product-image img')?.src || '';
+    const fallbackImages = [
+        '../../assets/images/catalog-set-1.svg',
+        '../../assets/images/catalog-set-2.svg',
+        '../../assets/images/catalog-set-3.svg'
+    ];
+    const productImageRaw = card.querySelector('.product-image img')?.src || '';
+    const productImage = productImageRaw && !productImageRaw.includes('placeholder')
+        ? productImageRaw
+        : fallbackImages[productId % fallbackImages.length];
     const productPrice = card.querySelector('.product-price')?.innerHTML || '₱0';
     const productDescription = card.querySelector('.product-description')?.textContent || '';
 
-    document.getElementById('modalProductImage').src = productImage;
-    document.getElementById('modalProductImage').alt = productName;
+    const modalImage = document.getElementById('modalProductImage');
+    if (modalImage) {
+        modalImage.src = productImage;
+        modalImage.alt = productName;
+        modalImage.title = 'Open image in new tab';
+        modalImage.style.cursor = 'zoom-in';
+        modalImage.onclick = (e) => {
+            e.preventDefault();
+            window.open(modalImage.src, '_blank');
+        };
+    }
     document.getElementById('modalProductName').textContent = productName;
     document.getElementById('modalProductPrice').innerHTML = productPrice;
     document.getElementById('modalProductDescription').textContent = productDescription;
@@ -878,6 +914,15 @@ function openProductModal(card) {
     // ============================
     if (typeof renderStars === 'function') renderStars(card);
     if (typeof renderReviewsAndBookings === 'function') renderReviewsAndBookings(productId);
+
+    // Reset reviews toggle to expanded each open
+    const reviewsSection = document.getElementById('modalReviewsSection');
+    const toggleReviewsBtn = document.getElementById('toggleReviewsBtn');
+    if (reviewsSection && toggleReviewsBtn) {
+        reviewsSection.classList.remove('collapsed');
+        toggleReviewsBtn.textContent = 'Hide reviews';
+        toggleReviewsBtn.setAttribute('aria-expanded', 'true');
+    }
 
     // ============================
     // OPEN MODAL

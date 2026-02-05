@@ -249,10 +249,22 @@ $result = mysqli_query($conn, $query);
         data-category="<?php echo htmlspecialchars($row['category']); ?>"
         data-price="<?php echo $row['price_per_day']; ?>">
                     
+        <?php 
+            $sampleImages = [
+                '../../assets/images/catalog-set-1.svg',
+                '../../assets/images/catalog-set-2.svg',
+                '../../assets/images/catalog-set-3.svg'
+            ];
+            $imageFile = !empty($row['image'])
+                ? '../../assets/images/' . htmlspecialchars($row['image'])
+                : $sampleImages[$row['item_id'] % count($sampleImages)];
+        ?>
         <div class="product-image-wrap">
-            <img src="../../assets/images/placeholder.jpg" 
-                 alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
-                 class="product-image">
+              <img src="<?php echo $imageFile; ?>"
+                  alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                  class="product-image"
+                  title="Open image in new tab"
+                  onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
             
             <span class="product-badge <?php echo strtolower($row['status'] ?? 'available'); ?>">
                 <?php echo htmlspecialchars($row['status'] ?? 'Available'); ?>
@@ -280,11 +292,11 @@ $result = mysqli_query($conn, $query);
             </p>
             
             <div class="product-actions">
-            <button class="product-cta-main"
-        onclick="location.href='../cart/add_to_cart.php?id=<?php echo $row['item_id']; ?>'">
-    Rent Now
-</button>
-
+                <button class="product-cta-main"
+                        title="Add this item to your cart"
+                        onclick="location.href='../cart/add_to_cart.php?id=<?php echo $row['item_id']; ?>'">
+                    Rent Now
+                </button>
             </div>
         </div>
         
@@ -315,8 +327,7 @@ $result = mysqli_query($conn, $query);
                     </section>
                 </div>
             </div>
-            
-          
+            <div id="footerContainer"></div>
         </main>
     </div>
 
@@ -333,7 +344,7 @@ $result = mysqli_query($conn, $query);
             <div class="modal-body product-modal-body">
                 <!-- Product Image Section -->
                 <div class="modal-product-image-section">
-                    <img src="" alt="" class="modal-product-image" id="modalProductImage">
+                    <img src="" alt="" class="modal-product-image" id="modalProductImage" onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
                     <span class="modal-product-badge" id="modalProductBadge">Available</span>
                 </div>
 
@@ -350,7 +361,7 @@ $result = mysqli_query($conn, $query);
                             <!-- Stars injected by JS -->
                         </div>
                         <span class="modal-rating-score" id="modalRatingScore">0.0</span>
-                        <span class="modal-rating-count" id="modalRatingCount">(0 reviews)</span>
+                        <span class="modal-rating-count" id="modalRatingCount" title="Total customer reviews">(0 reviews)</span>
                     </div>
 
                     <!-- Description -->
@@ -364,7 +375,7 @@ $result = mysqli_query($conn, $query);
                     </div>
 
                     <!-- Future Availability Summary -->
-                    <div class="modal-availability-section">
+                    <div class="modal-availability-section" title="Upcoming bookings for this item">
                         <h4 class="modal-section-title">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -380,41 +391,45 @@ $result = mysqli_query($conn, $query);
                         </div>
                     </div>
 
-                    <button class="btn-modal-favorite" id="modalFavoriteBtn" data-item-id="">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-    Add to Favorites
-</button>
-<button type="button" class="btn-modal-cart" id="modalCartBtn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-    </svg>
-    Add to Cart
-</button>
+                    <!-- Reviews Section -->
+                    <div class="modal-reviews-section" id="modalReviewsSection">
+                        <div class="modal-reviews-title">
+                            <div class="modal-reviews-heading">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <span>Customer Reviews</span>
+                                <span class="modal-reviews-count" id="modalReviewsCount">(0)</span>
+                            </div>
+                            <button type="button" class="reviews-toggle" id="toggleReviewsBtn" aria-expanded="true" title="Show or hide customer reviews">Hide reviews</button>
+                        </div>
+
+                        <!-- Reviews List -->
+                        <div class="modal-reviews-list" id="modalReviewsList">
+                            <!-- Reviews injected by JS -->
+                            <div class="review-empty-state">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <p>No reviews yet. Be the first to share your experience!</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Reviews Section -->
-            <div class="modal-reviews-section">
-                <h3 class="modal-reviews-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    Customer Reviews
-                    <span class="modal-reviews-count" id="modalReviewsCount">(0)</span>
-                </h3>
-
-                <!-- Reviews List -->
-                <div class="modal-reviews-list" id="modalReviewsList">
-                    <!-- Reviews injected by JS -->
-                    <div class="review-empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                        <p>No reviews yet. Be the first to share your experience!</p>
+                    <div class="modal-actions">
+                        <button class="btn-modal-favorite" id="modalFavoriteBtn" data-item-id="" title="Add or remove from your favorites">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Add to Favorites
+        </button>
+        <button type="button" class="btn-modal-cart" id="modalCartBtn" title="Add this item to cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            Add to Cart
+        </button>
                     </div>
                 </div>
             </div>
@@ -424,5 +439,13 @@ $result = mysqli_query($conn, $query);
     <!-- Scripts -->
     <script src="../../shared/js/components.js"></script>
     <script src="catalog.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Components.injectSidebar('sidebarContainer', 'catalog', 'client');
+                Components.injectTopbar('topbarContainer', 'Catalog');
+                Components.injectFooter('footerContainer');
+                Components.initStaggerAnimation('.catalog-grid');
+            });
+        </script>
 </body>
 </html>

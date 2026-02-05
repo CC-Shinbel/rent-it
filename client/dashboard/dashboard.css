@@ -15,13 +15,33 @@
     margin-left: var(--sidebar-width);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: auto;
 }
 
 .content-area {
-    flex: 1;
+    flex: 0 0 auto;
+    min-height: auto;
     padding: var(--spacing-xl);
     background: var(--bg-primary);
+}
+
+/* Consistent vertical rhythm for stacked sections */
+.content-area > * + * {
+    margin-top: clamp(18px, 2vw, 28px);
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        padding: clamp(16px, 4vw, 22px);
+    }
+
+    .content-area > * + * {
+        margin-top: clamp(14px, 3vw, 20px);
+    }
+
+    .page-header-dashboard {
+        margin-bottom: clamp(18px, 4vw, 26px);
+    }
 }
 
 /* =====================================================
@@ -72,6 +92,12 @@
     background: var(--accent-hover);
     transform: translateY(-1px);
     text-decoration: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-new svg {
@@ -106,6 +132,22 @@
 .kpi-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .kpi-row {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .kpi-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .kpi-icon-wrap {
+        margin-bottom: 8px;
+    }
 }
 
 .kpi-icon-wrap {
@@ -548,6 +590,49 @@
     width: 100%;
     border-collapse: collapse;
 }
+    .history-empty td {
+        padding: 28px 20px;
+        background: var(--bg-secondary);
+    }
+    .empty-state {
+        text-align: center;
+        color: var(--text-secondary);
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+    }
+    .loader-state {
+        padding: 18px 12px;
+    }
+    .loader-spinner {
+        width: 44px;
+        height: 44px;
+        border: 4px solid rgba(0, 0, 0, 0.08);
+        border-top-color: var(--accent, #ff6b00);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .empty-state-icon {
+        font-size: 26px;
+    }
+    .empty-state-title {
+        margin: 0;
+        color: var(--heading-primary);
+        font-weight: 700;
+    }
+    .empty-state-text {
+        margin: 0;
+        color: var(--text-secondary);
+    }
+    .empty-state-link {
+        color: var(--brand-primary-light);
+        font-weight: 700;
+        text-decoration: none;
+    }
+    .empty-state-link:hover { text-decoration: underline; }
 
 .history-table th,
 .history-table td {
@@ -853,7 +938,7 @@
 @media (max-width: 1024px) {
     .sidebar-logo-icon {
         height: 56px;
-    }
+}
 }
 @media (max-width: 768px) {
     .sidebar-logo-icon {
@@ -1443,9 +1528,37 @@
 /* =====================================================
    RESPONSIVE
    ===================================================== */
-@media (max-width: 768px) {
+@media (max-width: 850px) and (min-width: 769px) {
+    /* Keep sidebar labels visible in the tablet band so icons aren't alone */
+    .sidebar.collapsed {
+        width: var(--sidebar-width);
+    }
+
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .sidebar-user-info,
+    .sidebar.collapsed .logout-text,
+    .sidebar.collapsed .sidebar-logo-text {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        white-space: nowrap;
+    }
+
+    .sidebar.collapsed .nav-item {
+        justify-content: flex-start;
+    }
+}
+@media (max-width: 850px) {
     .main-content {
         margin-left: 0;
+        overflow-x: hidden;
+    }
+
+    /* When sidebar is collapsed in this range, keep content full width */
+    .app-container.sidebar-collapsed .main-content,
+    .app-container.sidebar-collapsed .topbar {
+        margin-left: 0;
+        left: 0;
     }
     
     .sidebar {
@@ -1924,6 +2037,22 @@
 .logout-modal-confirm:hover {
     background: #dc2626;
     transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+    .logout-modal {
+        padding: 24px 20px;
+        width: 94%;
+        max-width: 420px;
+    }
+
+    .logout-modal-actions {
+        flex-direction: column;
+    }
+
+    .logout-modal-btn {
+        width: 100%;
+    }
 }
 
 /* Pulse animation for notification badge */
@@ -2416,6 +2545,18 @@
 @media (max-width: 992px) {
     .rental-cards-row {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Medium screens (769px to 960px): let content wrap to avoid tall blank gaps before footer */
+@media (max-width: 960px) and (min-width: 769px) {
+    .main-content {
+        min-height: auto;
+    }
+
+    .content-area {
+        flex: 0 0 auto;
+        min-height: auto;
     }
 }
 

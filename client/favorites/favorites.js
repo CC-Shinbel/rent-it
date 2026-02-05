@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Components !== 'undefined') {
         Components.injectSidebar('sidebarContainer', 'favorites', 'client');
         Components.injectTopbar('topbarContainer', 'My Favorites');
-        Components.injectFooter();
+        Components.injectFooter('footerContainer');
     }
 
     initFavorites();

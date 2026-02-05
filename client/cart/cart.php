@@ -73,13 +73,19 @@ $result = mysqli_query($conn, $cart_query);
                                                    onchange="calculateTotal()">
                                         </label>
                                         
+                                        <?php 
+                                            $imageSrc = !empty($row['image']) 
+                                                ? htmlspecialchars($row['image']) 
+                                                : '../../assets/images/catalog-fallback.svg';
+                                        ?>
                                         <div class="cart-item-image">
-                                        <img src="https://via.placeholder.com/150?text=RentIt+Product" 
-     alt="<?php echo $row['item_name']; ?>"
-     class="cart-item-image">
-                               
-    
-    </div>
+                                            <img 
+                                                src="<?php echo $imageSrc; ?>" 
+                                                alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                                                class="cart-item-photo"
+                                                onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
+                                            >
+                                        </div>
 
                                         <div class="cart-item-details">
                                             <div class="cart-item-header">
@@ -153,7 +159,9 @@ $result = mysqli_query($conn, $cart_query);
                         </div>
                         <button class="btn-checkout-full" id="btnCheckout" disabled>Proceed to Checkout</button>
                     </aside>
-                </div> </div>
+                </div>
+            </div>
+            <div id="footerContainer"></div>
         </main>
     </div>
 

@@ -402,25 +402,11 @@ img {
     background: linear-gradient(135deg, var(--page-header-start, #013A63) 0%, var(--page-header-end, #014F86) 100%);
     border-top: none;
     margin-top: 3rem;
-    padding: 2rem 1.5rem 1rem;
-    /* Fix: Ensure footer spans full width, compensating for sidebar offset */
-    margin-left: calc(-1 * var(--sidebar-width, 240px));
-    width: calc(100% + var(--sidebar-width, 240px));
+    padding: 2rem clamp(1.5rem, 4vw, 2.5rem) 1.2rem;
+    width: 100%;
     box-sizing: border-box;
-}
-
-/* Fix footer positioning when sidebar is collapsed */
-.sidebar-collapsed .app-footer {
-    margin-left: calc(-1 * var(--sidebar-collapsed-width, 72px));
-    width: calc(100% + var(--sidebar-collapsed-width, 72px));
-}
-
-/* Fix footer on mobile when sidebar is hidden */
-@media (max-width: 768px) {
-    .app-footer {
-        margin-left: 0;
-        width: 100%;
-    }
+    position: relative;
+    z-index: 1;
 }
 
 /* Footer text colors for blueish background */
@@ -474,6 +460,89 @@ img {
     flex: 0 0 280px;
 }
 
+
+/* Footer Responsive Tweaks */
+@media (max-width: 960px) {
+    .footer-content {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .footer-links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-footer {
+        padding: 1.5rem 1.25rem 1rem;
+    }
+
+    .footer-content {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 1.25rem;
+        padding-bottom: 1.25rem;
+        text-align: left;
+    }
+
+    .footer-main {
+        flex: 0 0 auto;
+    }
+
+    .footer-links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        text-align: left;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        text-align: left;
+    }
+
+    .footer-brand-name {
+        font-size: 1.05rem;
+    }
+
+    .footer-tagline,
+    .footer-nav a,
+    .footer-heading,
+    .footer-copyright {
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .footer-heading {
+        letter-spacing: 0.04em;
+    }
+
+    .footer-nav {
+        gap: 0.35rem;
+    }
+
+    .social-link {
+        width: 32px;
+        height: 32px;
+    }
+}
 .footer-brand {
     display: flex;
     align-items: center;

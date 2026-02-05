@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof Components !== 'undefined') {
         Components.injectSidebar('sidebarContainer', 'cart', 'client');
         Components.injectTopbar('topbarContainer', 'My Cart');
+        Components.injectFooter('footerContainer');
     }
 
     // 2. Initialize functionalities
@@ -25,6 +26,19 @@ function initCartLogic() {
     const itemCheckboxes = document.querySelectorAll('.item-checkbox');
     const checkoutBtn = document.getElementById('btnCheckout');
     const removeSelectedBtn = document.getElementById('btnRemoveSelected');
+
+    // Make cart images feel interactive and open in a new tab
+    document.querySelectorAll('.cart-item-card').forEach(card => {
+        const photo = card.querySelector('.cart-item-photo');
+        if (photo) {
+            photo.style.cursor = 'zoom-in';
+            photo.title = 'Open image in new tab';
+            photo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (photo.src) window.open(photo.src, '_blank');
+            });
+        }
+    });
 
     // --- Calculation Logic ---
     function calculateTotal() {
