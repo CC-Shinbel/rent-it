@@ -5,109 +5,82 @@
  * =====================================================
  */
 
-// Sample order data (will be replaced with API calls)
-const sampleOrderDetail = {
-    id: 'ORD-2025-0142',
-    status: 'pending',
-    customer: {
-        id: 'USR-12345',
-        name: 'John Doe',
-        email: 'john.doe@email.com',
-        phone: '+63 912 345 6789',
-        avatar: null
-    },
-    items: [
-        {
-            id: 'EQ-001',
-            name: 'Canon EOS R5',
-            category: 'Cameras',
-            image: null,
-            quantity: 1,
-            dailyRate: 150.00,
-            subtotal: 450.00
-        },
-        {
-            id: 'EQ-002',
-            name: '50mm Prime Lens',
-            category: 'Lenses',
-            image: null,
-            quantity: 2,
-            dailyRate: 35.00,
-            subtotal: 210.00
-        }
-    ],
-    dates: {
-        ordered: '2025-01-28T10:30:00Z',
-        start: '2025-01-30',
-        end: '2025-02-02',
-        duration: 3
-    },
-    delivery: {
-        method: 'Delivery',
-        address: '123 Main Street, Makati City, Metro Manila 1200',
-        scheduledDate: '2025-01-30',
-        scheduledTime: '10:00 AM - 12:00 PM',
-        driver: null,
-        notes: 'Leave at front desk if not available'
-    },
-    payment: {
-        subtotal: 660.00,
-        tax: 79.20,
-        deliveryFee: 50.00,
-        deposit: 200.00,
-        discount: 0,
-        total: 989.20,
-        status: 'paid',
-        method: 'Visa ending in 4242'
-    },
-    timeline: [
-        {
-            event: 'Order Placed',
-            date: '2025-01-28T10:30:00Z',
-            completed: true
-        },
-        {
-            event: 'Payment Received',
-            date: '2025-01-28T10:32:00Z',
-            completed: true
-        },
-        {
-            event: 'Order Confirmed',
-            date: null,
-            completed: false,
-            current: true
-        },
-        {
-            event: 'Out for Delivery',
-            date: null,
-            completed: false
-        },
-        {
-            event: 'Delivered',
-            date: null,
-            completed: false
-        }
-    ],
-    notes: [
-        {
-            author: 'System',
-            date: '2025-01-28T10:30:00Z',
-            text: 'Order created from customer checkout.'
-        },
-        {
-            author: 'System',
-            date: '2025-01-28T10:32:00Z',
-            text: 'Payment of ₱989.20 received via credit card.'
-        }
-    ]
-};
+// Store order data from API
+let orderData = null;
+
+// Resolve absolute URLs based on the current base tag or window origin
+const baseHref = document.querySelector('base')?.href || `${window.location.origin}/`;
+console.log('[OrderDetail] Base href:', baseHref);
+
+function buildUrl(path) {
+    const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+    const url = new URL(normalizedPath, baseHref).toString();
+    console.log('[OrderDetail] Built URL:', url);
+    return url;
+}
 
 /**
  * Get order ID from URL
  */
 function getOrderIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('id') || sampleOrderDetail.id;
+    const id = params.get('id') || null;
+    console.log('[OrderDetail] Order ID from URL:', id);
+    return id;
+}
+
+/**
+ * Fetch order details from API
+ */
+async function fetchOrderDetail(orderId) {
+    console.log('[OrderDetail] Fetching order:', orderId);
+    try {
+        const apiUrl = buildUrl(`admin/api/get_order.php?id=${orderId}`);
+        console.log('[OrderDetail] API URL:', apiUrl);
+        const response = await fetch(apiUrl);
+        console.log('[OrderDetail] Response status:', response.status);
+        const result = await response.json();
+        console.log('[OrderDetail] API result:', result);
+        
+        if (result.success) {
+            orderData = result.data;
+            console.log('[OrderDetail] Order data:', orderData);
+            displayOrderDetail(orderData);
+        } else {
+            console.error('Failed to fetch order:', result.message);
+            showOrderNotFound();
+        }
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        showOrderNotFound();
+    }
+}
+
+/**
+ * Show order not found message
+ */
+function showOrderNotFound() {
+    document.querySelector('.order-detail-grid').innerHTML = `
+        <div class="detail-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <h2>Order Not Found</h2>
+            <p>The order you are looking for does not exist or has been removed.</p>
+            <a href="admin/orders/orders.php" class="btn btn-primary" style="margin-top: 1rem;">Back to Orders</a>
+        </div>
+    `;
+}
+
+/**
+ * Display order detail
+ */
+function displayOrderDetail(order) {
+    populateHeader(order);
+    populateCustomer(order.customer);
+    populateItems(order.items, order.dates.duration);
+    populateDelivery(order.delivery, order.dates);
+    populatePayment(order.payment);
+    populateTimeline(order.timeline);
+    populateStatusProgress(order.status);
+    populateNotes(order.notes);
 }
 
 /**
@@ -254,10 +227,12 @@ function populateHeader(order) {
  * Populate customer information
  */
 function populateCustomer(customer) {
+    console.log('[OrderDetail] Populating customer:', customer);
     document.getElementById('customerAvatar').textContent = getInitial(customer.name);
     document.getElementById('customerName').textContent = customer.name;
     document.getElementById('customerEmail').textContent = customer.email;
     document.getElementById('customerPhone').textContent = customer.phone;
+    console.log('[OrderDetail] Customer populated successfully');
 }
 
 /**
@@ -384,13 +359,19 @@ function populateStatusProgress(status) {
         { id: 'confirmed', label: 'Confirmed' },
         { id: 'out_for_delivery', label: 'Out for Delivery' },
         { id: 'active', label: 'Active' },
+        { id: 'return_scheduled', label: 'Return Scheduled' },
+        { id: 'returned', label: 'Returned' },
         { id: 'completed', label: 'Completed' }
     ];
 
-    const currentIndex = statuses.findIndex(s => s.id === status);
+    let currentIndex = statuses.findIndex(s => s.id === status);
+    // Handle cancelled status
+    if (status === 'cancelled') {
+        currentIndex = -1;
+    }
     
     const progressHtml = statuses.map((s, index) => {
-        const isCompleted = index < currentIndex;
+        const isCompleted = currentIndex >= 0 && index < currentIndex;
         const isCurrent = index === currentIndex;
         
         return `
@@ -430,6 +411,9 @@ function populateStatusProgress(status) {
         case 'active':
             actionHtml = `<button class="btn btn-secondary" onclick="scheduleReturn()">Schedule Return</button>`;
             break;
+        case 'return_scheduled':
+            actionHtml = `<button class="btn btn-primary" onclick="markReturned()">Mark Returned</button>`;
+            break;
     }
 
     actionContainer.innerHTML = actionHtml;
@@ -460,74 +444,156 @@ function populateNotes(notes) {
 }
 
 /**
- * Action handlers
+ * Action handlers - API-based
  */
-function confirmOrder() {
+async function confirmOrder() {
+    if (!orderData) return;
+    
     if (confirm('Confirm this order?')) {
-        sampleOrderDetail.status = 'confirmed';
-        sampleOrderDetail.timeline[2].completed = true;
-        sampleOrderDetail.timeline[2].date = new Date().toISOString();
-        sampleOrderDetail.timeline[2].current = false;
-        sampleOrderDetail.timeline[3].current = true;
-        sampleOrderDetail.notes.push({
-            author: 'Admin',
-            date: new Date().toISOString(),
-            text: 'Order confirmed and ready for dispatch scheduling.'
-        });
-        loadOrderDetail();
-        alert('Order confirmed successfully!');
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Booked' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order confirmed successfully!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to confirm order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error confirming order:', error);
+            alert('Error confirming order');
+        }
     }
 }
 
-function cancelOrder() {
+async function cancelOrder() {
+    if (!orderData) return;
+    
     if (confirm('Are you sure you want to cancel this order?')) {
-        sampleOrderDetail.status = 'cancelled';
-        sampleOrderDetail.notes.push({
-            author: 'Admin',
-            date: new Date().toISOString(),
-            text: 'Order cancelled by administrator.'
-        });
-        loadOrderDetail();
-        alert('Order cancelled.');
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Cancelled' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order cancelled.');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to cancel order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+            alert('Error cancelling order');
+        }
     }
 }
 
-function dispatchOrder() {
+async function dispatchOrder() {
+    if (!orderData) return;
+    
     if (confirm('Mark this order as dispatched?')) {
-        sampleOrderDetail.status = 'out_for_delivery';
-        sampleOrderDetail.timeline[3].completed = true;
-        sampleOrderDetail.timeline[3].date = new Date().toISOString();
-        sampleOrderDetail.timeline[3].current = false;
-        sampleOrderDetail.timeline[4].current = true;
-        sampleOrderDetail.delivery.driver = 'Mike Johnson';
-        sampleOrderDetail.notes.push({
-            author: 'Admin',
-            date: new Date().toISOString(),
-            text: 'Order dispatched. Driver: Mike Johnson'
-        });
-        loadOrderDetail();
-        alert('Order dispatched!');
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'In Transit' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order dispatched!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to dispatch order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error dispatching order:', error);
+            alert('Error dispatching order');
+        }
     }
 }
 
-function markDelivered() {
+async function markDelivered() {
+    if (!orderData) return;
+    
     if (confirm('Mark this order as delivered?')) {
-        sampleOrderDetail.status = 'active';
-        sampleOrderDetail.timeline[4].completed = true;
-        sampleOrderDetail.timeline[4].date = new Date().toISOString();
-        sampleOrderDetail.timeline[4].current = false;
-        sampleOrderDetail.notes.push({
-            author: 'Admin',
-            date: new Date().toISOString(),
-            text: 'Equipment delivered to customer.'
-        });
-        loadOrderDetail();
-        alert('Order marked as delivered!');
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Active' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order marked as delivered!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to update order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error updating order:', error);
+            alert('Error updating order');
+        }
     }
 }
 
-function scheduleReturn() {
-    alert('Return scheduling modal would open here.');
+async function scheduleReturn() {
+    if (!orderData) return;
+    
+    if (confirm('Mark this order as pending return?')) {
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Pending Return' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Return scheduled!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to schedule return: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error scheduling return:', error);
+            alert('Error scheduling return');
+        }
+    }
+}
+
+async function markReturned() {
+    if (!orderData) return;
+    
+    if (confirm('Mark this order as returned?')) {
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Returned' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order marked as returned!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to mark as returned: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error marking as returned:', error);
+            alert('Error marking as returned');
+        }
+    }
 }
 
 function printOrder() {
@@ -535,37 +601,30 @@ function printOrder() {
 }
 
 /**
- * Load order detail
- */
-function loadOrderDetail() {
-    const order = sampleOrderDetail;
-    
-    populateHeader(order);
-    populateCustomer(order.customer);
-    populateItems(order.items, order.dates.duration);
-    populateDelivery(order.delivery, order.dates);
-    populatePayment(order.payment);
-    populateTimeline(order.timeline);
-    populateStatusProgress(order.status);
-    populateNotes(order.notes);
-}
-
-/**
  * Initialize page
  */
+console.log('[OrderDetail] Script loaded');
 document.addEventListener('DOMContentLoaded', function() {
-    loadOrderDetail();
+    console.log('[OrderDetail] DOM loaded, initializing...');
+    const orderId = getOrderIdFromUrl();
+    
+    if (orderId) {
+        fetchOrderDetail(orderId);
+    } else {
+        console.warn('[OrderDetail] No order ID in URL');
+        showOrderNotFound();
+    }
 
     // Add note button handler
     document.getElementById('addNoteBtn')?.addEventListener('click', () => {
         const note = prompt('Enter note:');
-        if (note) {
-            sampleOrderDetail.notes.push({
+        if (note && orderData) {
+            orderData.notes.push({
                 author: 'Admin',
                 date: new Date().toISOString(),
                 text: note
             });
-            populateNotes(sampleOrderDetail.notes);
+            populateNotes(orderData.notes);
         }
     });
 });
