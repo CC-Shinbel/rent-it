@@ -5,138 +5,39 @@
  * =====================================================
  */
 
-// Sample order data (will be replaced with API calls)
-const sampleOrders = [
-    {
-        id: 'ORD-2025-0142',
-        customer: {
-            name: 'John Doe',
-            email: 'john.doe@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Canon EOS R5', quantity: 1 },
-            { name: '50mm Lens', quantity: 2 }
-        ],
-        dates: {
-            start: '2025-01-30',
-            end: '2025-02-02',
-            duration: 3
-        },
-        total: 711.00,
-        status: 'pending'
-    },
-    {
-        id: 'ORD-2025-0141',
-        customer: {
-            name: 'Maria Santos',
-            email: 'maria.santos@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Sony A7 IV', quantity: 1 }
-        ],
-        dates: {
-            start: '2025-01-29',
-            end: '2025-02-01',
-            duration: 3
-        },
-        total: 450.00,
-        status: 'confirmed'
-    },
-    {
-        id: 'ORD-2025-0140',
-        customer: {
-            name: 'Carlos Garcia',
-            email: 'carlos.g@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Videoke System Pro', quantity: 1 },
-            { name: 'Wireless Mic Set', quantity: 2 }
-        ],
-        dates: {
-            start: '2025-01-28',
-            end: '2025-01-30',
-            duration: 2
-        },
-        total: 580.00,
-        status: 'out_for_delivery'
-    },
-    {
-        id: 'ORD-2025-0139',
-        customer: {
-            name: 'Ana Reyes',
-            email: 'ana.reyes@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'DJ Equipment Set', quantity: 1 }
-        ],
-        dates: {
-            start: '2025-01-25',
-            end: '2025-01-28',
-            duration: 3
-        },
-        total: 890.00,
-        status: 'active'
-    },
-    {
-        id: 'ORD-2025-0138',
-        customer: {
-            name: 'Pedro Cruz',
-            email: 'pedro.cruz@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Sound System', quantity: 1 },
-            { name: 'Stage Lights', quantity: 4 }
-        ],
-        dates: {
-            start: '2025-01-22',
-            end: '2025-01-25',
-            duration: 3
-        },
-        total: 1250.00,
-        status: 'return_scheduled'
-    },
-    {
-        id: 'ORD-2025-0137',
-        customer: {
-            name: 'Lisa Wong',
-            email: 'lisa.wong@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Projector HD', quantity: 1 }
-        ],
-        dates: {
-            start: '2025-01-20',
-            end: '2025-01-22',
-            duration: 2
-        },
-        total: 320.00,
-        status: 'completed'
-    },
-    {
-        id: 'ORD-2025-0136',
-        customer: {
-            name: 'Mark Johnson',
-            email: 'mark.j@email.com',
-            avatar: null
-        },
-        items: [
-            { name: 'Camera Drone', quantity: 1 }
-        ],
-        dates: {
-            start: '2025-01-18',
-            end: '2025-01-20',
-            duration: 2
-        },
-        total: 450.00,
-        status: 'cancelled'
+// Store orders data from API
+let ordersData = [];
+let kpiCounts = { pending: 0, confirmed: 0, out_for_delivery: 0, active: 0 };
+
+// Resolve absolute URLs based on the current base tag or window origin
+const baseHref = document.querySelector('base')?.href || `${window.location.origin}/`;
+function buildUrl(path) {
+    const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+    return new URL(normalizedPath, baseHref).toString();
+}
+
+/**
+ * Fetch orders from API
+ */
+async function fetchOrders() {
+    try {
+        const response = await fetch(buildUrl('admin/api/get_orders.php'));
+        const result = await response.json();
+        
+        if (result.success) {
+            ordersData = result.data;
+            kpiCounts = result.counts;
+            renderOrders(ordersData);
+            updateKPICounts();
+        } else {
+            console.error('Failed to fetch orders:', result.message);
+            renderOrders([]);
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        renderOrders([]);
     }
-];
+}
 
 /**
  * Get status display text
@@ -181,15 +82,17 @@ function getInitial(name) {
  */
 function renderOrderRow(order) {
     const initial = getInitial(order.customer.name);
-    const itemsText = order.items.length === 1 
-        ? order.items[0].name 
-        : `${order.items[0].name} +${order.items.length - 1} more`;
+    const itemsText = order.items.length === 0
+        ? 'No items'
+        : order.items.length === 1 
+            ? order.items[0].name 
+            : `${order.items[0].name} +${order.items.length - 1} more`;
     const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
     
     return `
-        <tr data-order-id="${order.id}">
+        <tr data-order-id="${order.order_id}">
             <td>
-                <a href="admin/orders/orderdetail.php?id=${order.id}" class="order-id">${order.id}</a>
+                <a href="admin/orders/orderdetail.php?id=${order.order_id}" class="order-id">${order.id}</a>
             </td>
             <td>
                 <div class="customer-cell">
@@ -224,19 +127,19 @@ function renderOrderRow(order) {
             </td>
             <td>
                 <div class="actions-cell">
-                    <button class="action-btn view" title="View order details" onclick="viewOrder('${order.id}')">
+                    <button class="action-btn view" title="View order details" onclick="viewOrder(${order.order_id})">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                             <circle cx="12" cy="12" r="3"/>
                         </svg>
                     </button>
                     ${order.status === 'pending' ? `
-                        <button class="action-btn confirm" title="Confirm order" onclick="confirmOrder('${order.id}')">
+                        <button class="action-btn confirm" title="Confirm order" onclick="confirmOrder(${order.order_id})">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <polyline points="20 6 9 17 4 12"/>
                             </svg>
                         </button>
-                        <button class="action-btn cancel" title="Cancel order" onclick="cancelOrder('${order.id}')">
+                        <button class="action-btn cancel" title="Cancel order" onclick="cancelOrder(${order.order_id})">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <line x1="18" y1="6" x2="6" y2="18"/>
                                 <line x1="6" y1="6" x2="18" y2="18"/>
@@ -281,24 +184,11 @@ function renderOrders(orders) {
 /**
  * Update KPI counts
  */
-function updateKPICounts(orders) {
-    const counts = {
-        pending: 0,
-        confirmed: 0,
-        out_for_delivery: 0,
-        active: 0
-    };
-
-    orders.forEach(order => {
-        if (counts[order.status] !== undefined) {
-            counts[order.status]++;
-        }
-    });
-
-    document.getElementById('pendingCount').textContent = counts.pending;
-    document.getElementById('confirmedCount').textContent = counts.confirmed;
-    document.getElementById('deliveryCount').textContent = counts.out_for_delivery;
-    document.getElementById('activeCount').textContent = counts.active;
+function updateKPICounts() {
+    document.getElementById('pendingCount').textContent = kpiCounts.pending || 0;
+    document.getElementById('confirmedCount').textContent = kpiCounts.confirmed || 0;
+    document.getElementById('deliveryCount').textContent = kpiCounts.out_for_delivery || 0;
+    document.getElementById('activeCount').textContent = kpiCounts.active || 0;
 }
 
 /**
@@ -309,7 +199,7 @@ function filterOrders() {
     const statusFilter = document.getElementById('statusFilter')?.value || 'all';
     const dateFilter = document.getElementById('dateFilter')?.value || 'all';
 
-    let filtered = sampleOrders;
+    let filtered = ordersData;
 
     // Apply search filter
     if (searchTerm) {
@@ -326,7 +216,7 @@ function filterOrders() {
         filtered = filtered.filter(order => order.status === statusFilter);
     }
 
-    // Apply date filter (simplified for demo)
+    // Apply date filter
     if (dateFilter !== 'all') {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -358,38 +248,58 @@ function filterOrders() {
  * View order details
  */
 function viewOrder(orderId) {
-    window.location.href = `/admin/orders/orderdetail.php?id=${orderId}`;
+    window.location.href = buildUrl(`admin/orders/orderdetail.php?id=${orderId}`);
 }
 
 /**
  * Confirm order (change status to confirmed)
  */
-function confirmOrder(orderId) {
-    const order = sampleOrders.find(o => o.id === orderId);
-    if (order) {
-        order.status = 'confirmed';
-        filterOrders();
-        updateKPICounts(sampleOrders);
+async function confirmOrder(orderId) {
+    if (!confirm('Confirm this order?')) return;
+    
+    try {
+        const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Booked' })
+        });
         
-        // Show notification (would use a toast system in production)
-        alert(`Order ${orderId} has been confirmed!`);
+        const result = await response.json();
+        if (result.success) {
+            alert('Order confirmed successfully!');
+            fetchOrders();
+        } else {
+            alert('Failed to confirm order: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error confirming order:', error);
+        alert('Error confirming order');
     }
 }
 
 /**
  * Cancel order
  */
-function cancelOrder(orderId) {
-    if (confirm(`Are you sure you want to cancel order ${orderId}?`)) {
-        const order = sampleOrders.find(o => o.id === orderId);
-        if (order) {
-            order.status = 'cancelled';
-            filterOrders();
-            updateKPICounts(sampleOrders);
-            
-            // Show notification
-            alert(`Order ${orderId} has been cancelled.`);
+async function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+    
+    try {
+        const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Cancelled' })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('Order cancelled.');
+            fetchOrders();
+        } else {
+            alert('Failed to cancel order: ' + result.message);
         }
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        alert('Error cancelling order');
     }
 }
 
@@ -397,9 +307,8 @@ function cancelOrder(orderId) {
  * Initialize page
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial render
-    renderOrders(sampleOrders);
-    updateKPICounts(sampleOrders);
+    // Fetch orders from API
+    fetchOrders();
 
     // Search input handler
     const searchInput = document.getElementById('orderSearchInput');
@@ -417,8 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Refresh button
     document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
-        filterOrders();
-        updateKPICounts(sampleOrders);
+        fetchOrders();
     });
 
     // Export button (placeholder)
