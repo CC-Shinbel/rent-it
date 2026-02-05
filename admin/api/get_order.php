@@ -19,12 +19,9 @@ if (!$orderId) {
 $orderQuery = "SELECT r.order_id, r.user_id, r.rental_status, r.total_price, r.late_fee,
                       r.venue, r.customer_address, r.start_date, r.end_date,
                       u.full_name as customer_name, u.email as customer_email, 
-                      u.phone as customer_phone,
-                      d.dispatch_id, d.pickup_date, d.return_date, d.delivery_address,
-                      d.dispatch_status, d.contact_number as dispatch_contact
+                      u.phone as customer_phone
                FROM rental r
                LEFT JOIN users u ON r.user_id = u.id
-               LEFT JOIN dispatch d ON r.order_id = d.order_id
                WHERE r.order_id = ?";
 
 $stmt = mysqli_prepare($conn, $orderQuery);
@@ -123,7 +120,7 @@ $response = [
             'id' => $order['user_id'],
             'name' => $order['customer_name'] ?? 'Unknown',
             'email' => $order['customer_email'] ?? '',
-            'phone' => $order['customer_phone'] ?? $order['dispatch_contact'] ?? '',
+            'phone' => $order['customer_phone'] ?? '',
             'avatar' => null,
             'address' => $order['customer_address'] ?? ''
         ],
@@ -136,12 +133,12 @@ $response = [
         ],
         'delivery' => [
             'method' => $order['venue'] ?? 'Delivery',
-            'address' => $order['delivery_address'] ?? $order['customer_address'] ?? 'Not specified',
-            'scheduledDate' => $order['pickup_date'] ?? $order['start_date'],
+            'address' => $order['customer_address'] ?? 'Not specified',
+            'scheduledDate' => $order['start_date'],
             'scheduledTime' => '10:00 AM - 12:00 PM',
             'driver' => null,
             'notes' => '',
-            'status' => $order['dispatch_status']
+            'status' => $order['rental_status']
         ],
         'payment' => [
             'subtotal' => $subtotal,
