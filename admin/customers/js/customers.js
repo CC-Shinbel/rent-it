@@ -5,179 +5,36 @@
  * =====================================================
  */
 
-// Sample customer data with booking info
-const sampleCustomers = [
-    {
-        id: 'USR-12345',
-        name: 'John Doe',
-        email: 'john.doe@email.com',
-        phone: '+63 912 345 6789',
-        avatar: null,
-        booking: {
-            id: 'BK-78901',
-            items: ['Canon EOS R5', '50mm Lens'],
-            totalItems: 2,
-            startDate: '2025-01-30',
-            endDate: '2025-02-02',
-            duration: 3,
-            status: 'active',
-            payment: 'paid'
+// Customer data loaded from API
+let customersData = [];
+let apiStats = {
+    totalCustomers: 0,
+    activeBookings: 0,
+    overdueReturns: 0,
+    monthlyRevenue: 0
+};
+
+/**
+ * Fetch customers from API
+ */
+async function fetchCustomers() {
+    try {
+        const response = await fetch('admin/api/get_customers.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            customersData = data.customers;
+            apiStats = data.stats;
+            return true;
+        } else {
+            console.error('Failed to fetch customers:', data.message);
+            return false;
         }
-    },
-    {
-        id: 'USR-12346',
-        name: 'Maria Santos',
-        email: 'maria.santos@email.com',
-        phone: '+63 917 234 5678',
-        avatar: null,
-        booking: {
-            id: 'BK-78902',
-            items: ['Sony A7 IV'],
-            totalItems: 1,
-            startDate: '2025-01-29',
-            endDate: '2025-02-01',
-            duration: 3,
-            status: 'active',
-            payment: 'paid'
-        }
-    },
-    {
-        id: 'USR-12347',
-        name: 'Pedro Cruz',
-        email: 'pedro.cruz@email.com',
-        phone: '+63 918 345 6789',
-        avatar: null,
-        booking: {
-            id: 'BK-78903',
-            items: ['Sound System', 'Stage Lights'],
-            totalItems: 5,
-            startDate: '2025-01-22',
-            endDate: '2025-01-25',
-            duration: 3,
-            status: 'overdue',
-            payment: 'overdue'
-        }
-    },
-    {
-        id: 'USR-12348',
-        name: 'Ana Reyes',
-        email: 'ana.reyes@email.com',
-        phone: '+63 919 456 7890',
-        avatar: null,
-        booking: {
-            id: 'BK-78904',
-            items: ['DJ Equipment Set'],
-            totalItems: 1,
-            startDate: '2025-01-25',
-            endDate: '2025-01-28',
-            duration: 3,
-            status: 'returned',
-            payment: 'paid'
-        }
-    },
-    {
-        id: 'USR-12349',
-        name: 'Carlos Garcia',
-        email: 'carlos.g@email.com',
-        phone: '+63 920 567 8901',
-        avatar: null,
-        booking: {
-            id: 'BK-78905',
-            items: ['Videoke System Pro', 'Wireless Mic'],
-            totalItems: 3,
-            startDate: '2025-01-28',
-            endDate: '2025-01-30',
-            duration: 2,
-            status: 'pending',
-            payment: 'pending'
-        }
-    },
-    {
-        id: 'USR-12350',
-        name: 'Lisa Wong',
-        email: 'lisa.wong@email.com',
-        phone: '+63 921 678 9012',
-        avatar: null,
-        booking: {
-            id: 'BK-78906',
-            items: ['Projector HD'],
-            totalItems: 1,
-            startDate: '2025-01-20',
-            endDate: '2025-01-22',
-            duration: 2,
-            status: 'completed',
-            payment: 'paid'
-        }
-    },
-    {
-        id: 'USR-12351',
-        name: 'Mark Johnson',
-        email: 'mark.j@email.com',
-        phone: '+63 922 789 0123',
-        avatar: null,
-        booking: {
-            id: 'BK-78907',
-            items: ['Camera Drone', 'Extra Batteries'],
-            totalItems: 2,
-            startDate: '2025-01-18',
-            endDate: '2025-01-20',
-            duration: 2,
-            status: 'completed',
-            payment: 'paid'
-        }
-    },
-    {
-        id: 'USR-12352',
-        name: 'Sarah Lee',
-        email: 'sarah.lee@email.com',
-        phone: '+63 923 890 1234',
-        avatar: null,
-        booking: {
-            id: 'BK-78908',
-            items: ['LED Panel Lights'],
-            totalItems: 4,
-            startDate: '2025-01-23',
-            endDate: '2025-01-26',
-            duration: 3,
-            status: 'overdue',
-            payment: 'partial'
-        }
-    },
-    {
-        id: 'USR-12353',
-        name: 'James Chen',
-        email: 'james.chen@email.com',
-        phone: '+63 924 901 2345',
-        avatar: null,
-        booking: {
-            id: 'BK-78909',
-            items: ['Gimbal Stabilizer'],
-            totalItems: 1,
-            startDate: '2025-01-31',
-            endDate: '2025-02-03',
-            duration: 3,
-            status: 'pending',
-            payment: 'paid'
-        }
-    },
-    {
-        id: 'USR-12354',
-        name: 'Emily Torres',
-        email: 'emily.torres@email.com',
-        phone: '+63 925 012 3456',
-        avatar: null,
-        booking: {
-            id: 'BK-78910',
-            items: ['Ring Light Pro', 'Softbox Kit'],
-            totalItems: 2,
-            startDate: '2025-01-27',
-            endDate: '2025-01-29',
-            duration: 2,
-            status: 'active',
-            payment: 'paid'
-        }
+    } catch (error) {
+        console.error('Error fetching customers:', error);
+        return false;
     }
-];
+}
 
 /**
  * Get initial for avatar
@@ -227,9 +84,38 @@ function formatDate(dateStr) {
 function renderCustomerRow(customer) {
     const initial = getInitial(customer.name);
     const booking = customer.booking;
-    const itemsText = booking.items.length === 1 
-        ? booking.items[0] 
-        : `${booking.items[0]} +${booking.items.length - 1} more`;
+    
+    // Handle customers without bookings
+    let itemsText = 'No bookings';
+    let bookingId = '-';
+    let bookingIdHtml = '<span class="no-booking">-</span>';
+    let dateRangeHtml = '<span class="no-booking">-</span>';
+    let durationText = '';
+    let statusHtml = '<span class="status-badge inactive">No Rentals</span>';
+    let paymentHtml = '<span class="payment-badge none">-</span>';
+    
+    if (booking && booking.items && booking.items.length > 0) {
+        itemsText = booking.items.length === 1 
+            ? booking.items[0] 
+            : `${booking.items[0]} +${booking.items.length - 1} more`;
+        bookingId = booking.id;
+        bookingIdHtml = `<a href="admin/orders/orderdetail.php?id=${booking.order_id}" class="booking-id">${booking.id}</a>`;
+        dateRangeHtml = `<span class="date-range">${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</span>`;
+        durationText = `${booking.duration} day${booking.duration !== 1 ? 's' : ''}`;
+        statusHtml = `<span class="status-badge ${booking.status}">${getStatusText(booking.status)}</span>`;
+        paymentHtml = `<span class="payment-badge ${booking.payment}">${getPaymentText(booking.payment)}</span>`;
+    } else if (booking) {
+        // Customer has a booking but no items
+        bookingIdHtml = `<a href="admin/orders/orderdetail.php?id=${booking.order_id}" class="booking-id">${booking.id}</a>`;
+        if (booking.startDate && booking.endDate) {
+            dateRangeHtml = `<span class="date-range">${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</span>`;
+            durationText = `${booking.duration} day${booking.duration !== 1 ? 's' : ''}`;
+        }
+        statusHtml = `<span class="status-badge ${booking.status}">${getStatusText(booking.status)}</span>`;
+        paymentHtml = `<span class="payment-badge ${booking.payment}">${getPaymentText(booking.payment)}</span>`;
+    }
+    
+    const itemCountText = booking?.totalItems ? `${booking.totalItems} item${booking.totalItems !== 1 ? 's' : ''}` : '';
     
     return `
         <tr data-customer-id="${customer.id}">
@@ -247,34 +133,34 @@ function renderCustomerRow(customer) {
                 </div>
             </td>
             <td>
-                <a href="admin/orders/orderdetail.php?id=${booking.id}" class="booking-id">${booking.id}</a>
+                ${bookingIdHtml}
             </td>
             <td>
                 <div class="items-cell">
                     <span class="item-name">${itemsText}</span>
-                    <span class="item-count">${booking.totalItems} item${booking.totalItems !== 1 ? 's' : ''}</span>
+                    ${itemCountText ? `<span class="item-count">${itemCountText}</span>` : ''}
                 </div>
             </td>
             <td>
                 <div class="dates-cell">
-                    <span class="date-range">${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</span>
-                    <span class="date-duration">${booking.duration} day${booking.duration !== 1 ? 's' : ''}</span>
+                    ${dateRangeHtml}
+                    ${durationText ? `<span class="date-duration">${durationText}</span>` : ''}
                 </div>
             </td>
             <td>
-                <span class="status-badge ${booking.status}">${getStatusText(booking.status)}</span>
+                ${statusHtml}
             </td>
             <td>
-                <span class="payment-badge ${booking.payment}">${getPaymentText(booking.payment)}</span>
+                ${paymentHtml}
             </td>
             <td>
                 <div class="actions-cell">
-                    <button class="action-btn view" title="View details" onclick="viewCustomer('${customer.id}')">
+                    ${booking ? `<button class="action-btn view" title="View details" onclick="viewCustomer('${customer.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                             <circle cx="12" cy="12" r="3"/>
                         </svg>
-                    </button>
+                    </button>` : ''}
                     <button class="action-btn email" title="Send email" onclick="sendEmail('${customer.email}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -323,18 +209,13 @@ function renderCustomers(customers) {
 }
 
 /**
- * Update KPI counts
+ * Update KPI counts from API stats
  */
 function updateKPICounts() {
-    const activeBookings = sampleCustomers.filter(c => c.booking.status === 'active').length;
-    const overdueReturns = sampleCustomers.filter(c => c.booking.status === 'overdue').length;
-    
-    document.getElementById('activeBookingsCount').textContent = activeBookings;
-    document.getElementById('overdueReturnsCount').textContent = overdueReturns;
-    
-    // These would come from API in production
-    document.getElementById('monthlyRevenueValue').textContent = '₱42,580';
-    document.getElementById('totalCustomersCount').textContent = '1,842';
+    document.getElementById('activeBookingsCount').textContent = apiStats.activeBookings.toLocaleString();
+    document.getElementById('overdueReturnsCount').textContent = apiStats.overdueReturns.toLocaleString();
+    document.getElementById('monthlyRevenueValue').textContent = '₱' + apiStats.monthlyRevenue.toLocaleString();
+    document.getElementById('totalCustomersCount').textContent = apiStats.totalCustomers.toLocaleString();
 }
 
 /**
@@ -345,30 +226,31 @@ function filterCustomers() {
     const statusFilter = document.getElementById('statusFilter')?.value || 'all';
     const sortFilter = document.getElementById('sortFilter')?.value || 'recent';
 
-    let filtered = [...sampleCustomers];
+    let filtered = [...customersData];
 
     // Apply search filter
     if (searchTerm) {
-        filtered = filtered.filter(customer => 
-            customer.name.toLowerCase().includes(searchTerm) ||
-            customer.email.toLowerCase().includes(searchTerm) ||
-            customer.booking.id.toLowerCase().includes(searchTerm) ||
-            customer.booking.items.some(item => item.toLowerCase().includes(searchTerm))
-        );
+        filtered = filtered.filter(customer => {
+            const nameMatch = customer.name.toLowerCase().includes(searchTerm);
+            const emailMatch = customer.email.toLowerCase().includes(searchTerm);
+            const bookingIdMatch = customer.booking?.id?.toLowerCase().includes(searchTerm);
+            const itemsMatch = customer.booking?.items?.some(item => item.toLowerCase().includes(searchTerm));
+            return nameMatch || emailMatch || bookingIdMatch || itemsMatch;
+        });
     }
 
     // Apply status filter
     if (statusFilter !== 'all') {
         switch (statusFilter) {
             case 'active':
-                filtered = filtered.filter(c => c.booking.status === 'active');
+                filtered = filtered.filter(c => c.booking?.status === 'active');
                 break;
             case 'overdue':
-                filtered = filtered.filter(c => c.booking.status === 'overdue');
+                filtered = filtered.filter(c => c.booking?.status === 'overdue');
                 break;
             case 'inactive':
                 filtered = filtered.filter(c => 
-                    c.booking.status === 'completed' || c.booking.status === 'returned'
+                    !c.booking || c.booking.status === 'completed' || c.booking.status === 'returned' || c.booking.status === 'inactive'
                 );
                 break;
         }
@@ -380,13 +262,17 @@ function filterCustomers() {
             filtered.sort((a, b) => a.name.localeCompare(b.name));
             break;
         case 'bookings':
-            filtered.sort((a, b) => b.booking.totalItems - a.booking.totalItems);
+            filtered.sort((a, b) => (b.stats?.totalRentals || 0) - (a.stats?.totalRentals || 0));
             break;
         case 'revenue':
-            // Would sort by revenue in production
+            filtered.sort((a, b) => (b.stats?.totalSpent || 0) - (a.stats?.totalSpent || 0));
             break;
         default: // recent
-            filtered.sort((a, b) => new Date(b.booking.startDate) - new Date(a.booking.startDate));
+            filtered.sort((a, b) => {
+                const dateA = a.booking?.startDate ? new Date(a.booking.startDate) : new Date(0);
+                const dateB = b.booking?.startDate ? new Date(b.booking.startDate) : new Date(0);
+                return dateB - dateA;
+            });
     }
 
     renderCustomers(filtered);
@@ -396,9 +282,9 @@ function filterCustomers() {
  * View customer details
  */
 function viewCustomer(customerId) {
-    const customer = sampleCustomers.find(c => c.id === customerId);
-    if (customer) {
-        window.location.href = `/admin/orders/orderdetail.php?id=${customer.booking.id}`;
+    const customer = customersData.find(c => c.id === customerId);
+    if (customer && customer.booking) {
+        window.location.href = `admin/orders/orderdetail.php?id=${customer.booking.order_id}`;
     }
 }
 
@@ -407,7 +293,7 @@ function viewCustomer(customerId) {
  */
 function sendEmail(email, customerName = '') {
     // Find customer data
-    const customer = sampleCustomers.find(c => c.email === email);
+    const customer = customersData.find(c => c.email === email);
     const name = customerName || customer?.name || 'Customer';
     
     showEmailModal({
@@ -629,10 +515,38 @@ function callCustomer(phone) {
 /**
  * Initialize page
  */
-document.addEventListener('DOMContentLoaded', function() {
-    // Initial render
-    renderCustomers(sampleCustomers);
-    updateKPICounts();
+document.addEventListener('DOMContentLoaded', async function() {
+    // Show loading state
+    const tbody = document.getElementById('customersTableBody');
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 2rem;">
+                    <div>Loading customers...</div>
+                </td>
+            </tr>
+        `;
+    }
+
+    // Fetch customers from API
+    const success = await fetchCustomers();
+    
+    if (success) {
+        // Initial render
+        renderCustomers(customersData);
+        updateKPICounts();
+    } else {
+        // Show error state
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--color-error);">
+                        <div>Failed to load customers. Please refresh the page.</div>
+                    </td>
+                </tr>
+            `;
+        }
+    }
 
     // Search input handler
     const searchInput = document.getElementById('customerSearchInput');
@@ -648,8 +562,40 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('statusFilter')?.addEventListener('change', filterCustomers);
     document.getElementById('sortFilter')?.addEventListener('change', filterCustomers);
 
-    // Export button (placeholder)
+    // Export button
     document.getElementById('exportCustomersBtn')?.addEventListener('click', () => {
-        alert('Export functionality would generate a CSV/Excel file of the customer list.');
+        exportCustomers();
     });
 });
+
+/**
+ * Export customers to CSV
+ */
+function exportCustomers() {
+    if (customersData.length === 0) {
+        AdminComponents.showToast('No customers to export', 'warning');
+        return;
+    }
+
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Membership', 'Total Rentals', 'Total Spent'];
+    const rows = customersData.map(c => [
+        c.id,
+        c.name,
+        c.email,
+        c.phone,
+        c.membership,
+        c.stats?.totalRentals || 0,
+        c.stats?.totalSpent || 0
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customers_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    AdminComponents.showToast('Customers exported successfully', 'success');
+}
