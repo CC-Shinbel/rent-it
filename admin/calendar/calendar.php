@@ -107,281 +107,52 @@
                 <div class="calendar-card admin-card animate-fadeInUp">
                     <div class="calendar-grid-wrapper">
                         <table class="calendar-grid" id="calendarGrid">
-                            <thead>
+                            <thead id="calendarHeader">
                                 <tr>
                                     <th class="asset-column" title="Asset/Equipment name">Asset Name</th>
-                                    <th class="day-column" title="Monday, January 15">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Mon</span>
-                                            <span class="day-date">Jan 15</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
-                                    <th class="day-column" title="Tuesday, January 16">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Tue</span>
-                                            <span class="day-date">Jan 16</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
-                                    <th class="day-column" title="Wednesday, January 17">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Wed</span>
-                                            <span class="day-date">Jan 17</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
-                                    <th class="day-column" title="Thursday, January 18">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Thu</span>
-                                            <span class="day-date">Jan 18</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
-                                    <th class="day-column" title="Friday, January 19">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Fri</span>
-                                            <span class="day-date">Jan 19</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
-                                    <th class="day-column" title="Saturday, January 20">
+                                    <th class="day-column">
                                         <div class="day-header">
                                             <span class="day-name">Sat</span>
-                                            <span class="day-date">Jan 20</span>
+                                            <span class="day-date">-</span>
                                         </div>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- KRK-001 Pro System -->
-                                <tr data-asset="KRK-001" data-type="karaoke">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">KRK-001</span>
-                                            <span class="asset-name">Pro System</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(200% + 1px);" title="John Smith - Birthday | Jan 15-16, 2026" data-booking-id="B001">
-                                            <span class="booking-customer">John Smith - Birthday</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- KRK-002 Premium -->
-                                <tr data-asset="KRK-002" data-type="karaoke">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">KRK-002</span>
-                                            <span class="asset-name">Premium</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(400% + 3px);" title="Sarah Johnson - Corporate | Jan 16-19, 2026" data-booking-id="B002">
-                                            <span class="booking-customer">Sarah Johnson - Corporate</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- KRK-003 Standard -->
-                                <tr data-asset="KRK-003" data-type="karaoke">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">KRK-003</span>
-                                            <span class="asset-name">Standard</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block cleaning" style="width: calc(100%);" title="Cleaning in progress | Expected completion: Jan 15" data-maintenance-id="M001">
-                                            <span class="booking-status">Cleaning</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" style="width: calc(500% + 4px);" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                </tr>
-                                
-                                <!-- KRK-004 Deluxe -->
-                                <tr data-asset="KRK-004" data-type="karaoke">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">KRK-004</span>
-                                            <span class="asset-name">Deluxe</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(200% + 1px);" title="Mike Davis - Wedding | Jan 17-18, 2026" data-booking-id="B003">
-                                            <span class="booking-customer">Mike Davis - Wedding</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- KRK-005 Basic -->
-                                <tr data-asset="KRK-005" data-type="karaoke">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">KRK-005</span>
-                                            <span class="asset-name">Basic</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block repair" style="width: calc(300% + 2px);" title="In Repair - Speaker issue | Expected: Jan 17" data-maintenance-id="M002">
-                                            <span class="booking-status">In Repair</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- SPK-001 Speaker Set -->
-                                <tr data-asset="SPK-001" data-type="speaker">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">SPK-001</span>
-                                            <span class="asset-name">Speaker Set</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(200% + 1px);" title="Emily White | Jan 16-17, 2026" data-booking-id="B004">
-                                            <span class="booking-customer">Emily White</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" style="width: calc(300% + 2px);" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                </tr>
-                                
-                                <!-- MIC-001 Wireless -->
-                                <tr data-asset="MIC-001" data-type="microphone">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">MIC-001</span>
-                                            <span class="asset-name">Wireless</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(400% + 3px);" title="Package deal with KRK-002 | Jan 15-18, 2026" data-booking-id="B005">
-                                            <span class="booking-customer">Sarah Johnson (Package)</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- MIC-002 Wired Set -->
-                                <tr data-asset="MIC-002" data-type="microphone">
-                                    <td class="asset-cell">
-                                        <div class="asset-info">
-                                            <span class="asset-id">MIC-002</span>
-                                            <span class="asset-name">Wired Set</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell">
-                                        <div class="booking-block booked" style="width: calc(300% + 2px);" title="Tom Brown - Karaoke | Jan 17-19, 2026" data-booking-id="B006">
-                                            <span class="booking-customer">Tom Brown - Karaoke</span>
-                                        </div>
-                                    </td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell"></td>
-                                    <td class="day-cell">
-                                        <div class="booking-block available" title="Available for booking">
-                                            <span class="booking-status">Available</span>
-                                        </div>
+                            <tbody id="calendarBody">
+                                <!-- Calendar rows will be populated by JavaScript -->
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">
+                                        Loading calendar data...
                                     </td>
                                 </tr>
                             </tbody>
@@ -401,7 +172,7 @@
                             </svg>
                         </div>
                         <div class="summary-content">
-                            <span class="summary-value">6</span>
+                            <span class="summary-value" id="statBookings">0</span>
                             <span class="summary-label">Bookings This Week</span>
                         </div>
                     </div>
@@ -412,7 +183,7 @@
                             </svg>
                         </div>
                         <div class="summary-content">
-                            <span class="summary-value">1</span>
+                            <span class="summary-value" id="statRepair">0</span>
                             <span class="summary-label">In Repair</span>
                         </div>
                     </div>
@@ -423,7 +194,7 @@
                             </svg>
                         </div>
                         <div class="summary-content">
-                            <span class="summary-value">1</span>
+                            <span class="summary-value" id="statCleaning">0</span>
                             <span class="summary-label">Cleaning</span>
                         </div>
                     </div>
@@ -435,7 +206,7 @@
                             </svg>
                         </div>
                         <div class="summary-content">
-                            <span class="summary-value">24</span>
+                            <span class="summary-value" id="statAvailable">0</span>
                             <span class="summary-label">Available</span>
                         </div>
                     </div>
