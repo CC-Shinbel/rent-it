@@ -1,5 +1,5 @@
 <?php
-// filepath: c:\xampp\htdocs\rent-it\client\myrentals\myrentals.php
+
 session_start();
 include '../../shared/php/db_connection.php';
 
@@ -21,7 +21,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-      <!-- Favicon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>     <!-- Favicon -->
     <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
     
     <!-- Stylesheets -->
@@ -29,6 +29,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
+    
     
     <!-- Theme Script -->
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
@@ -48,8 +49,8 @@ if (!isset($_SESSION['user_id'])) {
                 <!-- Page Header -->
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Manage your active videoke equipment and view your rental history.</h1>                 
-                        </div>                    <div class="page-header-actions">
+                        <h1 class="page-title">My Rentals</h1>
+                        <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>                    </div>                    <div class="page-header-actions">
                         <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn-new">
                             New Rental
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -69,174 +70,39 @@ if (!isset($_SESSION['user_id'])) {
                 <section class="active-rentals-section">
                     <div class="section-header">
                         <h2 class="section-title">Currently In Possession</h2>
-                        <span class="units-badge" id="unitsBadge">2 Units Active</span>
+                        <span class="units-badge" id="unitsBadge">Loading...</span>
+
                     </div>
 
                     <div class="rental-cards-row" id="activeRentalsCards">
-                        <!-- Rental Card 1 -->
-                        <article class="rental-card">
-                            <div class="card-top">
-                                <div class="card-info">
-                                    <div class="badges-row">
-                                        <span class="badge status-rented">Rented</span>
-                                        <span class="rental-id">#VDK-8921</span>
-                                    </div>
-                                    <h3 class="card-title">Karaoke Pro System X-100</h3>
-                                    <div class="card-meta">Delivery: Jan 28, 2026</div>
-                                </div>
-                                <div class="days-badge">
-                                    <div class="days-value">3</div>
-                                    <div class="days-label">Days</div>
-                                </div>
-                            </div>
-                            <div class="card-image">
-                                <img src="/assets/images/ministar.jpg" alt="Karaoke Pro System" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 180%22><rect fill=%22%231E293B%22 width=%22400%22 height=%22180%22/><text x=%2250%%22 y=%2250%%22 fill=%22%2394A3B8%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-family=%22Inter, sans-serif%22 font-size=%2216%22>Karaoke Pro System X-100</text></svg>'">
-                            </div>
-                            <div class="card-actions">
-                                <button class="btn-extend">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                        <line x1="16" y1="2" x2="16" y2="6"/>
-                                        <line x1="8" y1="2" x2="8" y2="6"/>
-                                        <line x1="3" y1="10" x2="21" y2="10"/>
-                                    </svg>
-                                    Extend
-                                </button>
-                                <button class="btn-return">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                                    </svg>
-                                    Return
-                                </button>
-                            </div>
-                        </article>
+    <!-- Dynamic rental cards will be loaded here by myrentals.js -->
+</div>
+</section>
 
-                        <!-- Rental Card 2 (Expiring Soon) -->
-                        <article class="rental-card card-expiring">
-                            <div class="card-top">
-                                <div class="card-info">
-                                    <div class="badges-row">
-                                        <span class="badge status-expiring">Expiring Soon</span>
-                                        <span class="rental-id">#VDK-7742</span>
-                                    </div>
-                                    <h3 class="card-title">Party Box Master V2</h3>
-                                    <div class="card-meta">Delivery: Jan 25, 2026</div>
-                                </div>
-                                <div class="days-badge days-danger">
-                                    <div class="days-value">1</div>
-                                    <div class="days-label">Day</div>
-                                </div>
-                            </div>
-                            <div class="card-image">
-                                <img src="/assets/images/partyboxx.webp" alt="Party Box Master" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 180%22><rect fill=%22%230b1220%22 width=%22400%22 height=%22180%22/><text x=%2250%%22 y=%2250%%22 fill=%22%2394A3B8%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-family=%22Inter, sans-serif%22 font-size=%2216%22>Party Box Master V2</text></svg>'">
-                            </div>
-                            <div class="card-actions">
-                                <button class="btn-extend btn-urgent">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                                        <polyline points="23 4 23 10 17 10"/>
-                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                                    </svg>
-                                    Extend Now
-                                </button>
-                                <button class="btn-return">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                                    </svg>
-                                    Return
-                                </button>
-                            </div>
-                        </article>
-                    </div>                </section>                <!-- Booking History Section -->
-                <section class="history-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Booking History</h2>
-                        <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
-                    </div>
+<!-- Booking History Section -->
+<section class="history-section">
+    <div class="section-header">
+        <h2 class="section-title">Booking History</h2>
+        <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
+    </div>
 
-                    <div class="history-panel">
-                        <table class="history-table" role="table" aria-label="Booking history">
-                            <thead>
-                                <tr>
-                                    <th>Item Details</th>
-                                    <th>Rental Period</th>
-                                    <th>Total Amount</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody">
-                                <tr>
-                                    <td>
-                                        <div class="history-item">
-                                            <div class="history-thumb">🎤</div>
-                                            <div class="history-info">
-                                                <div class="history-name">Karaoke Pro System X-100</div>
-                                                <div class="history-id">#VDK-8921</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="period-dates">Oct 13 - Oct 16</div>
-                                        <div class="period-status">Completed</div>
-                                    </td>
-                                    <td class="amount-cell">₱500.00</td>
-                                    <td>
-                                        <a href="#" class="action-btn" aria-label="Download receipt" title="Download receipt">
-                                            Receipt
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M12 3v12M8 11l4 4 4-4M21 21H3"/>
-                                            </svg>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="history-item">
-                                            <div class="history-thumb">🔊</div>
-                                            <div class="history-info">
-                                                <div class="history-name">Party Box Master V2</div>
-                                                <div class="history-id">#VDK-7742</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="period-dates">Oct 9 - Oct 13</div>
-                                        <div class="period-status">Completed</div>
-                                    </td>
-                                    <td class="amount-cell">₱120.00</td>
-                                    <td>
-                                        <a href="#" class="action-btn" aria-label="Download receipt" title="Download receipt">
-                                            Receipt
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M12 3v12M8 11l4 4 4-4M21 21H3"/>
-                                            </svg>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="history-item">
-                                            <div class="history-thumb">🎚️</div>
-                                            <div class="history-info">
-                                                <div class="history-name">Home Studio Setup</div>
-                                                <div class="history-id">#VDK-2101</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="period-dates">Jul 02 - Jul 05</div>
-                                        <div class="period-status" style="color: var(--danger);">Cancelled</div>
-                                    </td>
-                                    <td class="amount-cell">₱0.00</td>
-                                    <td>
-                                        <button class="action-btn action-muted" aria-label="Refunded" title="This rental was refunded">
-                                            Refunded ø
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+    <div class="history-panel">
+        <table class="history-table" role="table" aria-label="Booking history">
+            <thead>
+                <tr>
+                    <th>Item Details</th>
+                    <th>Rental Period</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="historyTableBody">
+             
+            </tbody>
+        </table>
+    </div>
+</section>
+
 
                 <!-- Promo CTA -->
                 <section class="promo-banner">
@@ -249,10 +115,18 @@ if (!isset($_SESSION['user_id'])) {
                 </section>
             </div>
 
-            <!-- Footer Container (Injected by JS) -->
-            <div id="footerContainer"></div>
+           
         </main>
     </div>
+
+    <div id="receiptModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:350px; border-radius:12px; position:relative;">
+        <span class="close-modal" style="position:absolute; right:15px; top:10px; cursor:pointer; font-size:24px;">&times;</span>
+        <div id="receiptDetails">
+            </div>
+        <button onclick="window.print()" style="width:100%; margin-top:15px; background:#f97316; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer;">Print Receipt</button>
+    </div>
+</div>
     
     <!-- Scripts -->
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
