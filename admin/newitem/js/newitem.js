@@ -5,6 +5,13 @@
  * =====================================================
  */
 
+// Resolve absolute URLs based on the current base tag or window origin
+const baseHref = document.querySelector('base')?.href || `${window.location.origin}/`;
+function buildUrl(path) {
+    const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+    return new URL(normalizedPath, baseHref).toString();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
     initTagsInput();
@@ -135,20 +142,24 @@ function initFormValidation() {
         `;
 
         try {
-            // Simulate API call (replace with actual API endpoint)
-            await simulateSaveItem(formData);
+            // Send to API
+            const result = await saveItemToDatabase(formData);
 
-            // Show success message
-            showNotification('Item created successfully!', 'success');
+            if (result.success) {
+                // Show success message
+                showNotification('Item created successfully!', 'success');
 
-            // Redirect to dashboard after short delay
-            setTimeout(() => {
-                window.location.href = 'admin/dashboard/dashboard.php';
-            }, 1500);
+                // Redirect to dashboard after short delay
+                setTimeout(() => {
+                    window.location.href = buildUrl('admin/dashboard/dashboard.php');
+                }, 1500);
+            } else {
+                throw new Error(result.message || 'Failed to save item');
+            }
 
         } catch (error) {
             console.error('Error saving item:', error);
-            showNotification('Failed to save item. Please try again.', 'error');
+            showNotification(error.message || 'Failed to save item. Please try again.', 'error');
 
             // Reset button state
             saveBtn.disabled = false;
@@ -194,21 +205,55 @@ function collectFormData() {
 }
 
 /**
- * Simulate saving item (replace with actual API call)
+ * Save item to database via API
  */
-function simulateSaveItem(data) {
-    return new Promise((resolve, reject) => {
-        console.log('Saving item:', data);
-        
-        // Simulate network delay
-        setTimeout(() => {
-            // Simulate success
-            resolve({ success: true, id: 'VDK-' + Math.floor(Math.random() * 10000) });
-            
-            // To simulate error, uncomment:
-            // reject(new Error('Network error'));
-        }, 1000);
-    });
+async function saveItemToDatabase(data) {
+    // Get image file if present
+    const imageInput = document.getElementById('itemImage');
+    const hasImage = imageInput && imageInput.files.length > 0;
+
+    // Map form data to database fields
+    const apiData = {
+        item_name: data.name,
+        description: data.description,
+        category: data.category,
+        price_per_day: data.dailyRate,
+        deposit: data.depositAmount || null,
+        condition: data.condition,
+        status: data.status,
+        image: ''
+    };
+
+    // Use FormData if we have an image to upload
+    if (hasImage) {
+        const formData = new FormData();
+        formData.append('itemImage', imageInput.files[0]);
+        for (const [key, value] of Object.entries(apiData)) {
+            if (value !== null) {
+                formData.append(key, value);
+            }
+        }
+
+        const response = await fetch(buildUrl('admin/api/add_item.php'), {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error('Network error while saving item');
+        }
+        return await response.json();
+    } else {
+        // Send as JSON if no image
+        const response = await fetch(buildUrl('admin/api/add_item.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(apiData)
+        });
+        if (!response.ok) {
+            throw new Error('Network error while saving item');
+        }
+        return await response.json();
+    }
 }
 
 /**
