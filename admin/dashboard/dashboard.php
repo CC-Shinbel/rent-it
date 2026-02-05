@@ -72,20 +72,23 @@ $today = date('Y-m-d');
 $scheduleQuery = "SELECT r.order_id, r.rental_status, r.start_date, r.end_date, r.venue, r.customer_address,
                   u.full_name as customer_name,
                   GROUP_CONCAT(i.item_name SEPARATOR ', ') as items,
-                  d.dispatch_status, d.delivery_address
+                  r.customer_address as delivery_address
                   FROM rental r
                   LEFT JOIN users u ON r.user_id = u.id
                   LEFT JOIN rental_item ri ON r.order_id = ri.order_id
                   LEFT JOIN item i ON ri.item_id = i.item_id
-                  LEFT JOIN dispatch d ON r.order_id = d.order_id
                   WHERE r.start_date = '$today' OR r.end_date = '$today'
                   GROUP BY r.order_id
                   ORDER BY r.start_date ASC
                   LIMIT 4";
 $scheduleResult = mysqli_query($conn, $scheduleQuery);
 $todaySchedule = [];
-while ($row = mysqli_fetch_assoc($scheduleResult)) {
-    $todaySchedule[] = $row;
+if ($scheduleResult === false) {
+    error_log('Dashboard schedule query failed: ' . mysqli_error($conn));
+} else {
+    while ($row = mysqli_fetch_assoc($scheduleResult)) {
+        $todaySchedule[] = $row;
+    }
 }
 
 // Helper function to get status badge class
