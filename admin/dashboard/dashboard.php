@@ -265,7 +265,7 @@ function formatCurrency($amount) {
                     <section class="admin-card bookings-section animate-fadeInUp">
                         <div class="admin-card-header">
                             <h2 class="admin-card-title">Recent Bookings</h2>
-                            <a href="admin/calendar/calendar.php" class="btn btn-ghost btn-sm" title="View all bookings in calendar">
+                            <a href="admin/orders/orders.php" class="btn btn-ghost btn-sm" title="View all orders">
                                 View All
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="9 18 15 12 9 6"/>
