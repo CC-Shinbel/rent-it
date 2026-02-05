@@ -15,21 +15,23 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 try {
-   // ===== ACTIVE RENTALS =====
-$activeQuery = "
-SELECT 
-    r.order_id AS rental_code, 
-    i.item_name AS name,
-    r.start_date,
-    r.end_date,
-    r.rental_status AS status,
-    i.image AS image,
-  DATEDIFF(r.end_date, CURDATE()) AS days_left
-FROM rental r
-LEFT JOIN rental_item ri ON r.order_id = ri.order_id
-LEFT JOIN item i ON ri.item_id = i.item_id 
-WHERE r.user_id = ? AND r.rental_status = 'Active'
-";
+
+    $activeQuery = "
+    SELECT 
+        r.order_id,
+        r.order_id AS rental_code, 
+        i.item_name AS name,
+        i.price_per_day AS daily_rate,
+        r.start_date,
+        r.end_date,
+        r.rental_status AS status,
+        i.image AS image,
+        DATEDIFF(r.end_date, CURDATE()) AS days_left
+    FROM rental r
+    LEFT JOIN rental_item ri ON r.order_id = ri.order_id
+    LEFT JOIN item i ON ri.item_id = i.item_id 
+    WHERE r.user_id = ? AND r.rental_status = 'Active'
+    ";
 
     $stmtActive = $conn->prepare($activeQuery);
     $stmtActive->bind_param("i", $user_id);
@@ -38,21 +40,22 @@ WHERE r.user_id = ? AND r.rental_status = 'Active'
     $activeRentals = $resultActive->fetch_all(MYSQLI_ASSOC);
 
 
-   // ===== BOOKING HISTORY =====
-$historyQuery = "
-SELECT 
-    r.order_id AS rental_code,
-    GROUP_CONCAT(i.item_name SEPARATOR ', ') AS name,
-    r.start_date,
-    r.end_date,
-    r.rental_status AS status,
-    r.total_price AS total_amount
-FROM rental r
-LEFT JOIN rental_item ri ON r.order_id = ri.order_id
-LEFT JOIN item i ON ri.item_id = i.item_id
-WHERE r.user_id = ?
-GROUP BY r.order_id;
-";
+    $historyQuery = "
+    SELECT 
+        r.order_id,
+        r.order_id AS rental_code,
+        GROUP_CONCAT(i.item_name SEPARATOR ', ') AS name,
+        r.start_date,
+        r.end_date,
+        r.rental_status AS rental_status,
+        r.total_price AS total_amount
+    FROM rental r
+    LEFT JOIN rental_item ri ON r.order_id = ri.order_id
+    LEFT JOIN item i ON ri.item_id = i.item_id
+    WHERE r.user_id = ?
+    GROUP BY r.order_id
+    ORDER BY r.order_id DESC;
+    ";
 
     $stmtHistory = $conn->prepare($historyQuery);
     $stmtHistory->bind_param("i", $user_id);
@@ -67,15 +70,10 @@ GROUP BY r.order_id;
     ]);
 
 } catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage()
     ]);
-echo json_encode([
-    'success' => true,
-   
-    'active' => $activeRentals,
-    'history' => $history
-]);
 }
 ?>

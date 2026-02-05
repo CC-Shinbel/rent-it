@@ -433,67 +433,9 @@ const Components = {
                 <button class="menu-btn" id="menuBtn" title="Toggle sidebar menu">☰</button>
                 <h1 class="topbar-title" id="pageTitle">${title}</h1>
                 <div class="topbar-actions">
-                    <!-- Notification Bell -->
-                    <div class="notification-wrapper">
-                        <button class="btn-icon notification-btn" id="notificationBtn" aria-label="Notifications" title="View notifications">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                            </svg>
-                            <span class="notification-badge">3</span>
-                        </button>
+                
                         
-                        <!-- Notification Dropdown -->
-                        <div class="notification-dropdown" id="notificationDropdown">
-                            <div class="notification-header">
-                                <h4>Notifications</h4>
-                                <span class="mark-read" id="markReadBtn">Mark all read</span>
-                            </div>
-                            <div class="notification-list">
-                                <div class="notification-item unread">
-                                    <div class="notification-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                            <polyline points="22 4 12 14.01 9 11.01"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Booking Confirmed!</div>
-                                        <div class="notification-text">Your Platinum Pro rental is confirmed for Feb 14.</div>
-                                        <div class="notification-time">2 hours ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <polyline points="12 6 12 12 16 14"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Delivery Scheduled</div>
-                                        <div class="notification-text">Driver assigned. ETA: 2:30 PM tomorrow.</div>
-                                        <div class="notification-time">5 hours ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Rate Your Experience</div>
-                                        <div class="notification-text">How was your last rental? Leave a review!</div>
-                                        <div class="notification-time">1 day ago</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="notification-footer">
-                                <a href="#">View All Notifications</a>
-                            </div>
-                        </div>
-                    </div>
+                   
                     
                     <!-- Theme Toggle -->
                     <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">

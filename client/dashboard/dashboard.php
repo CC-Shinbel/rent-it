@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; 
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     $order_id = intval($_POST['order_id']);
     $action = $_POST['action'];
@@ -20,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $update_query = "UPDATE RENTAL SET rental_status = 'Pending Extension' WHERE order_id = $order_id AND user_id = $user_id";
     }
 
-    if (mysqli_query($conn, $update_query)) {
+    if (isset($update_query) && mysqli_query($conn, $update_query)) {
         header("Location: dashboard.php");
         exit();
     }
@@ -29,19 +28,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
 $user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
 $user_data = mysqli_fetch_assoc($user_query);
-$member_status = $user_data['membership_level'] ?? 'Bronze';
 
-// --- FETCH KPI DATA ---
 $res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
 $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
-$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented'");
+$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Rented', 'Pending Extension')");
 $active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
 
 $res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented' AND end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)");
 $upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
 
-// --- FETCH PENDING REQUESTS (Returns & Extensions) ---
+
+$active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
+                         LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
+                         LEFT JOIN ITEM i ON ri.item_id = i.item_id 
+                         WHERE r.user_id = $user_id AND r.rental_status IN ('Rented', 'Pending Extension')
+                         GROUP BY r.order_id";
+$active_result = mysqli_query($conn, $active_rentals_query);
+
 $pending_query = "SELECT r.*, i.item_name FROM RENTAL r 
                   LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                   LEFT JOIN ITEM i ON ri.item_id = i.item_id 
@@ -49,37 +53,15 @@ $pending_query = "SELECT r.*, i.item_name FROM RENTAL r
                   AND r.rental_status IN ('Pending Return', 'Pending Extension')";
 $pending_result = mysqli_query($conn, $pending_query);
 
-// --- FETCH ACTIVE RENTALS (Currently In Possession) ---
-$active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
-                         LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
-                         LEFT JOIN ITEM i ON ri.item_id = i.item_id 
-                         WHERE r.user_id = $user_id AND r.rental_status = 'Rented'";
-$active_result = mysqli_query($conn, $active_rentals_query);
-
-// --- FETCH BOOKING HISTORY ---
 $history_query = "SELECT r.*, i.item_name FROM RENTAL r 
                   LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                   LEFT JOIN ITEM i ON ri.item_id = i.item_id 
-                  WHERE r.user_id = $user_id ORDER BY r.start_date DESC LIMIT 5";
+                  WHERE r.user_id = $user_id 
+                  AND r.rental_status IN ('Active', 'Returned', 'Extended') 
+                  ORDER BY r.start_date DESC LIMIT 5";
 $history_result = mysqli_query($conn, $history_query);
 
-$current_db_status = $user_data['membership_level'] ?? 'Bronze';
-$new_status = $current_db_status;
-
-if ($total_spent >= 10000) {
-    $new_status = 'Platinum';
-} elseif ($total_spent >= 5000) {
-    $new_status = 'Gold';
-} elseif ($total_spent >= 1000) {
-    $new_status = 'Silver';
-}
-
-if ($new_status != $current_db_status) {
-    mysqli_query($conn, "UPDATE USERS SET membership_level = '$new_status' WHERE id = $user_id");
-    $member_status = $new_status; 
-} else {
-    $member_status = $current_db_status;
-}
+$member_status = $user_data['membership_level'] ?? 'Bronze';
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +77,6 @@ if ($new_status != $current_db_status) {
 <body>
     <div class="app-container">
         <div id="sidebarContainer"></div>
-        
         <main class="main-content">
             <div id="topbarContainer"></div>
             
@@ -119,7 +100,6 @@ if ($new_status != $current_db_status) {
                                 <div class="kpi-sub positive">In possession</div>
                             </div>
                         </article>
-
                         <article class="kpi-card">
                             <div class="kpi-content">
                                 <div class="kpi-label">Total Spent</div>
@@ -127,7 +107,6 @@ if ($new_status != $current_db_status) {
                                 <div class="kpi-sub">Lifetime</div>
                             </div>
                         </article>
-
                         <article class="kpi-card">
                             <div class="kpi-content">
                                 <div class="kpi-label">Upcoming Returns</div>
@@ -135,7 +114,6 @@ if ($new_status != $current_db_status) {
                                 <div class="kpi-sub <?php echo ($upcoming_returns > 0) ? 'warning' : ''; ?>">Due within 3 days</div>
                             </div>
                         </article>
-
                         <article class="kpi-card">
                             <div class="kpi-content">
                                 <div class="kpi-label">Member Status</div>
@@ -143,39 +121,6 @@ if ($new_status != $current_db_status) {
                                 <div class="kpi-sub positive">Verified User</div>
                             </div>
                         </article>
-                    </div>
-                </section>
-
-                <section class="requests-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Returns & Extensions</h2>
-                        <span class="status-tag">Waiting for Admin</span>
-                    </div>
-                    <div class="history-panel">
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Request Type</th>
-                                    <th>New Date/Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (mysqli_num_rows($pending_result) > 0): ?>
-                                    <?php while($row = mysqli_fetch_assoc($pending_result)): ?>
-                                    <tr>
-                                        <td><strong><?php echo htmlspecialchars($row['item_name']); ?></strong></td>
-                                        <td><?php echo ($row['rental_status'] == 'Pending Return') ? 'Return' : 'Extension'; ?></td>
-                                        <td><?php echo date('M d, g:i A', strtotime($row['end_date'])); ?></td>
-                                        <td><span class="status-pill status-pending">Pending</span></td>
-                                    </tr>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="4" style="text-align:center; opacity: 0.6; padding: 15px;">No pending requests.</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
                     </div>
                 </section>
 
@@ -190,31 +135,61 @@ if ($new_status != $current_db_status) {
                             <article class="rental-card">
                                 <div class="card-top">
                                     <div class="card-info">
-                                        <span class="badge status-rented">Rented</span>
+                                        <?php if($row['rental_status'] == 'Pending Extension'): ?>
+                                            <span class="badge status-pending">EXTENSION PENDING</span>
+                                        <?php else: ?>
+                                            <span class="badge status-rented">ACTIVE</span>
+                                        <?php endif; ?>
                                         <h3 class="card-title"><?php echo htmlspecialchars($row['item_name']); ?></h3>
                                         <div class="card-meta">Due: <?php echo date('M d, Y', strtotime($row['end_date'])); ?></div>
                                     </div>
                                 </div>
-                                <div class="card-actions">
-    <form method="POST" action="dashboard.php" style="display:inline;">
-        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-        <button type="submit" name="action" value="extend" class="btn-extend">Extend</button>
-    </form>
+                              
 
-    <form method="POST" action="dashboard.php" style="display:inline;">
-        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-        <button type="submit" name="action" value="return" class="btn-return">Return</button>
-    </form>
-</div>
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <p style="grid-column: 1/-1; opacity: 0.6;">You don't have any items right now.</p>
+                            <p style="grid-column: 1/-1; opacity: 0.6; padding: 20px;">No active rentals in your possession.</p>
                         <?php endif; ?>
                     </div>
                 </section>
 
-                <section class="history-section">
+                <section class="requests-section" style="margin-top: 40px;">
+                    <div class="section-header">
+                        <h2 class="section-title">Returns & Extensions</h2>
+                   
+                    </div>
+                    <div class="history-panel">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Request Type</th>
+                                    <th>Reference Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (mysqli_num_rows($pending_result) > 0): ?>
+                                    <?php while($row = mysqli_fetch_assoc($pending_result)): ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($row['item_name']); ?></strong></td>
+                                        <td>
+                                            <span class="request-type-label">
+                                                <?php echo ($row['rental_status'] == 'Pending Return') ? '🔄 Return' : '📅 Extension'; ?>
+                                            </span>
+                                        </td>
+                                        <td><?php echo date('M d, Y', strtotime($row['end_date'])); ?></td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="3" style="text-align:center; opacity: 0.6; padding: 20px;">No pending requests.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="history-section" style="margin-top: 40px;">
                     <div class="section-header">
                         <h2 class="section-title">Booking History</h2>
                         <a href="../bookinghistory/bookinghistory.php" class="view-all-link">View All</a>
@@ -227,36 +202,29 @@ if ($new_status != $current_db_status) {
                                     <th>Rental Period</th>
                                     <th>Amount</th>
                                     <th>Status</th>
-                                  
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php while($row = mysqli_fetch_assoc($history_result)): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['item_name']); ?> <br> <small>#ORD-<?php echo $row['order_id']; ?></small></td>
-                                    <td><?php echo date('M d', strtotime($row['start_date'])) . " - " . date('M d', strtotime($row['end_date'])); ?></td>
-                                    <td>₱<?php echo number_format($row['total_price'], 2); ?></td>
-                                    <td><span class="status-pill status-<?php echo strtolower($row['rental_status']); ?>"><?php echo $row['rental_status']; ?></span></td>
-                                 
-                                </tr>
-                                <?php endwhile; ?>
+                                <?php if (mysqli_num_rows($history_result) > 0): ?>
+                                    <?php while($row = mysqli_fetch_assoc($history_result)): 
+                                        $status_raw = $row['rental_status'];
+                                        $status_class = strtolower($status_raw);
+                                    ?>
+                                    <tr>
+                                        <td><strong><?php echo htmlspecialchars($row['item_name']); ?></strong><br><small>#ORD-<?php echo $row['order_id']; ?></small></td>
+                                        <td><?php echo date('M d', strtotime($row['start_date'])) . " - " . date('M d', strtotime($row['end_date'])); ?></td>
+                                        <td>₱<?php echo number_format($row['total_price'], 2); ?></td>
+                                        <td><span class="status-pill status-<?php echo $status_class; ?>"><?php echo strtoupper($status_raw); ?></span></td>
+                                    </tr>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="4" style="text-align:center; opacity: 0.6; padding: 20px;">No transaction history.</td></tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </section>
-
-                <section class="promo-banner">
-                    <div class="promo-content">
-                        <div class="promo-text">
-                            <h3>Plan a party next weekend?</h3>
-                            <p>Get 20% off on your next rental if you book 3 days in advance.</p>
-                        </div>
-                        <a href="../client/catalog/catalog.html" class="promo-cta">Claim 20% Discount</a>
-                    </div>
-                </section>
-
             </div> 
-          
         </main>
     </div>
 

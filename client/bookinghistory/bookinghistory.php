@@ -1,9 +1,8 @@
 <?php
-// filepath: c:\xampp\htdocs\rent-it\client\bookinghistory\bookinghistory.php
 session_start();
 include '../../shared/php/db_connection.php';
 
-// Security: Redirect if not logged in
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: " . BASE_URL . "/client/auth/login.php");
     exit();
@@ -11,11 +10,9 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch user data
 $user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
 $user_data = mysqli_fetch_assoc($user_query);
 
-// --- FETCH KPI DATA ---
 $res_lifetime = mysqli_query($conn, "SELECT COUNT(*) AS lifetime_count FROM rental WHERE user_id = $user_id");
 $lifetime_rentals = mysqli_fetch_assoc($res_lifetime)['lifetime_count'] ?? 0;
 
@@ -24,7 +21,6 @@ $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
 $member_status = $user_data['membership_level'] ?? 'Bronze';
 
-// --- FETCH BOOKING HISTORY (All rentals) ---
 $history_query = "SELECT r.*, i.item_name, i.category, i.image 
                   FROM rental r 
                   LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
@@ -42,7 +38,6 @@ $total_records = mysqli_num_rows($history_result);
     <meta name="description" content="RentIt - Booking History. Track all your past videoke rentals and manage receipts.">
     <title>Booking History - RentIt</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -54,41 +49,56 @@ $total_records = mysqli_num_rows($history_result);
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.css">
-    
-    <!-- Theme Script -->
+    <style>
+        .rentals-tabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.tab-link {
+    text-decoration: none;
+    color: #64748b;
+    padding: 10px 5px;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tab-link.active {
+    color: #f97316;
+}
+
+.tab-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #f97316;
+    border-radius: 10px 10px 0 0;
+}
+        </style>
+
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Container (Injected by JS) -->
         <div id="sidebarContainer"></div>
         
         <!-- Main Content -->
         <main class="main-content">
             <!-- Topbar Container (Injected by JS) -->
             <div id="topbarContainer"></div>
-            
-            <!-- Content Area -->
             <div class="content-area" id="contentArea">
-                <!-- Page Header -->
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Track all your past videoke rentals and manage receipts.</h1>
+                     
+                        <p class="page-subtitle">Track all your past videoke rentals and manage receipts.</p>
                     </div>
-                    <div class="page-header-actions">
-                        <button class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false" title="Open filters">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M3 5h18M7 12h10M10 19h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            Filter
-                        </button>                        <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn-new">
-                            New Rental
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                        </a>
-                    </div>
+                  
                 </div>
 
                 <!-- Tabs Navigation -->

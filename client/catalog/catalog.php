@@ -229,7 +229,7 @@ $result = mysqli_query($conn, $query);
                         <div class="products-header">
                             <h2 class="products-title">
                                 Browsing Machines
-                                <span class="products-count">(12 models found)</span>
+                                <span class="products-count">(6 models found)</span>
                             </h2>
                             <div class="products-sort">
                                 <span class="sort-label">Sort by:</span>

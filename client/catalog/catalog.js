@@ -885,7 +885,7 @@ function openProductModal(card) {
     newFavBtn.addEventListener('click', () => {
         const isActive = newFavBtn.classList.toggle('active');
 
-        fetch('../favorites/add_favorite.php', {
+        fetch('../catalog/add_favorite.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `item_id=${productId}&action=${isActive ? 'add' : 'remove'}`

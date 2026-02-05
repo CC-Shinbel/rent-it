@@ -1,19 +1,20 @@
 /* =====================================================
-   MY RENTALS PAGE JAVASCRIPT - Full Updated Version
+   MY RENTALS PAGE JAVASCRIPT - Full Optimized Version
    RentIt - Client Portal
    ===================================================== */
 
    document.addEventListener('DOMContentLoaded', function() {
-    
+    // Injects sidebar, topbar, and footer gamit ang Components helper
     if (typeof Components !== 'undefined') {
         Components.injectSidebar('sidebarContainer', 'myrentals', 'client');
         Components.injectTopbar('topbarContainer', 'My Rentals');
         Components.injectFooter('footerContainer');
     }
 
- 
     loadMyRentals();
 });
+
+let currentDailyRate = 0; 
 
 
 async function loadMyRentals() {
@@ -23,6 +24,8 @@ async function loadMyRentals() {
 
         if (!data.success) {
             console.error('Error fetching rentals:', data.message);
+            const container = document.getElementById('activeRentalsCards');
+            if(container) container.innerHTML = `<p class="error-msg">Failed to load rentals.</p>`;
             return;
         }
 
@@ -39,6 +42,12 @@ function renderActiveRentals(rentals) {
     const badge = document.getElementById('unitsBadge');
     if (!container) return;
 
+    if (rentals.length === 0) {
+        container.innerHTML = `<div class="empty-state">No active rentals found.</div>`;
+        badge.textContent = "0 Units Active";
+        return;
+    }
+
     container.innerHTML = '';
     badge.textContent = `${rentals.length} Unit${rentals.length !== 1 ? 's' : ''} Active`;
 
@@ -46,9 +55,9 @@ function renderActiveRentals(rentals) {
         const statusClass = r.days_left <= 1 ? 'status-expiring' : 'status-rented';
         const daysClass = r.days_left <= 1 ? 'days-danger' : '';
         const cardExpiring = r.days_left <= 1 ? 'card-expiring' : '';
-
-     
-        const orderId = r.order_id || r.rental_code;
+        
+        const orderId = r.order_id;
+        const rate = parseFloat(r.daily_rate) || 0;
 
         container.innerHTML += `
         <article class="rental-card ${cardExpiring}">
@@ -71,10 +80,12 @@ function renderActiveRentals(rentals) {
                 </div>
             </div>
             <div class="card-image">
-                <img src="../../assets/images/${r.image}" alt="${r.name}" onerror="this.src='../../assets/images/default-item.png'">
+                <img src="../../assets/images/${r.image}" 
+                     alt="${r.name}" 
+                     onerror="this.onerror=null; this.src='../../assets/images/default-item.png';">
             </div>
             <div class="card-actions">
-                <button class="btn-extend" onclick="handleExtend('${orderId}')">Extend</button>
+                <button class="btn-extend" onclick="handleExtend('${orderId}', ${rate})">Extend</button>
                 <button class="btn-return" onclick="handleReturn('${orderId}')">Return</button>
             </div>
         </article>
@@ -83,34 +94,89 @@ function renderActiveRentals(rentals) {
 }
 
 
-function handleExtend(orderId) {
+function handleExtend(orderId, dailyRate) {
+    currentDailyRate = parseFloat(dailyRate) || 0;
     
-    window.location.href = `../returns/returns.php?id=${orderId}&action=extend`;
-}
+    const modal = document.getElementById('extensionModal');
+    const inputId = document.getElementById('extension_order_id');
+    const rateDisplay = document.getElementById('rate_per_day_display');
+    const selectDays = document.getElementById('extension_days');
 
-function handleReturn(orderId) {
-    if (confirm(`Are you sure you want to return Order #${orderId}?`)) {
-        window.location.href = `../returns/returns.php?id=${orderId}&action=return`;
+    if (modal && inputId) {
+        inputId.value = orderId;
+        
+        if (rateDisplay) {
+            rateDisplay.textContent = `₱${currentDailyRate.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        }
+        
+        if (selectDays) selectDays.value = "1";
+        updateExtensionPrice(1);
+        
+        modal.style.display = 'flex';
     }
 }
 
-/**
- * Render booking history table
- */
+
+function handleReturn(orderId) {
+    const modal = document.getElementById('returnModal');
+    const inputId = document.getElementById('return_order_id');
+    
+    if (modal && inputId) {
+        inputId.value = orderId;
+        modal.style.display = 'flex';
+    }
+}
+
+
+function updateExtensionPrice(days) {
+    const numDays = parseInt(days) || 1;
+    const total = currentDailyRate * numDays;
+    
+    const priceDisplay = document.getElementById('ext_price_display');
+    if (priceDisplay) {
+        priceDisplay.textContent = `₱${total.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+    }
+}
+
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+
+window.onclick = function(event) {
+    const modals = ['returnModal', 'extensionModal', 'receiptModal'];
+    modals.forEach(id => {
+        const modal = document.getElementById(id);
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    });
+}
+
+
 function renderBookingHistory(history) {
     const tbody = document.getElementById('historyTableBody');
     if (!tbody) return;
     tbody.innerHTML = '';
 
+    if (history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No history found.</td></tr>';
+        return;
+    }
+
     history.forEach(h => {
-        const itemName = h.name ? h.name : "Multiple Items/Order";
-        const rentalData = JSON.stringify(h).replace(/"/g, '&quot;');
+        const itemName = h.name ? h.name : "Multiple Items";
+        const rentalData = JSON.stringify(h).replace(/'/g, "&apos;").replace(/"/g, '&quot;');
         
         tbody.innerHTML += `
         <tr>
             <td>
                 <div class="history-item">
-                    <div class="history-thumb">ðŸŽ¤</div>
+                    <div class="history-thumb">🎤</div>
                     <div class="history-info">
                         <div class="history-name" style="color: #1e293b; font-weight: 600;">${itemName}</div>
                         <div class="history-id" style="color: #64748b; font-size: 0.85rem;">#${h.rental_code}</div>
@@ -119,11 +185,11 @@ function renderBookingHistory(history) {
             </td>
             <td>
                 <div class="period-dates" style="color: #475569;">${formatDate(h.start_date)} - ${formatDate(h.end_date)}</div>
-                <div class="period-status" style="font-weight: 500; color: ${h.status === 'Active' ? '#10b981' : '#64748b'};">
-                    ${capitalize(h.status)}
+                <div class="period-status" style="font-weight: 500; color: ${h.rental_status === 'Active' ? '#10b981' : '#64748b'};">
+                    ${capitalize(h.rental_status)}
                 </div>
             </td>
-            <td class="amount-cell" style="font-weight: 700; color: #1e293b;">â‚±${parseFloat(h.total_amount).toFixed(2)}</td>
+            <td class="amount-cell" style="font-weight: 700; color: #1e293b;">₱${parseFloat(h.total_amount).toFixed(2)}</td>
             <td>
                 <button class="action-btn receipt-btn" 
                         onclick='showReceipt(${rentalData})'
@@ -136,14 +202,12 @@ function renderBookingHistory(history) {
     });
 }
 
-/**
- * Receipt Modal Function
- */
-function showReceipt(data) {
-    let modal = document.getElementById('receiptModal');
-    if (!modal) return;
 
+function showReceipt(data) {
+    const modal = document.getElementById('receiptModal');
     const receiptDetails = document.getElementById('receiptDetails');
+    if (!modal || !receiptDetails) return;
+
     receiptDetails.innerHTML = `
         <div id="receipt-canvas" style="padding: 10px; font-family: 'Inter', sans-serif;">
             <div style="text-align:center; border-bottom:2px dashed #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
@@ -158,17 +222,17 @@ function showReceipt(data) {
 
             <div style="margin-bottom:10px;">
                 <span style="color:#64748b; display:block;">Item:</span>
-                <span style="font-weight:600; display:block;">${data.name}</span>
+                <span style="font-weight:600; display:block;">${data.name || 'Rental Unit'}</span>
             </div>
 
-             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <span style="color:#64748b;">Period:</span>
                 <span style="font-size: 13px;">${formatDate(data.start_date)} - ${formatDate(data.end_date)}</span>
             </div>
 
             <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding-top:10px; border-top:1px solid #eee;">
                 <span style="font-weight:700;">Total Paid:</span>
-                <span style="font-weight:800; color:#f97316;">â‚±${parseFloat(data.total_amount).toFixed(2)}</span>
+                <span style="font-weight:800; color:#f97316;">₱${parseFloat(data.total_amount).toFixed(2)}</span>
             </div>
             
             <p style="text-align:center; font-size:10px; color:#94a3b8; margin-top:20px;">Thank you for renting with RentIt!</p>
@@ -176,23 +240,16 @@ function showReceipt(data) {
     `;
 
     modal.style.display = 'block';
-
-    // Close logic
-    const closeBtn = modal.querySelector('.close-modal');
-    closeBtn.onclick = () => modal.style.display = 'none';
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; };
 }
 
-/**
- * Utility Functions
- */
 function formatDate(dateStr) {
     if (!dateStr) return 'N/A';
     const d = new Date(dateStr);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+
 function capitalize(str) {
     if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
