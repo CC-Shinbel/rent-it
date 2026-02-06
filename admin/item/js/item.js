@@ -122,7 +122,7 @@ function renderItemRow(item) {
             <td>
                 <div class="item-cell">
                     <div class="item-thumb">
-                        ${image ? `<img src="${image}" alt="${item.item_name}">` : '<div class="item-thumb-placeholder">No Image</div>'}
+                        ${image ? `<img src="${image}" alt="${item.item_name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="item-thumb-placeholder" style="display:none">No Image</div>` : '<div class="item-thumb-placeholder">No Image</div>'}
                     </div>
                     <div class="item-info">
                         <div class="item-name">${escapeHtml(item.item_name || 'Unnamed')}</div>

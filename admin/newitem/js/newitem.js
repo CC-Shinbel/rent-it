@@ -12,11 +12,131 @@ function buildUrl(path) {
     return new URL(normalizedPath, baseHref).toString();
 }
 
+// Edit mode state
+let isEditMode = false;
+let editItemId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
     initTagsInput();
     initFormValidation();
+
+    // Detect edit mode from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    if (editId) {
+        isEditMode = true;
+        editItemId = editId;
+        loadItemForEdit(editId);
+    }
 });
+
+/**
+ * Load item data for editing
+ */
+async function loadItemForEdit(itemId) {
+    try {
+        const response = await fetch(buildUrl(`admin/api/get_item.php?id=${itemId}`));
+        const result = await response.json();
+
+        if (!result.success) {
+            showNotification(result.message || 'Failed to load item', 'error');
+            return;
+        }
+
+        const item = result.data;
+
+        // Update page title and button text
+        const pageTitle = document.querySelector('.admin-page-title');
+        if (pageTitle) pageTitle.textContent = 'Edit Item';
+
+        const pageSubtitle = document.querySelector('.admin-page-subtitle');
+        if (pageSubtitle) pageSubtitle.textContent = 'Update the details for this rental item';
+
+        const saveBtn = document.getElementById('saveItemBtn');
+        if (saveBtn) {
+            saveBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Update Item
+            `;
+        }
+
+        // Update browser title
+        document.title = 'Edit Item - RentIt Admin';
+
+        // Populate form fields
+        setVal('itemName', item.item_name);
+        setVal('itemDescription', item.description);
+        setSelect('itemCategory', item.category);
+        setVal('dailyRate', item.price_per_day);
+        setVal('depositAmount', item.deposit);
+        setVal('totalUnits', item.total_units);
+        setVal('availableUnits', item.available_units);
+        setSelect('itemCondition', item.condition);
+        setSelect('itemStatus', item.status);
+        setVal('itemTags', item.tags || '');
+
+        // Set toggles
+        const isVisibleEl = document.getElementById('isVisible');
+        if (isVisibleEl) isVisibleEl.checked = item.is_visible == 1;
+
+        const isFeaturedEl = document.getElementById('isFeatured');
+        if (isFeaturedEl) isFeaturedEl.checked = item.is_featured == 1;
+
+        // Show existing image if available
+        if (item.image) {
+            const preview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const removeBtn = document.getElementById('removeImageBtn');
+            if (preview) {
+                preview.onerror = function() {
+                    this.style.display = 'none';
+                    if (placeholder) {
+                        placeholder.style.display = 'flex';
+                        placeholder.querySelector('p').textContent = 'Image not found';
+                        placeholder.querySelector('span').textContent = 'Upload a new image';
+                    }
+                    if (removeBtn) removeBtn.style.display = 'none';
+                };
+                preview.src = buildUrl(`assets/images/items/${item.image}`);
+                preview.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+                if (removeBtn) removeBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // Trigger tags preview update
+        const tagsInput = document.getElementById('itemTags');
+        if (tagsInput) tagsInput.dispatchEvent(new Event('input'));
+
+    } catch (error) {
+        console.error('Error loading item for edit:', error);
+        showNotification('Failed to load item data', 'error');
+    }
+}
+
+/** Helper: set input value */
+function setVal(id, value) {
+    const el = document.getElementById(id);
+    if (el && value !== null && value !== undefined) el.value = value;
+}
+
+/** Helper: set select value */
+function setSelect(id, value) {
+    const el = document.getElementById(id);
+    if (!el || !value) return;
+    // Try exact match first, then case-insensitive
+    for (const opt of el.options) {
+        if (opt.value === value || opt.value.toLowerCase() === value.toLowerCase()) {
+            el.value = opt.value;
+            return;
+        }
+    }
+}
 
 /**
  * Initialize Image Upload Functionality
@@ -147,11 +267,11 @@ function initFormValidation() {
 
             if (result.success) {
                 // Show success message
-                showNotification('Item created successfully!', 'success');
+                showNotification(isEditMode ? 'Item updated successfully!' : 'Item created successfully!', 'success');
 
-                // Redirect to dashboard after short delay
+                // Redirect to items page after short delay
                 setTimeout(() => {
-                    window.location.href = buildUrl('admin/dashboard/dashboard.php');
+                    window.location.href = buildUrl('admin/item/item.php');
                 }, 1500);
             } else {
                 throw new Error(result.message || 'Failed to save item');
@@ -169,7 +289,7 @@ function initFormValidation() {
                     <polyline points="17 21 17 13 7 13 7 21"/>
                     <polyline points="7 3 7 8 15 8"/>
                 </svg>
-                Save Item
+                ${isEditMode ? 'Update Item' : 'Save Item'}
             `;
         }
     });
@@ -183,24 +303,15 @@ function collectFormData() {
         name: document.getElementById('itemName')?.value || '',
         description: document.getElementById('itemDescription')?.value || '',
         category: document.getElementById('itemCategory')?.value || '',
-        brand: document.getElementById('itemBrand')?.value || '',
-        model: document.getElementById('itemModel')?.value || '',
-        sku: document.getElementById('itemSKU')?.value || '',
         dailyRate: parseFloat(document.getElementById('dailyRate')?.value) || 0,
-        weeklyRate: parseFloat(document.getElementById('weeklyRate')?.value) || 0,
         depositAmount: parseFloat(document.getElementById('depositAmount')?.value) || 0,
-        lateFeeRate: parseFloat(document.getElementById('lateFeeRate')?.value) || 0,
         totalUnits: parseInt(document.getElementById('totalUnits')?.value) || 1,
         availableUnits: parseInt(document.getElementById('availableUnits')?.value) || 1,
-        condition: document.getElementById('itemCondition')?.value || 'good',
-        status: document.getElementById('itemStatus')?.value || 'available',
-        isVisible: document.getElementById('isVisible')?.checked || false,
-        isFeatured: document.getElementById('isFeatured')?.checked || false,
-        tags: (document.getElementById('itemTags')?.value || '')
-            .split(',')
-            .map(t => t.trim())
-            .filter(t => t.length > 0),
-        createdAt: new Date().toISOString()
+        condition: document.getElementById('itemCondition')?.value || 'Good',
+        status: document.getElementById('itemStatus')?.value || 'Available',
+        isVisible: document.getElementById('isVisible')?.checked ? 1 : 0,
+        isFeatured: document.getElementById('isFeatured')?.checked ? 1 : 0,
+        tags: (document.getElementById('itemTags')?.value || '').trim()
     };
 }
 
@@ -212,6 +323,9 @@ async function saveItemToDatabase(data) {
     const imageInput = document.getElementById('itemImage');
     const hasImage = imageInput && imageInput.files.length > 0;
 
+    // Determine API endpoint
+    const apiEndpoint = isEditMode ? 'admin/api/update_item.php' : 'admin/api/add_item.php';
+
     // Map form data to database fields
     const apiData = {
         item_name: data.name,
@@ -221,8 +335,18 @@ async function saveItemToDatabase(data) {
         deposit: data.depositAmount || null,
         condition: data.condition,
         status: data.status,
+        total_units: data.totalUnits,
+        available_units: data.availableUnits,
+        is_visible: data.isVisible,
+        is_featured: data.isFeatured,
+        tags: data.tags || null,
         image: ''
     };
+
+    // Include item_id for edit mode
+    if (isEditMode && editItemId) {
+        apiData.item_id = editItemId;
+    }
 
     // Use FormData if we have an image to upload
     if (hasImage) {
@@ -234,7 +358,7 @@ async function saveItemToDatabase(data) {
             }
         }
 
-        const response = await fetch(buildUrl('admin/api/add_item.php'), {
+        const response = await fetch(buildUrl(apiEndpoint), {
             method: 'POST',
             body: formData
         });
@@ -244,7 +368,7 @@ async function saveItemToDatabase(data) {
         return await response.json();
     } else {
         // Send as JSON if no image
-        const response = await fetch(buildUrl('admin/api/add_item.php'), {
+        const response = await fetch(buildUrl(apiEndpoint), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(apiData)

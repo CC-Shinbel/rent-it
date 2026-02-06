@@ -305,8 +305,9 @@ const AdminComponents = {
     /**
      * Inject Header into the DOM
      * @param {string} containerId - Container element ID
+     * @param {string} pageTitle - Title to display in the header
      */
-    injectHeader(containerId) {
+    injectHeader(containerId, pageTitle = '') {
         const container = document.getElementById(containerId);
         if (!container) return;
 
@@ -325,13 +326,7 @@ const AdminComponents = {
                         </svg>
                     </button>
                     
-                    <div class="header-search">
-                        <svg class="header-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.35-4.35"/>
-                        </svg>
-                        <input type="text" class="header-search-input" placeholder="Search bookings or machines..." id="headerSearch" title="Search across the admin panel">
-                    </div>
+                    <h2 class="header-page-title">${pageTitle}</h2>
                 </div>
                 
                 <div class="header-right">
@@ -775,9 +770,26 @@ const AdminComponents = {
      * @param {string} activePage - Current page ID for sidebar highlight
      */
     initPage(activePage) {
+        // Map page IDs to titles
+        const pageTitles = {
+            dashboard: 'Dashboard',
+            calendar: 'Calendar',
+            repairs: 'Repairs',
+            latefees: 'Late Fees',
+            orders: 'Orders',
+            items: 'Items',
+            customers: 'Customers',
+            dispatch: 'Dispatch',
+            settings: 'Settings',
+            newitem: 'New Item',
+            notification: 'Notifications',
+            profile: 'Profile'
+        };
+        const pageTitle = pageTitles[activePage] || '';
+
         // Inject components
         this.injectSidebar('sidebarContainer', activePage);
-        this.injectHeader('headerContainer');
+        this.injectHeader('headerContainer', pageTitle);
         this.injectFooter('footerContainer');
 
         // Add animation to content area

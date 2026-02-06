@@ -99,7 +99,7 @@ function renderOrderRow(order) {
                 <div class="customer-cell">
                     <div class="customer-avatar">
                         ${order.customer.avatar 
-                            ? `<img src="${order.customer.avatar}" alt="${order.customer.name}">` 
+                            ? `<img src="${order.customer.avatar}" alt="${order.customer.name}" onerror="this.style.display='none';this.parentElement.textContent='${initial}'">` 
                             : initial}
                     </div>
                     <div class="customer-info">

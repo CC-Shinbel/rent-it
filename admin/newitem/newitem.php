@@ -95,33 +95,14 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <span class="form-hint">Provide detailed information about the item</span>
                                     </div>
 
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="itemCategory" class="form-label">Category <span class="required">*</span></label>
-                                            <select id="itemCategory" name="itemCategory" class="form-select" required>
-                                                <option value="">Select a category</option>
-                                                <option value="portable">Portable</option>
-                                                <option value="premium">Premium</option>
-                                                <option value="professional">Professional</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="itemBrand" class="form-label">Brand</label>
-                                            <input type="text" id="itemBrand" name="itemBrand" class="form-input" placeholder="e.g., SoundMax">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="itemModel" class="form-label">Model Number</label>
-                                            <input type="text" id="itemModel" name="itemModel" class="form-input" placeholder="e.g., SM-KX200">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="itemSKU" class="form-label">SKU / Item Code</label>
-                                            <input type="text" id="itemSKU" name="itemSKU" class="form-input" placeholder="e.g., VDK-0042">
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="itemCategory" class="form-label">Category <span class="required">*</span></label>
+                                        <select id="itemCategory" name="itemCategory" class="form-select" required>
+                                            <option value="">Select a category</option>
+                                            <option value="Portable">Portable</option>
+                                            <option value="Premium">Premium</option>
+                                            <option value="Professional">Professional</option>
+                                        </select>
                                     </div>
                                 </div>
                             </section>
@@ -145,21 +126,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="weeklyRate" class="form-label">Weekly Rate (₱)</label>
-                                            <input type="number" id="weeklyRate" name="weeklyRate" class="form-input" placeholder="0.00" min="0" step="0.01">
-                                            <span class="form-hint">Optional discounted rate for 7+ days</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group">
                                             <label for="depositAmount" class="form-label">Security Deposit (₱)</label>
                                             <input type="number" id="depositAmount" name="depositAmount" class="form-input" placeholder="0.00" min="0" step="0.01">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="lateFeeRate" class="form-label">Late Fee per Day (₱)</label>
-                                            <input type="number" id="lateFeeRate" name="lateFeeRate" class="form-input" placeholder="0.00" min="0" step="0.01">
+                                            <span class="form-hint">Refundable deposit charged at checkout</span>
                                         </div>
                                     </div>
                                 </div>
@@ -253,10 +222,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                     <div class="form-group">
                                         <label for="itemStatus" class="form-label">Status</label>
                                         <select id="itemStatus" name="itemStatus" class="form-select">
-                                            <option value="available">Available</option>
-                                            <option value="maintenance">Under Maintenance</option>
-                                            <option value="reserved">Reserved</option>
-                                            <option value="unavailable">Unavailable</option>
+                                            <option value="Available">Available</option>
+                                            <option value="Repairing">Under Maintenance</option>
+                                            <option value="Reserved">Reserved</option>
+                                            <option value="Unavailable">Unavailable</option>
                                         </select>
                                     </div>
 

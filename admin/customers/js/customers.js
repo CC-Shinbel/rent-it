@@ -123,7 +123,7 @@ function renderCustomerRow(customer) {
                 <div class="customer-cell">
                     <div class="customer-avatar">
                         ${customer.avatar 
-                            ? `<img src="${customer.avatar}" alt="${customer.name}">` 
+                            ? `<img src="${customer.avatar}" alt="${customer.name}" onerror="this.style.display='none';this.parentElement.textContent='${initial}'">` 
                             : initial}
                     </div>
                     <div class="customer-info">
