@@ -1,4 +1,9 @@
 
+/* Ensure content-area fills remaining space so footer stays at the bottom */
+.content-area {
+    flex: 1 0 auto;
+}
+
 .page-header-dashboard {
     display: flex;
     align-items: center;

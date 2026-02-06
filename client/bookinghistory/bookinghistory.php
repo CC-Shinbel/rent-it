@@ -194,11 +194,11 @@ $total_records = mysqli_num_rows($history_result);
                                             <span class="status-pill <?php echo $status_class; ?>"><?php echo htmlspecialchars($row['rental_status']); ?></span>
                                         </td>
                                         <td>
-                                           
+
                                     <?php endwhile; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="6" style="text-align: center; padding: 40px; opacity: 0.6;">
+                                        <td colspan="6" style="text-align: center; padding: 40px; opacity: 1;">
                                             <p>No booking history found.</p>
                                             <a href="../catalog/catalog.php" class="btn-new" style="margin-top: 15px; display: inline-block;">Browse Catalog</a>
                                         </td>

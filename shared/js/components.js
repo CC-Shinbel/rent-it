@@ -40,17 +40,31 @@ const Components = {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             try {
-                return JSON.parse(userStr);
+                const user = JSON.parse(userStr);
+                // Derive a display name: use full_name if set, otherwise email username
+                if (!user.displayName) {
+                    if (user.full_name && user.full_name.trim()) {
+                        user.displayName = user.full_name;
+                    } else if (user.email) {
+                        user.displayName = user.email.split('@')[0];
+                    } else {
+                        user.displayName = 'User';
+                    }
+                }
+                // Keep backward compat: also set .name
+                user.name = user.displayName;
+                return user;
             } catch (e) {
-                return { name: 'User', role: 'Customer' };
+                return { name: 'User', displayName: 'User', role: 'Customer' };
             }
         }
-        return { name: 'User', role: 'Customer' };
+        return { name: 'User', displayName: 'User', role: 'Customer' };
     },
 
     /**
      * Get user's initial for avatar
-     * @param {string} name - User's name
+     * Uses profile_picture if available, otherwise first letter of display name
+     * @param {string} name - User's display name
      * @returns {string} First character uppercase
      */
     getUserInitial(name) {
@@ -119,9 +133,9 @@ const Components = {
                 
                 <div class="sidebar-footer">
                     <div class="sidebar-user">
-                        <div class="sidebar-user-avatar">${initial}</div>
+                        <div class="sidebar-user-avatar">${user.profile_picture ? '<img src="/rent-it/assets/profile/' + user.profile_picture + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">' : initial}</div>
                         <div class="sidebar-user-info">
-                            <span class="sidebar-user-name">${user.name || 'User'}</span>
+                            <span class="sidebar-user-name">${user.displayName || 'User'}</span>
                             <span class="sidebar-user-role">${user.role || 'Customer'}</span>
                         </div>
                     </div>
