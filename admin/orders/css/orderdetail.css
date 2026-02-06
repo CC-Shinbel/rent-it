@@ -392,6 +392,22 @@
     font-weight: var(--admin-font-medium);
 }
 
+.status-step.late .status-step-indicator {
+    background: #EF4444;
+    border-color: #EF4444;
+    color: white;
+}
+
+.status-step.late .status-step-label {
+    color: #EF4444;
+    font-weight: var(--admin-font-semibold);
+}
+
+.status-badge.late {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
 .status-action {
     padding-top: var(--admin-spacing-md);
     border-top: 1px solid var(--admin-border-color);

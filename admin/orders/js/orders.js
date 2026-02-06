@@ -49,6 +49,7 @@ function getStatusText(status) {
         'out_for_delivery': 'Out for Delivery',
         'active': 'Active',
         'return_scheduled': 'Return Scheduled',
+        'returned': 'Returned',
         'completed': 'Completed',
         'cancelled': 'Cancelled',
         'late': 'Late'

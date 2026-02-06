@@ -15,11 +15,12 @@ if (!$orderId) {
     exit;
 }
 
-// Fetch order details
+// Fetch order details with user info
 $orderQuery = "SELECT r.order_id, r.user_id, r.rental_status, r.total_price, r.late_fee,
                       r.venue, r.customer_address, r.start_date, r.end_date,
                       u.full_name as customer_name, u.email as customer_email, 
-                      u.phone as customer_phone
+                      u.phone as customer_phone, u.address as user_address,
+                      u.membership_level
                FROM rental r
                LEFT JOIN users u ON r.user_id = u.id
                WHERE r.order_id = ?";
@@ -36,9 +37,9 @@ if (mysqli_num_rows($result) === 0) {
 
 $order = mysqli_fetch_assoc($result);
 
-// Fetch order items
+// Fetch order items with deposit info
 $itemsQuery = "SELECT ri.rental_item_id, ri.item_id, ri.item_price, ri.item_status,
-                      i.item_name, i.description, i.category, i.image, i.price_per_day
+                      i.item_name, i.description, i.category, i.image, i.price_per_day, i.deposit
                FROM rental_item ri
                LEFT JOIN item i ON ri.item_id = i.item_id
                WHERE ri.order_id = ?";
@@ -49,11 +50,16 @@ mysqli_stmt_execute($stmtItems);
 $itemsResult = mysqli_stmt_get_result($stmtItems);
 
 $items = [];
+$totalDeposit = 0;
 $startDate = new DateTime($order['start_date']);
 $endDate = new DateTime($order['end_date']);
 $duration = $startDate->diff($endDate)->days + 1;
 
 while ($item = mysqli_fetch_assoc($itemsResult)) {
+    $dailyRate = floatval($item['price_per_day'] ?? $item['item_price'] ?? 0);
+    $itemDeposit = floatval($item['deposit'] ?? 0);
+    $totalDeposit += $itemDeposit;
+
     $items[] = [
         'id' => $item['item_id'],
         'name' => $item['item_name'] ?? 'Unknown Item',
@@ -61,13 +67,14 @@ while ($item = mysqli_fetch_assoc($itemsResult)) {
         'image' => $item['image'] ? 'assets/images/items/' . $item['image'] : null,
         'description' => $item['description'],
         'quantity' => 1,
-        'dailyRate' => floatval($item['price_per_day'] ?? 0),
-        'subtotal' => floatval($item['item_price'] ?? 0) * $duration,
+        'dailyRate' => $dailyRate,
+        'subtotal' => $dailyRate * $duration,
+        'deposit' => $itemDeposit,
         'status' => $item['item_status']
     ];
 }
 
-// Map status
+// Map DB status to frontend status
 $statusMap = [
     'Pending' => 'pending',
     'Booked' => 'confirmed',
@@ -77,34 +84,73 @@ $statusMap = [
     'Pending Return' => 'return_scheduled',
     'Returned' => 'returned',
     'Completed' => 'completed',
-    'Cancelled' => 'cancelled'
+    'Cancelled' => 'cancelled',
+    'Late' => 'late'
 ];
 
 // Calculate payment breakdown
 $subtotal = floatval($order['total_price']);
 $lateFee = floatval($order['late_fee'] ?? 0);
-$deliveryFee = 50.00; // Default delivery fee
-$tax = 0; // Can be calculated if needed
+$deliveryFee = 0;
+$tax = 0;
 
-// Build timeline based on status
+// Resolve address — use rental customer_address, fallback to user address
+$deliveryAddress = !empty($order['customer_address']) 
+    ? $order['customer_address'] 
+    : (!empty($order['user_address']) ? $order['user_address'] : 'Not specified');
+
+// Determine delivery method from venue
+$venue = $order['venue'] ?? '';
+$deliveryMethod = 'Delivery';
+if (stripos($venue, 'pickup') !== false || stripos($venue, 'pick-up') !== false || stripos($venue, 'pick up') !== false) {
+    $deliveryMethod = 'Pickup';
+} elseif (!empty($venue)) {
+    $deliveryMethod = $venue;
+}
+
+// Build timeline based on current status
 $currentStatus = $order['rental_status'];
 $statusOrder = ['Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Returned', 'Completed'];
 $statusIndex = array_search($currentStatus, $statusOrder);
+
+// Handle Late status (treat as after Active in timeline)
+$isLate = ($currentStatus === 'Late');
+if ($isLate) {
+    $statusIndex = 4; // Same position as Active
+}
 if ($statusIndex === false) $statusIndex = 0;
 
-$timelineEvents = [
-    ['event' => 'Order Placed', 'date' => $order['start_date'], 'completed' => true],
-    ['event' => 'Order Confirmed', 'date' => $statusIndex >= 1 ? $order['start_date'] : null, 'completed' => $statusIndex >= 1],
-    ['event' => 'Out for Delivery', 'date' => $statusIndex >= 3 ? $order['start_date'] : null, 'completed' => $statusIndex >= 3],
-    ['event' => 'Delivered / Active', 'date' => $statusIndex >= 4 ? $order['start_date'] : null, 'completed' => $statusIndex >= 4],
-    ['event' => 'Returned', 'date' => $statusIndex >= 6 ? $order['end_date'] : null, 'completed' => $statusIndex >= 6]
-];
+// Handle cancelled
+$isCancelled = ($currentStatus === 'Cancelled');
 
-// Mark current step
-foreach ($timelineEvents as $idx => &$event) {
-    if (!$event['completed'] && ($idx === 0 || $timelineEvents[$idx - 1]['completed'])) {
-        $event['current'] = true;
-        break;
+$timelineEvents = [];
+if ($isCancelled) {
+    $timelineEvents = [
+        ['event' => 'Order Placed', 'date' => $order['start_date'], 'completed' => true],
+        ['event' => 'Order Cancelled', 'date' => $order['start_date'], 'completed' => true, 'current' => true]
+    ];
+} else {
+    $timelineEvents = [
+        ['event' => 'Order Placed', 'date' => $order['start_date'], 'completed' => true],
+        ['event' => 'Order Confirmed', 'date' => $statusIndex >= 1 ? $order['start_date'] : null, 'completed' => $statusIndex >= 1],
+        ['event' => 'Out for Delivery', 'date' => $statusIndex >= 3 ? $order['start_date'] : null, 'completed' => $statusIndex >= 3],
+        ['event' => 'Delivered / Active', 'date' => $statusIndex >= 4 ? $order['start_date'] : null, 'completed' => $statusIndex >= 4],
+        ['event' => $isLate ? 'Late Return' : 'Return Scheduled', 'date' => $statusIndex >= 5 ? $order['end_date'] : null, 'completed' => $statusIndex >= 5 || $isLate],
+        ['event' => 'Returned', 'date' => $statusIndex >= 6 ? $order['end_date'] : null, 'completed' => $statusIndex >= 6],
+        ['event' => 'Completed', 'date' => $statusIndex >= 7 ? $order['end_date'] : null, 'completed' => $statusIndex >= 7]
+    ];
+
+    // Mark Late as current step if applicable
+    if ($isLate) {
+        $timelineEvents[4]['current'] = true;
+    } else {
+        // Mark current step (first non-completed after a completed one)
+        for ($i = 0; $i < count($timelineEvents); $i++) {
+            if (!$timelineEvents[$i]['completed']) {
+                $timelineEvents[$i]['current'] = true;
+                break;
+            }
+        }
     }
 }
 
@@ -122,7 +168,8 @@ $response = [
             'email' => $order['customer_email'] ?? '',
             'phone' => $order['customer_phone'] ?? '',
             'avatar' => null,
-            'address' => $order['customer_address'] ?? ''
+            'address' => $deliveryAddress,
+            'membership' => $order['membership_level'] ?? 'Bronze'
         ],
         'items' => $items,
         'dates' => [
@@ -132,24 +179,21 @@ $response = [
             'duration' => $duration
         ],
         'delivery' => [
-            'method' => $order['venue'] ?? 'Delivery',
-            'address' => $order['customer_address'] ?? 'Not specified',
+            'method' => $deliveryMethod,
+            'address' => $deliveryAddress,
             'scheduledDate' => $order['start_date'],
-            'scheduledTime' => '10:00 AM - 12:00 PM',
-            'driver' => null,
-            'notes' => '',
             'status' => $order['rental_status']
         ],
         'payment' => [
             'subtotal' => $subtotal,
             'tax' => $tax,
             'deliveryFee' => $deliveryFee,
-            'deposit' => 0,
+            'deposit' => $totalDeposit,
             'discount' => 0,
             'lateFee' => $lateFee,
             'total' => $subtotal + $lateFee,
             'status' => 'paid',
-            'method' => 'Cash / Card'
+            'method' => 'Cash'
         ],
         'timeline' => $timelineEvents,
         'notes' => [

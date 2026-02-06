@@ -309,6 +309,11 @@
     color: var(--admin-success);
 }
 
+.status-badge.returned {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
 .status-badge.cancelled {
     background: var(--admin-error-subtle);
     color: var(--admin-error);

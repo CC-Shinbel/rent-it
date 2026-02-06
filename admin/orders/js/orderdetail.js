@@ -139,7 +139,8 @@ function getStatusText(status) {
         'return_scheduled': 'Return Scheduled',
         'returned': 'Returned',
         'completed': 'Completed',
-        'cancelled': 'Cancelled'
+        'cancelled': 'Cancelled',
+        'late': 'Late'
     };
     return statusMap[status] || status;
 }
@@ -204,6 +205,28 @@ function populateHeader(order) {
                         <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
                     Mark as Delivered
+                </button>
+            `;
+            break;
+        case 'returned':
+            actionsHtml = `
+                <button class="btn btn-primary" onclick="markCompleted()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Mark Completed
+                </button>
+            `;
+            break;
+        case 'late':
+            actionsHtml = `
+                <button class="btn btn-primary" onclick="markReturned()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Mark Returned
                 </button>
             `;
             break;
@@ -278,9 +301,9 @@ function populateItems(items, duration) {
 function populateDelivery(delivery, dates) {
     document.getElementById('deliveryMethod').textContent = delivery.method;
     document.getElementById('deliveryAddress').textContent = delivery.address;
-    document.getElementById('deliverySchedule').textContent = `${formatShortDate(delivery.scheduledDate)} • ${delivery.scheduledTime}`;
-    document.getElementById('driverName').textContent = delivery.driver || 'Not Assigned';
-    document.getElementById('deliveryNotes').textContent = delivery.notes || 'No special instructions';
+    document.getElementById('deliverySchedule').textContent = `${formatShortDate(delivery.scheduledDate)}`;
+    document.getElementById('driverName').textContent = 'Not Assigned';
+    document.getElementById('deliveryNotes').textContent = 'No special instructions';
 }
 
 /**
@@ -369,13 +392,18 @@ function populateStatusProgress(status) {
     if (status === 'cancelled') {
         currentIndex = -1;
     }
+    // Handle late status — treat as between active and return_scheduled
+    if (status === 'late') {
+        currentIndex = 3; // Active position, but flagged as late
+    }
     
     const progressHtml = statuses.map((s, index) => {
         const isCompleted = currentIndex >= 0 && index < currentIndex;
         const isCurrent = index === currentIndex;
+        const isLate = status === 'late' && isCurrent;
         
         return `
-            <div class="status-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}">
+            <div class="status-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLate ? 'late' : ''}">
                 <div class="status-step-indicator">
                     ${isCompleted ? `
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -387,7 +415,7 @@ function populateStatusProgress(status) {
                         </svg>
                     ` : ''}
                 </div>
-                <span class="status-step-label">${s.label}</span>
+                <span class="status-step-label">${isLate ? 'Late' : s.label}</span>
             </div>
         `;
     }).join('');
@@ -412,6 +440,12 @@ function populateStatusProgress(status) {
             actionHtml = `<button class="btn btn-secondary" onclick="scheduleReturn()">Schedule Return</button>`;
             break;
         case 'return_scheduled':
+            actionHtml = `<button class="btn btn-primary" onclick="markReturned()">Mark Returned</button>`;
+            break;
+        case 'returned':
+            actionHtml = `<button class="btn btn-primary" onclick="markCompleted()">Mark Completed</button>`;
+            break;
+        case 'late':
             actionHtml = `<button class="btn btn-primary" onclick="markReturned()">Mark Returned</button>`;
             break;
     }
@@ -592,6 +626,31 @@ async function markReturned() {
         } catch (error) {
             console.error('Error marking as returned:', error);
             alert('Error marking as returned');
+        }
+    }
+}
+
+async function markCompleted() {
+    if (!orderData) return;
+    
+    if (confirm('Mark this order as completed?')) {
+        try {
+            const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderData.order_id, status: 'Completed' })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                alert('Order completed!');
+                fetchOrderDetail(orderData.order_id);
+            } else {
+                alert('Failed to complete order: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error completing order:', error);
+            alert('Error completing order');
         }
     }
 }
