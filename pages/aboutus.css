@@ -187,6 +187,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.about-hero-image:hover img {
+    transform: scale(1.03);
 }
 
 /* ===== CORE VALUES SECTION ===== */
@@ -504,6 +509,41 @@
 
 .accordion-content li:last-child {
     border-bottom: none;
+}
+
+/* Light mode fixes for Terms accordion contrast */
+:root:not([data-theme="dark"]) .terms-section {
+    background: var(--bg-secondary);
+}
+
+:root:not([data-theme="dark"]) .terms-title {
+    color: var(--heading-primary);
+}
+
+:root:not([data-theme="dark"]) .terms-updated {
+    color: var(--text-tertiary);
+}
+
+:root:not([data-theme="dark"]) .accordion-header {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="dark"]) .accordion-header:hover {
+    background: var(--bg-secondary);
+}
+
+:root:not([data-theme="dark"]) .accordion-header.active {
+    background: var(--bg-secondary);
+}
+
+:root:not([data-theme="dark"]) .accordion-title {
+    color: var(--text-primary);
+}
+
+:root:not([data-theme="dark"]) .accordion-chevron {
+    stroke: var(--text-tertiary);
 }
 
 /* ===== POLICY GRID (Cancellation) ===== */

@@ -641,6 +641,10 @@
     margin-right: var(--spacing-sm);
 }
 
+.password-requirements-block {
+    margin: var(--spacing-md) 0;
+}
+
 
 /* =====================================================
    RESPONSIVE STYLES

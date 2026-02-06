@@ -445,6 +445,14 @@ $userName = $_SESSION['user_name'] ?? '';
                         <a href="<?= BASE_URL ?>/pages/wip.html" class="footer-link">Delivery Areas</a>
                     </nav>
                 </div>
+
+                <!-- Admin Links -->
+                <div class="footer-col">
+                    <h5>Admin</h5>
+                    <nav class="footer-nav">
+                        <a href="<?= BASE_URL ?>/admin/auth/login.html" class="footer-link">Admin Login</a>
+                    </nav>
+                </div>
             </div>
 
             <div class="footer-divider"></div>

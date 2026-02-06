@@ -1122,8 +1122,8 @@ body:has(.mobile-nav.open)::before {
 
 .footer-inner {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 48px;
+    grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(140px, 1fr));
+    gap: 32px;
     padding-bottom: 32px;
 }
 
@@ -1354,6 +1354,15 @@ body:has(.mobile-nav.open)::before {
 
     .estimator-card {
         max-width: 480px;
+    }
+
+    .footer-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
     }
 }
 
