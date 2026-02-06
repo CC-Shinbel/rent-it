@@ -84,8 +84,10 @@ $repairsQuery = "SELECT
     repair_id,
     item_id,
     issue_type,
+    priority,
     status AS repair_status,
     estimated_cost,
+    notes,
     created_date,
     eta_date
 FROM repair
@@ -106,8 +108,10 @@ while ($repair = mysqli_fetch_assoc($repairsResult)) {
         'repair_id' => intval($repair['repair_id']),
         'item_id' => intval($repair['item_id']),
         'description' => $repair['issue_type'] ?? '',
+        'priority' => $repair['priority'] ?? 'medium',
         'status' => $repair['repair_status'] ?? 'in-progress',
-        'cost' => floatval($repair['estimated_cost'] ?? 0),
+        'estimated_cost' => floatval($repair['estimated_cost'] ?? 0),
+        'notes' => $repair['notes'] ?? '',
         'reported_date' => $repair['created_date'],
         'resolved_date' => $repair['eta_date']
     ];

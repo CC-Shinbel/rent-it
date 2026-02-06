@@ -115,6 +115,11 @@ const CalendarManager = {
         document.querySelectorAll('.booking-block.booked').forEach(block => {
             block.addEventListener('click', (e) => this.showBookingDetails(e.target.closest('.booking-block')));
         });
+
+        // Bind click events for repair blocks
+        document.querySelectorAll('.booking-block.repair').forEach(block => {
+            block.addEventListener('click', (e) => this.showRepairDetails(e.target.closest('.booking-block')));
+        });
     },
     
     /**
@@ -155,30 +160,32 @@ const CalendarManager = {
             dateStr <= b.end_date
         );
         
-        // Check for repair on this day
+        // Check for repair on this day (exclude completed/resolved in find itself)
         const repair = repairs.find(r => 
             r.item_id === item.id && 
+            r.status !== 'completed' && r.status !== 'Resolved' &&
             dateStr >= r.reported_date && 
             (r.resolved_date === null || dateStr <= r.resolved_date)
         );
         
         if (booking) {
-            // Check if this is the start date of the booking
+            const startDate = new Date(booking.start_date);
+            const endDate = new Date(booking.end_date);
+            const weekStart = this.weekDays[0];
+            const weekEnd = this.weekDays[5];
             const isStart = dateStr === booking.start_date;
-            if (isStart) {
-                // Calculate span (number of days in this week)
-                const endDate = new Date(booking.end_date);
-                const startDate = new Date(booking.start_date);
-                const weekEnd = this.weekDays[5];
-                
+            // Continuation: booking started before this week's first day (Mon)
+            const isContinuation = (dayIndex === 0 && booking.start_date < this.formatDateISO(weekStart));
+            
+            if (isStart || isContinuation) {
+                // Calculate how many days this block spans within the visible week
                 const effectiveEnd = endDate > weekEnd ? weekEnd : endDate;
                 const daysInWeek = Math.min(6 - dayIndex, Math.ceil((effectiveEnd - day) / (1000 * 60 * 60 * 24)) + 1);
-                const widthPercent = daysInWeek * 100;
-                const extraPx = (daysInWeek - 1);
+                const blockWidth = this.getBlockWidth(daysInWeek);
                 
                 return `
                     <td class="day-cell">
-                        <div class="booking-block booked" style="width: calc(${widthPercent}% + ${extraPx}px);" 
+                        <div class="booking-block booked" style="width: ${blockWidth};" 
                              title="${this.escapeHtml(booking.customer_name)} | ${this.formatDateShort(startDate)} - ${this.formatDateShort(endDate)}" 
                              data-booking-id="${booking.id}"
                              data-order-id="${booking.order_id}">
@@ -192,22 +199,23 @@ const CalendarManager = {
             }
         }
         
-        if (repair && repair.status !== 'Resolved') {
-            // Check if this is the start date of the repair
+        if (repair) {
+            const resolvedDate = repair.resolved_date ? new Date(repair.resolved_date) : null;
+            const weekStart = this.weekDays[0];
+            const weekEnd = this.weekDays[5];
             const isStart = dateStr === repair.reported_date;
-            if (isStart) {
-                const reportedDate = new Date(repair.reported_date);
-                const resolvedDate = repair.resolved_date ? new Date(repair.resolved_date) : this.weekDays[5];
-                const weekEnd = this.weekDays[5];
-                
-                const effectiveEnd = resolvedDate > weekEnd ? weekEnd : resolvedDate;
+            // Continuation: repair started before this week's first day (Mon)
+            const isContinuation = (dayIndex === 0 && repair.reported_date < this.formatDateISO(weekStart));
+            
+            if (isStart || isContinuation) {
+                const effectiveEndDate = resolvedDate || weekEnd;
+                const effectiveEnd = effectiveEndDate > weekEnd ? weekEnd : effectiveEndDate;
                 const daysInWeek = Math.min(6 - dayIndex, Math.ceil((effectiveEnd - day) / (1000 * 60 * 60 * 24)) + 1);
-                const widthPercent = daysInWeek * 100;
-                const extraPx = (daysInWeek - 1);
+                const blockWidth = this.getBlockWidth(daysInWeek);
                 
                 return `
                     <td class="day-cell">
-                        <div class="booking-block repair" style="width: calc(${widthPercent}% + ${extraPx}px);" 
+                        <div class="booking-block repair" style="width: ${blockWidth};" 
                              title="In Repair - ${this.escapeHtml(repair.description || 'Maintenance')}" 
                              data-repair-id="${repair.id}">
                             <span class="booking-status">In Repair</span>
@@ -292,12 +300,16 @@ const CalendarManager = {
             if (e.target.id === 'bookingModal') this.closeModal();
         });
         
-        // New booking button
-        document.getElementById('newBookingBtn')?.addEventListener('click', () => this.showNewBookingModal());
+        // Add new item button is now a link, no JS needed
         
-        // Edit booking
+        // Edit booking — redirect to order detail page
         document.getElementById('editBookingBtn')?.addEventListener('click', () => {
-            AdminComponents.showToast('Edit functionality would open booking form', 'info');
+            const orderId = this._currentModalOrderId;
+            if (orderId) {
+                window.location.href = `admin/orders/orderdetail.php?id=${orderId}`;
+            } else {
+                AdminComponents.showToast('Could not find order details', 'warning');
+            }
             this.closeModal();
         });
         
@@ -371,6 +383,20 @@ const CalendarManager = {
     },
     
     /**
+     * Get block width based on number of days spanned
+     * Manually tuned percentages to align with cell borders
+     */
+    getBlockWidth(days) {
+        if (days <= 1) return 'calc(100% - 8px)';
+        if (days === 2) return 'calc(200% - 8px)';
+        if (days === 3) return 'calc(315% - 8px)';
+        if (days === 4) return 'calc(425% - 10px)';
+        if (days === 5) return 'calc(535% - 11px)';
+        if (days >= 6) return 'calc(645% - 11px)';
+        return 'calc(100% - 8px)';
+    },
+    
+    /**
      * Filter by asset type
      */
     filterByAssetType(type) {
@@ -402,6 +428,9 @@ const CalendarManager = {
         const orderId = block.dataset.orderId;
         const modal = document.getElementById('bookingModal');
         
+        // Store order ID for the edit button
+        this._currentModalOrderId = orderId;
+        
         // Find booking in data
         const booking = this.calendarData?.bookings?.find(b => b.id === bookingId);
         const item = this.calendarData?.items?.find(i => i.id === booking?.item_id);
@@ -420,6 +449,92 @@ const CalendarManager = {
         }
         
         modal?.classList.add('open');
+    },
+
+    /**
+     * Show repair details modal (via AdminComponents)
+     */
+    showRepairDetails(block) {
+        if (!block) return;
+
+        const repairId = block.dataset.repairId;
+        const repair = this.calendarData?.repairs?.find(r => String(r.id) === String(repairId));
+        const item = repair ? this.calendarData?.items?.find(i => String(i.id) === String(repair.item_id)) : null;
+
+        if (!repair) {
+            AdminComponents.showToast('Repair details not found', 'warning');
+            return;
+        }
+
+        const itemName = item ? item.name : `Item #${repair.item_id}`;
+        const priority = (repair.priority || 'medium');
+        const priorityLabel = priority.charAt(0).toUpperCase() + priority.slice(1);
+        const status = repair.status || 'in-progress';
+        const statusLabel = this.formatRepairStatus(status);
+        const reportedDate = repair.reported_date ? this.formatDate(new Date(repair.reported_date)) : 'N/A';
+        const etaDate = repair.resolved_date ? this.formatDate(new Date(repair.resolved_date)) : 'N/A';
+        const cost = repair.estimated_cost ? `₱${Number(repair.estimated_cost).toLocaleString()}` : '₱0';
+        const description = repair.description || repair.issue_type || 'No description';
+
+        AdminComponents.showModal({
+            title: 'Repair Details',
+            content: `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Equipment</span>
+                        <span style="font-weight: 600;">${this.escapeHtml(itemName)}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Repair ID</span>
+                        <span style="font-weight: 600;">RPR-${String(repair.id).padStart(3, '0')}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Status</span>
+                        <span style="font-weight: 600;">${this.escapeHtml(statusLabel)}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Priority</span>
+                        <span style="font-weight: 600;">${this.escapeHtml(priorityLabel)}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Created</span>
+                        <span>${reportedDate}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">ETA</span>
+                        <span>${etaDate}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Est. Cost</span>
+                        <span>${cost}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                    <span style="font-size: 0.75rem; color: var(--admin-text-muted); text-transform: uppercase;">Description</span>
+                    <p style="margin: 0; color: var(--admin-text-secondary);">${this.escapeHtml(description)}</p>
+                </div>
+            `,
+            confirmText: 'Edit Repair',
+            cancelText: 'Close',
+            onConfirm: () => {
+                window.location.href = `admin/repairs/repairs.php`;
+            }
+        });
+    },
+
+    /**
+     * Format repair status label
+     */
+    formatRepairStatus(status) {
+        if (!status) return 'In Progress';
+        const s = status.toLowerCase().replace(/[_ ]/g, '-');
+        const labels = {
+            'in-progress': 'In Progress',
+            'awaiting-parts': 'Awaiting Parts',
+            'completed': 'Completed',
+            'unavailable': 'Unavailable'
+        };
+        return labels[s] || status;
     },
     
     /**
