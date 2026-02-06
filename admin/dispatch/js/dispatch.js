@@ -165,7 +165,9 @@ function filterDispatches() {
     let filtered = dispatchesData;
 
     // Filter by type
-    if (filterType !== 'all') {
+    if (filterType === 'completed') {
+        filtered = filtered.filter(d => d.status === 'completed');
+    } else if (filterType !== 'all') {
         filtered = filtered.filter(d => d.type === filterType);
     }
 

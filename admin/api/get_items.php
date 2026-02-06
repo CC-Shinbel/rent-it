@@ -7,9 +7,17 @@ require_once __DIR__ . '/../../config.php';
 
 header('Content-Type: application/json');
 
-$query = "SELECT item_id, item_name, description, category, image, price_per_day, deposit, `condition`, status, maintenance_notes, total_times_rented, rating, reviews, total_units, available_units, is_visible, is_featured, tags
-          FROM item
-          ORDER BY item_id DESC";
+$query = "SELECT i.item_id, i.item_name, i.description, i.category, i.image, i.price_per_day, i.deposit, i.`condition`, i.status, i.maintenance_notes, i.total_times_rented, i.rating, i.reviews, i.total_units, i.available_units, i.is_visible, i.is_featured, i.tags,
+          COALESCE(completed_counts.completed_count, 0) AS completed_rentals
+          FROM item i
+          LEFT JOIN (
+              SELECT ri.item_id, COUNT(DISTINCT ri.order_id) AS completed_count
+              FROM rental_item ri
+              JOIN rental r ON ri.order_id = r.order_id
+              WHERE r.rental_status IN ('Completed', 'Returned')
+              GROUP BY ri.item_id
+          ) completed_counts ON i.item_id = completed_counts.item_id
+          ORDER BY i.item_id DESC";
 
 $result = mysqli_query($conn, $query);
 
@@ -27,7 +35,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     $row['deposit'] = $row['deposit'] !== null ? floatval($row['deposit']) : null;
     $row['rating'] = $row['rating'] !== null ? floatval($row['rating']) : null;
     $row['reviews'] = $row['reviews'] !== null ? intval($row['reviews']) : null;
-    $row['total_times_rented'] = $row['total_times_rented'] !== null ? intval($row['total_times_rented']) : 0;
+    $row['total_times_rented'] = intval($row['completed_rentals']);
+    unset($row['completed_rentals']);
     $items[] = $row;
 }
 
