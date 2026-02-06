@@ -15,7 +15,7 @@ $orderId = intval($input['order_id']);
 $newStatus = mysqli_real_escape_string($conn, $input['status']);
 
 // Valid status values
-$validStatuses = ['Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Returned', 'Completed', 'Cancelled'];
+$validStatuses = ['Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Returned', 'Completed', 'Cancelled', 'Late'];
 
 if (!in_array($newStatus, $validStatuses)) {
     echo json_encode(['success' => false, 'message' => 'Invalid status value']);
@@ -36,6 +36,9 @@ if (mysqli_stmt_execute($stmt)) {
             break;
         case 'Active':
             $itemStatus = 'Rented';
+            break;
+        case 'Late':
+            $itemStatus = 'Late';
             break;
         case 'Returned':
         case 'Completed':

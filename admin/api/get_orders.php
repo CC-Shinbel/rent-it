@@ -60,7 +60,8 @@ while ($order = mysqli_fetch_assoc($result)) {
         'Pending Return' => 'return_scheduled',
         'Returned' => 'completed',
         'Completed' => 'completed',
-        'Cancelled' => 'cancelled'
+        'Cancelled' => 'cancelled',
+        'Late' => 'late'
     ];
 
     // Calculate duration
