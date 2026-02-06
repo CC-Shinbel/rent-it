@@ -177,15 +177,6 @@ function buildActionButtons(repair, statusKey) {
             </button>`;
     }
 
-    // Delete button (always shown)
-    buttons += `
-        <button class="action-btn remove-btn" title="Delete repair ticket" data-action="delete" data-repair-id="${id}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-        </button>`;
-
     return buttons;
 }
 
@@ -222,9 +213,6 @@ function handleRepairAction(repairId, action) {
             break;
         case 'unavailable':
             confirmAction(repairId, 'unavailable', `Set <strong>${escapeHtml(itemName)}</strong> as Unavailable? The item will be removed from the rental pool.`, 'Set Unavailable', 'danger');
-            break;
-        case 'delete':
-            confirmAction(repairId, 'delete', `Delete this repair ticket for <strong>${escapeHtml(itemName)}</strong>? The item will be set back to Available.`, 'Delete Ticket', 'danger');
             break;
     }
 }
