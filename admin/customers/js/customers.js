@@ -7,12 +7,17 @@
 
 // Customer data loaded from API
 let customersData = [];
+let filteredCustomersData = [];
 let apiStats = {
     totalCustomers: 0,
     activeBookings: 0,
     overdueReturns: 0,
     monthlyRevenue: 0
 };
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 /**
  * Fetch customers from API
@@ -167,7 +172,7 @@ function renderCustomerRow(customer) {
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
                     </button>
-                    <button class="action-btn call" title="Call customer" onclick="callCustomer('${customer.phone}')">
+                    <button class="action-btn call" title="Show phone number" onclick="toggleCustomerPhone(this, '${customer.phone}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
@@ -179,11 +184,13 @@ function renderCustomerRow(customer) {
 }
 
 /**
- * Render all customers
+ * Render all customers with pagination
  */
 function renderCustomers(customers) {
     const tbody = document.getElementById('customersTableBody');
     if (!tbody) return;
+
+    filteredCustomersData = customers;
 
     if (customers.length === 0) {
         tbody.innerHTML = `
@@ -202,10 +209,74 @@ function renderCustomers(customers) {
                 </td>
             </tr>
         `;
+        updateCustomersPagination(0);
         return;
     }
 
-    tbody.innerHTML = customers.map(customer => renderCustomerRow(customer)).join('');
+    // Paginate
+    const totalPages = Math.ceil(customers.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageCustomers = customers.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageCustomers.map(customer => renderCustomerRow(customer)).join('');
+    updateCustomersPagination(customers.length);
+}
+
+/**
+ * Update pagination controls
+ */
+function updateCustomersPagination(totalItems) {
+    const paginationContainer = document.querySelector('.customers-pagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    const info = paginationContainer.querySelector('.pagination-info');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} customers`;
+
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    const pagesSpan = paginationContainer.querySelector('.pagination-pages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToCustomerPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToCustomerPage(page) {
+    currentPage = page;
+    renderCustomers(filteredCustomersData);
 }
 
 /**
@@ -275,6 +346,7 @@ function filterCustomers() {
             });
     }
 
+    currentPage = 1;
     renderCustomers(filtered);
 }
 
@@ -508,8 +580,18 @@ RentIt Team`
 /**
  * Call customer
  */
-function callCustomer(phone) {
-    window.location.href = `tel:${phone.replace(/\s/g, '')}`;
+function toggleCustomerPhone(btn, phone) {
+    if (btn.classList.contains('phone-revealed')) {
+        btn.classList.remove('phone-revealed');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+        btn.title = 'Show phone number';
+        btn.style.width = '';
+        return;
+    }
+    btn.classList.add('phone-revealed');
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${phone || 'N/A'}`;
+    btn.title = phone || 'N/A';
+    btn.style.width = 'auto';
 }
 
 /**
@@ -561,6 +643,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Filter change handlers
     document.getElementById('statusFilter')?.addEventListener('change', filterCustomers);
     document.getElementById('sortFilter')?.addEventListener('change', filterCustomers);
+
+    // Pagination buttons
+    document.getElementById('prevPageBtn')?.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderCustomers(filteredCustomersData);
+        }
+    });
+    document.getElementById('nextPageBtn')?.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredCustomersData.length / PAGE_SIZE);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderCustomers(filteredCustomersData);
+        }
+    });
 
     // Export button
     document.getElementById('exportCustomersBtn')?.addEventListener('click', () => {

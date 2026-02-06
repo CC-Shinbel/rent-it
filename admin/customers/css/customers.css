@@ -431,6 +431,23 @@
     color: var(--admin-success);
 }
 
+.action-btn.call.phone-revealed {
+    width: auto !important;
+    padding: 0.25rem 0.5rem;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--admin-bg-secondary);
+    color: var(--admin-text-secondary);
+    border-radius: var(--admin-radius-sm);
+}
+
+.action-btn.call.phone-revealed:hover {
+    background: var(--admin-bg-hover);
+    color: var(--admin-text-primary);
+}
+
 /* ============================
    PAGINATION
    ============================ */
