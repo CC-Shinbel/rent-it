@@ -780,3 +780,22 @@
         justify-content: center;
     }
 }
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .repairs-stats {
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 2560px) {
+    .repairs-stats {
+        gap: 2.5rem;
+    }
+
+    .repairs-table {
+        font-size: var(--admin-font-md);
+    }
+}

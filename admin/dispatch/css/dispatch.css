@@ -488,3 +488,42 @@
         justify-content: flex-end;
     }
 }
+
+@media (max-width: 375px) {
+    .dispatch-card {
+        padding: var(--admin-spacing-sm);
+    }
+
+    .dispatch-card-header {
+        padding: var(--admin-spacing-sm);
+    }
+
+    .dispatch-card-body {
+        padding: var(--admin-spacing-sm);
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .dispatch-stats {
+        gap: var(--admin-spacing-xl);
+    }
+
+    .dispatch-grid {
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: var(--admin-spacing-xl);
+    }
+}
+
+@media (min-width: 2560px) {
+    .dispatch-stats {
+        gap: var(--admin-spacing-2xl);
+    }
+
+    .dispatch-grid {
+        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+        gap: var(--admin-spacing-2xl);
+    }
+}

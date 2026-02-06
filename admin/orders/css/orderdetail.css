@@ -607,7 +607,7 @@
 }
 
 /* ============================
-   RESPONSIVE
+   RESPONSIVE - Small screens
    ============================ */
 @media (max-width: 768px) {
     .order-detail-grid {
@@ -651,5 +651,45 @@
 
     .customer-detail-info {
         align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .detail-card .admin-card-header {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .detail-card .admin-card-body {
+        padding: var(--admin-spacing-md);
+    }
+
+    .info-row {
+        flex-direction: column;
+        gap: var(--admin-spacing-xs);
+    }
+
+    .info-value {
+        text-align: left;
+    }
+
+    .rental-item-details h4 {
+        font-size: var(--admin-font-sm);
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .order-detail-grid {
+        grid-template-columns: 1fr 480px;
+        gap: var(--admin-spacing-2xl);
+    }
+}
+
+@media (min-width: 2560px) {
+    .order-detail-grid {
+        grid-template-columns: 1fr 560px;
+        gap: var(--admin-spacing-3xl);
     }
 }

@@ -406,3 +406,17 @@
         align-self: flex-start;
     }
 }
+
+@media (max-width: 375px) {
+    .notification-item {
+        padding: 0.75rem;
+    }
+
+    .notification-title {
+        font-size: 0.8125rem;
+    }
+
+    .notification-message {
+        font-size: 0.75rem;
+    }
+}

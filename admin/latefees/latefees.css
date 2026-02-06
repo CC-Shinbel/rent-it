@@ -820,3 +820,27 @@ textarea.form-input {
         max-width: 150px;
     }
 }
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .latefees-stats {
+        gap: 2rem;
+    }
+
+    .latefees-layout {
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 2560px) {
+    .latefees-stats {
+        gap: 2.5rem;
+    }
+
+    .latefees-layout {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 3rem;
+    }
+}

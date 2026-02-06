@@ -407,4 +407,60 @@ textarea:focus-visible {
     .admin-content {
         padding: var(--admin-spacing-sm);
     }
+
+    .admin-page-title {
+        font-size: var(--admin-font-xl);
+    }
+
+    .admin-page-subtitle {
+        font-size: var(--admin-font-xs);
+    }
+
+    .admin-page-actions {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .admin-page-actions .btn {
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+}
+
+@media (max-width: 375px) {
+    .admin-page-title {
+        font-size: var(--admin-font-lg);
+    }
+
+    .admin-page-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .admin-page-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================
+   LARGE SCREENS
+   ============================ */
+@media (min-width: 1920px) {
+    .admin-content {
+        --admin-container-max: 1800px;
+        max-width: var(--admin-container-max);
+        padding: var(--admin-spacing-3xl) var(--admin-spacing-2xl);
+    }
+}
+
+@media (min-width: 2560px) {
+    .admin-content {
+        --admin-container-max: 2200px;
+        max-width: var(--admin-container-max);
+        padding: var(--admin-spacing-3xl) var(--admin-spacing-3xl);
+    }
+
+    html {
+        font-size: 18px;
+    }
 }

@@ -262,3 +262,26 @@
         align-self: flex-end;
     }
 }
+
+@media (max-width: 480px) {
+    .setting-item {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .setting-label {
+        font-size: var(--admin-font-sm);
+    }
+
+    .setting-description {
+        font-size: var(--admin-font-xs);
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .settings-grid {
+        gap: var(--admin-spacing-2xl);
+    }
+}
