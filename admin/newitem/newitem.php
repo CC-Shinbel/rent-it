@@ -123,6 +123,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <div class="form-group">
                                             <label for="dailyRate" class="form-label">Daily Rate (₱) <span class="required">*</span></label>
                                             <input type="number" id="dailyRate" name="dailyRate" class="form-input" placeholder="0.00" min="0" step="0.01" required>
+                                            <span class="form-hint">This rate is also used as the late fee charge per day</span>
                                         </div>
 
                                         <div class="form-group">
