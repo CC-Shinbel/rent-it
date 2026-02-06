@@ -205,7 +205,7 @@ include '../../shared/php/db_connection.php';
                         <span class="auth-footer-label">Secure sign-in • Your data stays private</span>
                         <span class="auth-footer-links">
                             By continuing, you agree to our
-                            <a href="/wip.html">Terms</a> and <a href="/wip.html">Privacy Policy</a>.
+                            <a href="/rent-it/pages/terms.html">Terms</a> and <a href="/rent-it/pages/privacy-policy.html">Privacy Policy</a>.
                         </span>
                     </div>
                 </div>

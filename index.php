@@ -268,39 +268,7 @@ $userName = $_SESSION['user_name'] ?? '';
                     </div>
                 </div>
 
-                <!-- Right Column: Estimator -->
-                <aside class="estimator-card animate-on-scroll animate-delay-2">
-                    <h3 class="estimator-title">Delivery Estimator</h3>
-
-                    <label class="est-label">Your Location</label>
-                    <div class="input-with-icon">
-                        <span class="input-icon">📍</span>
-                        <input type="text" class="est-input" placeholder="Enter city or address" id="locationInput">
-                    </div>
-
-                    <div class="fee-row">
-                        <div>
-                            <div class="fee-label">Estimated Delivery Fee</div>
-                            <div class="fee-note">Based on your current zone</div>
-                        </div>
-                        <div class="fee-value">₱150.00</div>
-                    </div>
-
-                    <div class="map-box">
-                        <svg viewBox="0 0 400 120" preserveAspectRatio="none">
-                            <rect width="400" height="120" fill="#61A5C2"/>
-                            <path d="M0 30 L400 60" stroke="#E5E7EB" stroke-width="4" opacity="0.6"/>
-                            <path d="M0 80 L400 50" stroke="#E5E7EB" stroke-width="3" opacity="0.5"/>
-                            <path d="M100 0 L150 120" stroke="#E5E7EB" stroke-width="3" opacity="0.4"/>
-                            <path d="M280 0 L320 120" stroke="#E5E7EB" stroke-width="3" opacity="0.4"/>
-                            <circle cx="200" cy="60" r="6" fill="#FB7012"/>
-                            <circle cx="200" cy="60" r="12" fill="#FB7012" opacity="0.3"/>
-                        </svg>
-                        <span class="map-label">Manila • Mandaluyong</span>
-                    </div>
-
-                    <button class="btn btn-primary est-cta">Calculate Final Price</button>
-                </aside>
+                
             </div>
         </section>
 
@@ -401,21 +369,20 @@ $userName = $_SESSION['user_name'] ?? '';
                         </p>
                         <p class="powered-by">Powered by <a href="https://certicode.com" target="_blank" rel="noopener">CertiCode</a></p>
                         <div class="social-links">
-                            <a href="<?= BASE_URL ?>/pages/wip.html" class="social" aria-label="Facebook">
+                            <a href="https://www.facebook.com/CertiCode" class="social" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                                 </svg>
                             </a>
-                            <a href="<?= BASE_URL ?>/pages/wip.html" class="social" aria-label="Share">
+                            <a href="https://www.certicode.tech/" class="social" aria-label="CertiCode" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="18" cy="5" r="3"/>
-                                    <circle cx="6" cy="12" r="3"/>
-                                    <circle cx="18" cy="19" r="3"/>
-                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <line x1="3" y1="12" x2="21" y2="12"/>
+                                    <path d="M12 3a12 12 0 0 0 0 18"/>
+                                    <path d="M12 3a12 12 0 0 1 0 18"/>
                                 </svg>
                             </a>
-                            <a href="mailto:hello@rentit.ph" class="social" aria-label="Email">
+                            <a href="<?= BASE_URL ?>/pages/contactus.html" class="social" aria-label="Contact">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                                     <polyline points="22,6 12,13 2,6"/>
