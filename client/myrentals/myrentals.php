@@ -125,15 +125,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                 </section>
 
-                <section class="promo-banner">
-                    <div class="promo-content">
-                        <div class="promo-text">
-                            <h3>Plan a party next weekend?</h3>
-                            <p>Get 20% off on your next rental if you book 3 days in advance. Exclusive for loyal customers.</p>
-                        </div>
-                        <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="promo-cta">Claim 20% Discount</a>
-                    </div>
-                </section>
+              
             </div>
         </main>
     </div>
