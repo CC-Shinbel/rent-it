@@ -371,6 +371,23 @@
     color: white;
 }
 
+.action-btn.call-btn.phone-revealed {
+    width: auto;
+    padding: 0.3rem 0.6rem;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--admin-bg-secondary);
+    color: var(--admin-text-secondary);
+    user-select: all;
+}
+
+.action-btn.call-btn.phone-revealed:hover {
+    background: var(--admin-bg-tertiary);
+    color: var(--admin-text-primary);
+}
+
 .action-btn.resolve-btn {
     background: var(--admin-success-bg);
     color: var(--admin-success);

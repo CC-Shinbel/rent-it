@@ -7,7 +7,12 @@
 
 // Store orders data from API
 let ordersData = [];
+let filteredOrdersData = [];
 let kpiCounts = { pending: 0, confirmed: 0, out_for_delivery: 0, active: 0 };
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 // Resolve absolute URLs based on the current base tag or window origin
 const baseHref = document.querySelector('base')?.href || `${window.location.origin}/`;
@@ -27,7 +32,8 @@ async function fetchOrders() {
         if (result.success) {
             ordersData = result.data;
             kpiCounts = result.counts;
-            renderOrders(ordersData);
+            currentPage = 1;
+            filterOrders();
             updateKPICounts();
         } else {
             console.error('Failed to fetch orders:', result.message);
@@ -182,7 +188,7 @@ function renderOrderRow(order) {
 }
 
 /**
- * Render all orders
+ * Render all orders with pagination
  */
 function renderOrders(orders) {
     const tbody = document.getElementById('ordersTableBody');
@@ -204,10 +210,77 @@ function renderOrders(orders) {
                 </td>
             </tr>
         `;
+        updatePagination(0);
         return;
     }
 
-    tbody.innerHTML = orders.map(order => renderOrderRow(order)).join('');
+    // Paginate
+    const totalPages = Math.ceil(orders.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageOrders = orders.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageOrders.map(order => renderOrderRow(order)).join('');
+    updatePagination(orders.length);
+}
+
+/**
+ * Update pagination controls
+ */
+function updatePagination(totalItems) {
+    const paginationContainer = document.querySelector('.orders-pagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    // Update info text
+    const info = paginationContainer.querySelector('.pagination-info');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} orders`;
+
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Build page buttons
+    const pagesSpan = paginationContainer.querySelector('.pagination-pages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToPage(page) {
+    currentPage = page;
+    renderOrders(filteredOrdersData);
 }
 
 /**
@@ -270,6 +343,8 @@ function filterOrders() {
         });
     }
 
+    filteredOrdersData = filtered;
+    currentPage = 1;
     renderOrders(filtered);
 }
 
@@ -389,6 +464,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Refresh button
     document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
         fetchOrders();
+    });
+
+    // Pagination buttons
+    document.getElementById('prevPageBtn')?.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderOrders(filteredOrdersData);
+        }
+    });
+    document.getElementById('nextPageBtn')?.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredOrdersData.length / PAGE_SIZE);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderOrders(filteredOrdersData);
+        }
     });
 
     // Export button (placeholder)

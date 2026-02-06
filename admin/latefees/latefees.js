@@ -131,17 +131,17 @@ function renderOverdueCard(rental) {
                 <span class="fee-label">Late Fee</span>
             </div>
             <div class="overdue-actions">
+                <button class="action-btn call-btn" title="Show phone number" onclick="togglePhone(this, '${escapeHtml(rental.customer.phone || 'N/A')}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </button>
                 <button class="action-btn reminder-btn" title="Send reminder" data-action="remind" onclick="openReminder(${rental.order_id})">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                         <polyline points="22,6 12,13 2,6"/>
                     </svg>
                 </button>
-                <a href="tel:${escapeHtml(rental.customer.phone || '')}" class="action-btn call-btn" title="Call ${escapeHtml(rental.customer.name)} — ${escapeHtml(rental.customer.phone || 'No phone')}" onclick="logCall(${rental.order_id})">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                    </svg>
-                </a>
                 <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve" onclick="resolveItem(${rental.order_id})">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
@@ -205,6 +205,41 @@ function attachEventListeners() {
             }
         });
     });
+
+    // Template "Edit" buttons
+    document.querySelectorAll('.template-btn.edit').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const templateItem = e.target.closest('.template-item');
+            const templateType = templateItem?.dataset.template;
+            if (templateType) {
+                // Load template into modal for editing
+                const templateSelect = document.getElementById('templateSelect');
+                if (templateSelect) templateSelect.value = templateType;
+                updateEmailTemplate(templateType);
+                // Open modal so user can edit
+                const modal = document.getElementById('reminderModal');
+                if (modal) modal.classList.add('open');
+                AdminComponents.showToast?.(`Editing "${templateType}" template`, 'info');
+            }
+        });
+    });
+
+    // Manage Templates button
+    const manageTemplatesBtn = document.getElementById('manageTemplatesBtn');
+    if (manageTemplatesBtn) {
+        manageTemplatesBtn.addEventListener('click', () => {
+            // Scroll to templates section and highlight it
+            const templatesCard = document.querySelector('.templates-card');
+            if (templatesCard) {
+                templatesCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                templatesCard.style.outline = '2px solid var(--admin-accent)';
+                templatesCard.style.outlineOffset = '4px';
+                setTimeout(() => {
+                    templatesCard.style.outline = 'none';
+                }, 2000);
+            }
+        });
+    }
 }
 
 // ─────────────────────────────────────────────────────
@@ -237,7 +272,7 @@ function filterOverdueItems(filter) {
 let currentReminderId = null;
 
 function openReminder(orderId) {
-    const rental = overdueData.find(r => r.order_id === orderId);
+    const rental = overdueData.find(r => Number(r.order_id) === Number(orderId));
     if (!rental) return;
 
     currentReminderId = orderId;
@@ -317,7 +352,7 @@ function updateEmailTemplate(templateType, rental) {
 function sendReminder() {
     if (!currentReminderId) return;
 
-    const rental = overdueData.find(r => r.order_id === currentReminderId);
+    const rental = overdueData.find(r => Number(r.order_id) === Number(currentReminderId));
     if (!rental) return;
 
     // In a real app, this would call an API to send the email
@@ -344,16 +379,21 @@ function sendAllReminders() {
 // ACTIONS
 // ─────────────────────────────────────────────────────
 
-function logCall(orderId) {
-    const rental = overdueData.find(r => r.order_id === orderId);
-    if (!rental) return;
-
-    AdminComponents.showToast?.(`Call logged for ${rental.customer.name}`, 'info');
-    addActivity('call', `Call logged: ${rental.customer.name}`);
+function togglePhone(btn, phone) {
+    // If already showing phone, revert to icon
+    if (btn.classList.contains('phone-revealed')) {
+        btn.classList.remove('phone-revealed');
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+        btn.title = 'Show phone number';
+        return;
+    }
+    btn.classList.add('phone-revealed');
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> ${phone}`;
+    btn.title = phone;
 }
 
 function resolveItem(orderId) {
-    const rental = overdueData.find(r => r.order_id === orderId);
+    const rental = overdueData.find(r => Number(r.order_id) === Number(orderId));
     if (!rental) return;
 
     if (!confirm(`Mark ${rental.order_id_formatted} as resolved?`)) return;
@@ -362,7 +402,7 @@ function resolveItem(orderId) {
     addActivity('resolved', `Late fee resolved for ${rental.customer.name}`);
 
     // Remove from local data and re-render
-    overdueData = overdueData.filter(r => r.order_id !== orderId);
+    overdueData = overdueData.filter(r => Number(r.order_id) !== Number(orderId));
     renderOverdueItems(overdueData);
 
     // Update stats locally
