@@ -33,7 +33,6 @@ function getStatusText(status) {
  */
 function renderDispatchCard(dispatch) {
     const customerInitial = getInitial(dispatch.customer.name);
-    const driverInitial = dispatch.driver ? getInitial(dispatch.driver.name) : null;
     const itemTags = dispatch.items.map(item => `<span class="dispatch-item-tag">${item}</span>`).join('');
     
     return `
@@ -93,21 +92,6 @@ function renderDispatchCard(dispatch) {
                 </div>
             </div>
             <div class="dispatch-card-footer">
-                ${dispatch.driver ? `
-                    <div class="dispatch-driver">
-                        <div class="dispatch-driver-avatar">${driverInitial}</div>
-                        <span class="dispatch-driver-name">${dispatch.driver.name}</span>
-                    </div>
-                ` : `
-                    <div class="dispatch-driver unassigned">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        <span>Not Assigned</span>
-                    </div>
-                `}
                 <div class="dispatch-actions" onclick="event.stopPropagation()">
                     <button class="dispatch-action-btn" title="Email customer" onclick="emailCustomer('${dispatch.customer.email}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

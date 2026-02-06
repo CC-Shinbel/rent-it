@@ -400,39 +400,7 @@
     border-top: 1px solid var(--admin-border-color);
 }
 
-.dispatch-driver {
-    display: flex;
-    align-items: center;
-    gap: var(--admin-spacing-sm);
-    font-size: var(--admin-font-sm);
-}
 
-.dispatch-driver-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--admin-success);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--admin-font-xs);
-    font-weight: var(--admin-font-semibold);
-}
-
-.dispatch-driver-name {
-    color: var(--admin-text-primary);
-    font-weight: var(--admin-font-medium);
-}
-
-.dispatch-driver.unassigned {
-    color: var(--admin-warning);
-}
-
-.dispatch-driver.unassigned svg {
-    width: 18px;
-    height: 18px;
-}
 
 .dispatch-actions {
     display: flex;
