@@ -32,7 +32,7 @@ $result = mysqli_query($conn, $query);
     <link rel="stylesheet" href="catalog.css">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
 </head>
 <body>
     <div class="app-container">

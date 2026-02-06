@@ -70,6 +70,7 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RentIt - Dashboard</title>
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <link rel="stylesheet" href="../../shared/css/theme.css">
     <link rel="stylesheet" href="../../shared/css/globals.css">
     <link rel="stylesheet" href="../dashboard/dashboard.css">
@@ -193,6 +194,9 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
                     </div>
                 </section>
             </div> 
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
         </main>
     </div>
 

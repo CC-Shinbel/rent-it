@@ -127,6 +127,9 @@ if (!isset($_SESSION['user_id'])) {
 
               
             </div>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
         </main>
     </div>
 
@@ -201,7 +204,6 @@ if (!isset($_SESSION['user_id'])) {
             </form>
         </div>
     </div>
-    
     
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
     <script src="<?= BASE_URL ?>/client/myrentals/myrentals.js"></script>
