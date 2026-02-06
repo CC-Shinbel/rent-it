@@ -78,8 +78,18 @@ function renderItemRow(item) {
 
     let actionButtons = '';
 
+    // Edit button always shown
+    actionButtons += `
+        <button class="item-action-btn item-action-edit" data-item-id="${item.item_id}" data-action="Edit" title="Edit Item" onclick="editItem(${item.item_id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Edit
+        </button>`;
+
     if (isAvailable) {
-        actionButtons = `
+        actionButtons += `
             <button class="item-action-btn item-action-repair" data-item-id="${item.item_id}" data-action="Repairing" title="Set to Repairing">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -94,7 +104,7 @@ function renderItemRow(item) {
                 Unavailable
             </button>`;
     } else if (isRepairing || isUnavailable) {
-        actionButtons = `
+        actionButtons += `
             <button class="item-action-btn item-action-available" data-item-id="${item.item_id}" data-action="Available" title="Set to Available">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -103,7 +113,7 @@ function renderItemRow(item) {
                 Available
             </button>`;
     } else if (isBooked) {
-        actionButtons = `<span class="item-action-disabled">In Use</span>`;
+        actionButtons += `<span class="item-action-disabled">In Use</span>`;
     }
 
     return `
@@ -379,6 +389,13 @@ function filterItems() {
     }
 
     renderItems(filtered);
+}
+
+/**
+ * Navigate to edit item page
+ */
+function editItem(itemId) {
+    window.location.href = buildUrl(`admin/newitem/newitem.php?edit=${itemId}`);
 }
 
 function escapeHtml(str) {

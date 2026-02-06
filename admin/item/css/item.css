@@ -118,6 +118,9 @@
 .item-action-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 .item-action-btn svg { flex-shrink: 0; }
 
+.item-action-edit { border-color: #8B5CF6; color: #8B5CF6; }
+.item-action-edit:hover { background: #8B5CF6; color: #fff; }
+
 .item-action-repair { border-color: #3B82F6; color: #3B82F6; }
 .item-action-repair:hover { background: #3B82F6; color: #fff; }
 

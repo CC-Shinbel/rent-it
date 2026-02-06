@@ -141,6 +141,15 @@ function buildActionButtons(repair, statusKey) {
             </svg>
         </button>`;
 
+    // Edit button (always shown)
+    buttons += `
+        <button class="action-btn edit-btn" title="Edit repair ticket" data-action="edit" data-repair-id="${id}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        </button>`;
+
     if (statusKey === 'in-progress' || statusKey === 'awaiting-parts') {
         // Mark complete
         buttons += `
@@ -201,6 +210,9 @@ function handleRepairAction(repairId, action) {
     switch (action) {
         case 'view':
             showRepairDetailModal(repair);
+            break;
+        case 'edit':
+            showEditRepairModal(repair);
             break;
         case 'complete':
             confirmAction(repairId, 'complete', `Mark repair for <strong>${escapeHtml(itemName)}</strong> as completed?`, 'Mark Complete');
@@ -323,6 +335,155 @@ function setText(id, text) {
 }
 
 /* =================================================================
+   EDIT REPAIR MODAL
+   ================================================================= */
+function showEditRepairModal(repair) {
+    if (!repair) return;
+
+    const ticketId = `RPR-${String(repair.repair_id).padStart(3, '0')}`;
+    const itemName = repair.item_name || `Item #${repair.item_id}`;
+    const today = new Date().toISOString().split('T')[0];
+
+    // Pre-fill with current values
+    const currentIssue = escapeHtml(repair.issue_type || '');
+    const currentPriority = (repair.priority || 'medium').toLowerCase();
+    const currentStatus = normalizeStatus(repair.status);
+    const currentEta = repair.eta_date || '';
+    const currentCost = repair.estimated_cost || '';
+    const currentNotes = escapeHtml(repair.notes || '');
+
+    const formContent = `
+        <div style="margin-bottom: 1rem;">
+            <p style="color: var(--admin-text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                Editing <strong>${ticketId}</strong> — ${escapeHtml(itemName)}
+            </p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">Issue Type</label>
+                <input type="text" id="editIssueType" value="${currentIssue}" placeholder="e.g. Speaker Damage"
+                    style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary);">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">Priority</label>
+                <select id="editPriority"
+                    style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary);">
+                    <option value="low" ${currentPriority === 'low' ? 'selected' : ''}>Low</option>
+                    <option value="medium" ${currentPriority === 'medium' ? 'selected' : ''}>Medium</option>
+                    <option value="high" ${currentPriority === 'high' ? 'selected' : ''}>High</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">Status</label>
+                <select id="editStatus"
+                    style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary);">
+                    <option value="in-progress" ${currentStatus === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                    <option value="awaiting-parts" ${currentStatus === 'awaiting-parts' ? 'selected' : ''}>Awaiting Parts</option>
+                    <option value="completed" ${currentStatus === 'completed' ? 'selected' : ''}>Completed</option>
+                    <option value="unavailable" ${currentStatus === 'unavailable' ? 'selected' : ''}>Unavailable</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">ETA Date</label>
+                <input type="date" id="editEtaDate" value="${currentEta}" min="${today}"
+                    style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary);">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.375rem;">
+                <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">Estimated Cost (₱)</label>
+                <input type="number" id="editEstCost" value="${currentCost}" min="0" step="0.01" placeholder="0.00"
+                    style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary);">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.375rem; margin-top: 1rem;">
+            <label style="font-size: 0.8125rem; font-weight: 600; color: var(--admin-text-secondary);">Notes</label>
+            <textarea id="editNotes" rows="3" placeholder="Additional repair notes..."
+                style="padding: 0.5rem 0.75rem; border: 1px solid var(--admin-border-color); border-radius: var(--admin-radius-md); font-size: 0.875rem; background: var(--admin-bg-card); color: var(--admin-text-primary); resize: vertical;">${currentNotes}</textarea>
+        </div>
+    `;
+
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
+        AdminComponents.showModal({
+            title: 'Edit Repair Ticket',
+            content: formContent,
+            confirmText: 'Save Changes',
+            cancelText: 'Cancel',
+            onConfirm: () => submitRepairEdit(repair.repair_id)
+        });
+    }
+}
+
+async function submitRepairEdit(repairId) {
+    const today = new Date().toISOString().split('T')[0];
+
+    const issueType = document.getElementById('editIssueType')?.value?.trim();
+    const priority = document.getElementById('editPriority')?.value;
+    const status = document.getElementById('editStatus')?.value;
+    const etaDate = document.getElementById('editEtaDate')?.value;
+    const estCost = document.getElementById('editEstCost')?.value;
+    const notes = document.getElementById('editNotes')?.value?.trim();
+
+    // Validate ETA date is not in the past
+    if (etaDate && etaDate < today) {
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast('ETA date cannot be in the past. Please select today or a future date.', 'danger');
+        } else {
+            alert('ETA date cannot be in the past.');
+        }
+        return;
+    }
+
+    // Validate issue type is not empty
+    if (!issueType) {
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast('Issue type is required.', 'danger');
+        } else {
+            alert('Issue type is required.');
+        }
+        return;
+    }
+
+    const payload = {
+        repair_id: repairId,
+        issue_type: issueType,
+        priority: priority,
+        status: status,
+        eta_date: etaDate,
+        estimated_cost: estCost ? parseFloat(estCost) : 0,
+        notes: notes
+    };
+
+    try {
+        const response = await fetch(buildUrl('admin/api/update_repair.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast('Repair ticket updated successfully', 'success');
+            }
+            fetchRepairs(); // Refresh the table
+        } else {
+            const msg = result.message || 'Failed to update repair ticket';
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(msg, 'danger');
+            } else {
+                alert(msg);
+            }
+        }
+    } catch (err) {
+        console.error('Edit repair error:', err);
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast('Error updating repair ticket', 'danger');
+        } else {
+            alert('Error updating repair ticket');
+        }
+    }
+}
+
+/* =================================================================
    SEARCH & FILTERS
    ================================================================= */
 function attachEventListeners() {
@@ -345,6 +506,21 @@ function attachEventListeners() {
     document.getElementById('closeRepairModal')?.addEventListener('click', closeRepairModal);
     document.getElementById('cancelRepairModalBtn')?.addEventListener('click', closeRepairModal);
     document.querySelector('#repairModal .modal-overlay')?.addEventListener('click', closeRepairModal);
+
+    // Edit button inside detail modal
+    document.getElementById('editRepairBtn')?.addEventListener('click', () => {
+        // Find the currently viewed repair from the modal's ticket ID
+        const ticketText = document.getElementById('modalTicketId')?.textContent || '';
+        const match = ticketText.match(/RPR-(\d+)/);
+        if (match) {
+            const repairId = parseInt(match[1], 10);
+            const repair = repairsData.find(r => r.repair_id == repairId);
+            if (repair) {
+                closeRepairModal();
+                showEditRepairModal(repair);
+            }
+        }
+    });
 
     // New Repair button
     document.getElementById('newRepairBtn')?.addEventListener('click', showNewRepairModal);
