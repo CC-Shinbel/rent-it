@@ -1,9 +1,4 @@
-/* =====================================================
-   BOOKING HISTORY PAGE STYLES
-   RentIt - Client Portal
-   ===================================================== */
 
-/* Page Header */
 .page-header-dashboard {
     display: flex;
     align-items: center;
@@ -157,9 +152,10 @@
 }
 
 .kpi-value {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--text);
+    color: #1a1a1a;
+    font-size: 1.5rem;
+    font-weight: bold;
+    opacity: 1 !important;
 }
 
 /* Tabs Navigation */
