@@ -18,6 +18,85 @@
 .status-default { background: var(--admin-surface-200); color: var(--admin-text); }
 
 /* =====================================================
+   PRICING COLUMN
+   ===================================================== */
+.item-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.price-main {
+    font-weight: 600;
+    color: var(--admin-text);
+    font-size: 0.875rem;
+}
+.price-deposit {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+}
+
+/* =====================================================
+   STATUS & VISIBILITY COLUMN
+   ===================================================== */
+.item-status-visibility {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.visibility-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.visibility-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.visibility-badge.visible {
+    background: #DCFCE7;
+    color: #166534;
+}
+.visibility-badge.hidden {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.visibility-badge.featured {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* =====================================================
+   TAGS COLUMN
+   ===================================================== */
+.item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.item-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--admin-surface-200);
+    border: 1px solid var(--admin-border);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--admin-text);
+}
+.item-no-tags {
+    font-size: 12px;
+    color: var(--admin-text-muted);
+    font-style: italic;
+}
+
+/* =====================================================
    ACTION BUTTONS
    ===================================================== */
 .item-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -68,7 +147,7 @@
     }
 
     .items-table {
-        min-width: 800px;
+        min-width: 1000px;
     }
 }
 

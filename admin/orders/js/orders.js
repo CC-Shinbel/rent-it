@@ -50,7 +50,8 @@ function getStatusText(status) {
         'active': 'Active',
         'return_scheduled': 'Return Scheduled',
         'completed': 'Completed',
-        'cancelled': 'Cancelled'
+        'cancelled': 'Cancelled',
+        'late': 'Late'
     };
     return statusMap[status] || status;
 }
@@ -146,6 +147,32 @@ function renderOrderRow(order) {
                             </svg>
                         </button>
                     ` : ''}
+                    ${(function() {
+                        const endDate = new Date(order.dates.end);
+                        endDate.setHours(0, 0, 0, 0);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const isOverdue = endDate < today;
+                        const canMarkLate = isOverdue && ['active', 'return_scheduled'].includes(order.status);
+                        const isLate = order.status === 'late';
+                        
+                        if (isLate) {
+                            return `<button class="action-btn late-fee" title="View late fees" onclick="viewLateFees(${order.order_id})">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </button>`;
+                        } else if (canMarkLate) {
+                            return `<button class="action-btn late-fee" title="Mark as late" onclick="markAsLate(${order.order_id})">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </button>`;
+                        }
+                        return '';
+                    })()}
                 </div>
             </td>
         </tr>
@@ -249,6 +276,39 @@ function filterOrders() {
  */
 function viewOrder(orderId) {
     window.location.href = buildUrl(`admin/orders/orderdetail.php?id=${orderId}`);
+}
+
+/**
+ * View late fees for an order (already marked as late)
+ */
+function viewLateFees(orderId) {
+    window.location.href = buildUrl(`admin/latefees/latefees.php?order_id=${orderId}`);
+}
+
+/**
+ * Mark order as late — changes status to Late and navigates to late fees page
+ */
+async function markAsLate(orderId) {
+    if (!confirm('Mark this order as LATE? This will apply late fee penalties to this order.')) return;
+    
+    try {
+        const response = await fetch(buildUrl('admin/api/update_order_status.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Late' })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('Order marked as late. Redirecting to late fees...');
+            window.location.href = buildUrl(`admin/latefees/latefees.php?order_id=${orderId}`);
+        } else {
+            alert('Failed to mark order as late: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error marking order as late:', error);
+        alert('Error marking order as late');
+    }
 }
 
 /**

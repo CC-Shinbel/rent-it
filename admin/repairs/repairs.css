@@ -529,6 +529,67 @@
 }
 
 /* =====================================================
+   MODAL BACKDROP OVERRIDE
+   The shared admin-components.css .modal class styles the inner box.
+   Here we override it when used as the full-screen backdrop wrapper.
+   ===================================================== */
+#repairModal.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none;
+    overflow: visible;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.5rem;
+}
+
+#repairModal.modal.active {
+    display: flex;
+}
+
+#repairModal .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 0;
+}
+
+#repairModal .modal-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border-color);
+    border-radius: var(--admin-radius-xl);
+    box-shadow: var(--admin-shadow-xl);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: repairModalSlideIn 0.25s ease-out;
+}
+
+@keyframes repairModalSlideIn {
+    from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =====================================================
    REPAIR DETAIL MODAL
    ===================================================== */
 .repair-modal {

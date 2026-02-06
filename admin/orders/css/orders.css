@@ -314,6 +314,11 @@
     color: var(--admin-error);
 }
 
+.status-badge.late {
+    background: #fef3c7;
+    color: #d97706;
+}
+
 /* Actions Cell */
 .actions-cell {
     display: flex;
@@ -350,6 +355,10 @@
 
 .action-btn.cancel:hover {
     color: var(--admin-error);
+}
+
+.action-btn.late-fee:hover {
+    color: var(--admin-warning);
 }
 
 /* ============================
