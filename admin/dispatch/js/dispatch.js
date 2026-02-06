@@ -47,6 +47,11 @@ function renderDispatchCard(dispatch) {
                             <circle cx="5.5" cy="18.5" r="2.5"/>
                             <circle cx="18.5" cy="18.5" r="2.5"/>
                         </svg>
+                    ` : dispatch.type === 'returning' ? `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"/>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
                     ` : `
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
@@ -104,9 +109,10 @@ function renderDispatchCard(dispatch) {
                     </div>
                 `}
                 <div class="dispatch-actions" onclick="event.stopPropagation()">
-                    <button class="dispatch-action-btn" title="Call customer" onclick="callCustomer('${dispatch.customer.phone}')">
+                    <button class="dispatch-action-btn" title="Email customer" onclick="emailCustomer('${dispatch.customer.email}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
                         </svg>
                     </button>
                     <button class="dispatch-action-btn" title="Get directions" onclick="getDirections('${dispatch.address}')">
@@ -114,7 +120,14 @@ function renderDispatchCard(dispatch) {
                             <polygon points="3 11 22 2 13 21 11 13 3 11"/>
                         </svg>
                     </button>
-                    ${dispatch.status !== 'completed' ? `
+                    ${dispatch.type === 'returning' ? `
+                        <button class="dispatch-action-btn" title="Mark Available" onclick="markAvailable('${dispatch.orderId}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </button>
+                    ` : dispatch.status !== 'completed' ? `
                         <button class="dispatch-action-btn" title="Mark complete" onclick="markComplete('${dispatch.id}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"/>
@@ -194,10 +207,39 @@ function viewOrder(orderId) {
 }
 
 /**
- * Call customer
+ * Email customer
  */
-function callCustomer(phone) {
-    window.location.href = `tel:${phone.replace(/\s/g, '')}`;
+function emailCustomer(email) {
+    if (!email || email === 'N/A') {
+        AdminComponents.showToast('No email address available for this customer', 'warning');
+        return;
+    }
+    window.location.href = `mailto:${email}`;
+}
+
+/**
+ * Mark returning item as available (Completed)
+ */
+async function markAvailable(orderId) {
+    if (!confirm('Mark this order as completed and items as available?')) return;
+    try {
+        const response = await fetch('/rent-it/admin/api/update_order_status.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: 'Completed' })
+        });
+        const data = await response.json();
+        if (data.success) {
+            AdminComponents.showToast('Order marked as completed!', 'success');
+            const dateRange = document.getElementById('dateRangeSelect')?.value || 'week';
+            fetchDispatches(dateRange);
+        } else {
+            AdminComponents.showToast(data.error || 'Failed to update status', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        AdminComponents.showToast('Error updating order status', 'error');
+    }
 }
 
 /**

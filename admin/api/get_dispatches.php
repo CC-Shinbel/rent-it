@@ -35,7 +35,7 @@ try {
             break;
     }
     
-    // Query dispatch-style data from rentals + rental_item + item (no dispatch table required)
+    // Query dispatch-style data from rentals + rental_item + item + driver
     $query = "
         SELECT 
             r.order_id,
@@ -45,16 +45,20 @@ try {
             r.customer_address,
             r.start_date,
             r.end_date,
+            r.driver_id,
             u.id as user_id,
             u.full_name as customer_name,
             u.email as customer_email,
             u.phone as customer_phone,
             u.address as user_address,
+            d.full_name as driver_name,
+            d.phone as driver_phone,
             GROUP_CONCAT(DISTINCT i.item_name SEPARATOR ', ') AS item_names
         FROM rental r
         LEFT JOIN users u ON r.user_id = u.id
         LEFT JOIN rental_item ri ON r.order_id = ri.order_id
         LEFT JOIN item i ON ri.item_id = i.item_id
+        LEFT JOIN driver d ON r.driver_id = d.driver_id
         WHERE 1=1
         $dateCondition
         GROUP BY r.order_id
@@ -73,7 +77,13 @@ try {
         $orderId = (int)$row['order_id'];
 
         // Derive type from rental status/dates
-        $type = in_array($row['rental_status'], ['Active', 'Pending Return']) ? 'pickup' : 'delivery';
+        if (in_array($row['rental_status'], ['Pending Return', 'Returned'])) {
+            $type = 'returning';
+        } else if ($row['rental_status'] === 'Active') {
+            $type = 'pickup';
+        } else {
+            $type = 'delivery';
+        }
         $scheduledDate = $type === 'pickup' ? ($row['end_date'] ?? $row['start_date']) : $row['start_date'];
 
         // Status based on rental status only
@@ -119,7 +129,10 @@ try {
             'items' => $items,
             'totalPrice' => (float)$row['total_price'],
             'rentalStatus' => $row['rental_status'],
-            'driver' => null // Extendable
+            'driver' => !empty($row['driver_name']) ? [
+                'name' => $row['driver_name'],
+                'phone' => $row['driver_phone'] ?? ''
+            ] : null
         ];
     }
     
@@ -134,6 +147,7 @@ try {
     $stats = [
         'deliveries' => 0,
         'pickups' => 0,
+        'returning' => 0,
         'pending' => 0,
         'completed' => 0
     ];
@@ -144,6 +158,9 @@ try {
         }
         if ($dispatch['type'] === 'pickup' && $dispatch['status'] !== 'completed') {
             $stats['pickups']++;
+        }
+        if ($dispatch['type'] === 'returning' && $dispatch['status'] !== 'completed') {
+            $stats['returning']++;
         }
         if ($dispatch['status'] === 'pending') {
             $stats['pending']++;

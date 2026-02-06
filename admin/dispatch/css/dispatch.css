@@ -246,6 +246,10 @@
     color: var(--admin-info);
 }
 
+.dispatch-type.returning {
+    color: var(--admin-warning, #f59e0b);
+}
+
 .dispatch-type svg {
     width: 16px;
     height: 16px;
