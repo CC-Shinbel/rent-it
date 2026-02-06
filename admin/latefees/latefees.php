@@ -81,7 +81,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">₱45,750</span>
+                        <span class="stat-value" id="statOutstandingFees">₱0</span>
                         <span class="stat-label">Outstanding Fees</span>
                     </div>
                 </div>
@@ -94,7 +94,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">12</span>
+                        <span class="stat-value" id="statOverdueRentals">0</span>
                         <span class="stat-label">Overdue Rentals</span>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">₱28,500</span>
+                        <span class="stat-value" id="statCollectedMonth">₱0</span>
                         <span class="stat-label">Collected This Month</span>
                     </div>
                 </div>
@@ -119,7 +119,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">8</span>
+                        <span class="stat-value" id="statRemindersSent">0</span>
                         <span class="stat-label">Reminders Sent Today</span>
                     </div>
                 </div>
@@ -149,243 +149,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </div>
                         </div>
                         <div class="overdue-list" id="overdueList">
-                            <!-- Overdue Item 1 - Critical -->
-                            <div class="overdue-item critical" data-id="OD-001" data-days="12">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator critical" title="Critical: 12 days overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">Michael Chen</span>
-                                        <span class="customer-email">michael.chen@email.com</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">KRK-001 Pro System</span>
-                                        <span class="days-overdue">12 days overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱6,000</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Overdue Item 2 - Critical -->
-                            <div class="overdue-item critical" data-id="OD-002" data-days="9">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator critical" title="Critical: 9 days overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">Sarah Williams</span>
-                                        <span class="customer-email">s.williams@business.com</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">KRK-002 Premium + SPK-001</span>
-                                        <span class="days-overdue">9 days overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱9,000</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Overdue Item 3 - Warning -->
-                            <div class="overdue-item warning" data-id="OD-003" data-days="5">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator warning" title="Warning: 5 days overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">David Martinez</span>
-                                        <span class="customer-email">david.m@gmail.com</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">MIC-001 Wireless Set</span>
-                                        <span class="days-overdue">5 days overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱1,250</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Overdue Item 4 - Warning -->
-                            <div class="overdue-item warning" data-id="OD-004" data-days="4">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator warning" title="Warning: 4 days overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">Jennifer Lopez</span>
-                                        <span class="customer-email">jlo.events@mail.com</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">LGT-001 LED Par Set</span>
-                                        <span class="days-overdue">4 days overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱2,000</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Overdue Item 5 - Mild -->
-                            <div class="overdue-item mild" data-id="OD-005" data-days="2">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator mild" title="Mild: 2 days overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">Robert Kim</span>
-                                        <span class="customer-email">rkim@company.ph</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">KRK-003 Standard</span>
-                                        <span class="days-overdue">2 days overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱1,000</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Overdue Item 6 - Mild -->
-                            <div class="overdue-item mild" data-id="OD-006" data-days="1">
-                                <div class="overdue-priority">
-                                    <span class="priority-indicator mild" title="Mild: 1 day overdue"></span>
-                                </div>
-                                <div class="overdue-main">
-                                    <div class="overdue-customer">
-                                        <span class="customer-name">Anna Santos</span>
-                                        <span class="customer-email">anna.santos@email.ph</span>
-                                    </div>
-                                    <div class="overdue-details">
-                                        <span class="equipment-name">MIC-002 Wired Set</span>
-                                        <span class="days-overdue">1 day overdue</span>
-                                    </div>
-                                </div>
-                                <div class="overdue-fee">
-                                    <span class="fee-amount">₱250</span>
-                                    <span class="fee-label">Late Fee</span>
-                                </div>
-                                <div class="overdue-actions">
-                                    <button class="action-btn reminder-btn" title="Send reminder" data-action="remind">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                            <polyline points="22,6 12,13 2,6"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn call-btn" title="Call customer" data-action="call">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn resolve-btn" title="Mark as resolved" data-action="resolve">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
+                            <!-- Populated dynamically by latefees.js -->
+                            <div class="overdue-empty" id="overdueEmpty" style="display:none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="opacity:0.3;margin-bottom:1rem;">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <h3 style="margin:0 0 0.5rem;color:var(--admin-text-primary);">No Overdue Rentals</h3>
+                                <p style="margin:0;color:var(--admin-text-secondary);font-size:0.875rem;">All rentals are on schedule. Great job!</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
                 <!-- Right: Email Templates & Activity -->
                 <div class="templates-section">
                     <!-- Email Templates Card -->
@@ -545,10 +319,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 </div>
             </div>
         </div>
-        
-        <!-- Footer (injected via JS) -->
-        <footer id="admin-footer"></footer>
-    </main>
     
     <!-- Send Reminder Modal -->
     <div class="modal" id="reminderModal">
@@ -616,11 +386,9 @@ Sound Rental Team</textarea>
         </div>
     </div>
     
-        </div>
-        </main>
-        
-        <!-- Footer Container (injected via JS) -->
-        <div id="footerContainer"></div>
+    <!-- Footer Container (injected via JS) -->
+    <div id="footerContainer"></div>
+    </main>
     </div>
     
     <!-- Toast Container -->
