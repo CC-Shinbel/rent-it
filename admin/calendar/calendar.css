@@ -482,3 +482,40 @@
     margin: 0;
     font-size: var(--admin-font-sm);
 }
+
+/* ============================
+   SMALL SCREEN ADJUSTMENTS
+   ============================ */
+@media (max-width: 480px) {
+    .calendar-controls {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .calendar-legend {
+        flex-wrap: wrap;
+    }
+
+    .calendar-search input {
+        width: 120px;
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .calendar-summary {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--admin-spacing-xl);
+    }
+}
+
+@media (min-width: 2560px) {
+    .calendar-summary {
+        gap: var(--admin-spacing-2xl);
+    }
+
+    .calendar-search input {
+        width: 240px;
+    }
+}

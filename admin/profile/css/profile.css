@@ -294,3 +294,19 @@
         text-align: center;
     }
 }
+
+@media (max-width: 480px) {
+    .profile-picture-section .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .settings-grid {
+        gap: var(--admin-spacing-2xl);
+    }
+}

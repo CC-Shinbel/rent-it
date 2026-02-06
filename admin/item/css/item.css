@@ -236,3 +236,39 @@
         width: 100%;
     }
 }
+
+@media (max-width: 375px) {
+    .item-action-btn {
+        padding: 3px 6px;
+        font-size: 9px;
+    }
+
+    .item-thumb {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .items-search {
+        max-width: 500px;
+    }
+}
+
+@media (min-width: 2560px) {
+    .items-search {
+        max-width: 600px;
+    }
+
+    .items-table {
+        font-size: var(--admin-font-md);
+    }
+
+    .item-thumb {
+        width: 56px;
+        height: 56px;
+    }
+}

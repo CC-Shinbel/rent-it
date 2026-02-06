@@ -799,3 +799,49 @@
         padding: var(--admin-spacing-md) var(--admin-spacing-lg);
     }
 }
+
+@media (max-width: 480px) {
+    .customers-kpi-grid {
+        gap: var(--admin-spacing-md);
+    }
+
+    .customers-toolbar {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .filter-select {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .customers-filters {
+        flex-direction: column;
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .customers-kpi-grid {
+        gap: var(--admin-spacing-xl);
+    }
+
+    .customers-search {
+        max-width: 500px;
+    }
+}
+
+@media (min-width: 2560px) {
+    .customers-kpi-grid {
+        gap: var(--admin-spacing-2xl);
+    }
+
+    .customers-search {
+        max-width: 600px;
+    }
+
+    .customers-table {
+        font-size: var(--admin-font-md);
+    }
+}

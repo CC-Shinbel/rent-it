@@ -458,3 +458,52 @@
     color: var(--admin-text-muted);
     padding: 0 var(--admin-spacing-xs);
 }
+
+/* ============================
+   SMALL SCREEN ADJUSTMENTS
+   ============================ */
+@media (max-width: 480px) {
+    .history-kpi-grid {
+        gap: var(--admin-spacing-md);
+    }
+
+    .history-toolbar {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .history-filters .filter-select {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .history-filters {
+        flex-direction: column;
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .history-kpi-grid {
+        gap: var(--admin-spacing-xl);
+    }
+
+    .history-search {
+        max-width: 500px;
+    }
+}
+
+@media (min-width: 2560px) {
+    .history-kpi-grid {
+        gap: var(--admin-spacing-2xl);
+    }
+
+    .history-search {
+        max-width: 600px;
+    }
+
+    .history-table {
+        font-size: var(--admin-font-md);
+    }
+}

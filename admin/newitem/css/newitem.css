@@ -285,3 +285,33 @@
         padding: 30px 16px;
     }
 }
+
+@media (max-width: 480px) {
+    .image-upload-area {
+        min-height: 120px;
+        padding: 20px 12px;
+    }
+
+    .upload-text {
+        font-size: var(--admin-font-xs);
+    }
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .newitem-form {
+        gap: var(--admin-spacing-2xl);
+    }
+}
+
+@media (min-width: 2560px) {
+    .newitem-form {
+        gap: var(--admin-spacing-3xl);
+    }
+
+    .image-upload-area {
+        min-height: 280px;
+    }
+}

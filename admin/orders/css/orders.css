@@ -23,6 +23,47 @@
     .orders-kpi-grid {
         grid-template-columns: 1fr;
     }
+
+    .orders-pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-kpi-grid {
+        gap: var(--admin-spacing-md);
+    }
+
+    .orders-toolbar {
+        gap: var(--admin-spacing-md);
+    }
+
+    .orders-search {
+        min-width: unset;
+        max-width: none;
+    }
+
+    .orders-filters {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-select {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .pagination-pages {
+        gap: 2px;
+    }
+
+    .page-btn,
+    .pagination-btn {
+        width: 32px;
+        height: 32px;
+        font-size: var(--admin-font-xs);
+    }
 }
 
 /* ============================
@@ -498,4 +539,31 @@
 .orders-empty-text {
     font-size: var(--admin-font-sm);
     color: var(--admin-text-muted);
+}
+
+/* ============================
+   LARGE SCREEN ADJUSTMENTS
+   ============================ */
+@media (min-width: 1920px) {
+    .orders-kpi-grid {
+        gap: var(--admin-spacing-xl);
+    }
+
+    .orders-search {
+        max-width: 500px;
+    }
+}
+
+@media (min-width: 2560px) {
+    .orders-kpi-grid {
+        gap: var(--admin-spacing-2xl);
+    }
+
+    .orders-search {
+        max-width: 600px;
+    }
+
+    .orders-table {
+        font-size: var(--admin-font-md);
+    }
 }
