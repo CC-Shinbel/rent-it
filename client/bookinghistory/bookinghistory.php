@@ -119,7 +119,7 @@ $total_records = mysqli_num_rows($history_result);
                                 </svg>
                             </div>
                             <div class="kpi-content">
-                                <div class="kpi-label">Lifetime Rentals</div>
+                                <div class="kpi-label">Rentals</div>
                                 <div class="kpi-value" id="lifetimeRentals"><?php echo $lifetime_rentals; ?></div>
                             </div>
                         </article>

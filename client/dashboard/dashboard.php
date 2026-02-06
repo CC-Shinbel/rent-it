@@ -32,17 +32,16 @@ $user_data = mysqli_fetch_assoc($user_query);
 $res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
 $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
-$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Rented', 'Pending Extension')");
+$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Active','Rented', 'Pending Extension')");
 $active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
 
-$res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Rented' AND end_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)");
+$res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Returned')");
 $upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
-
 
 $active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
                          LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                          LEFT JOIN ITEM i ON ri.item_id = i.item_id 
-                         WHERE r.user_id = $user_id AND r.rental_status IN ('Rented', 'Pending Extension')
+                         WHERE r.user_id = $user_id AND r.rental_status IN ('Active','Rented', 'Pending Extension')
                          GROUP BY r.order_id";
 $active_result = mysqli_query($conn, $active_rentals_query);
 
@@ -109,9 +108,8 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
                         </article>
                         <article class="kpi-card">
                             <div class="kpi-content">
-                                <div class="kpi-label">Upcoming Returns</div>
+                                <div class="kpi-label">Total Returned</div>
                                 <div class="kpi-value"><?php echo $upcoming_returns; ?></div>
-                                <div class="kpi-sub <?php echo ($upcoming_returns > 0) ? 'warning' : ''; ?>">Due within 3 days</div>
                             </div>
                         </article>
                         <article class="kpi-card">

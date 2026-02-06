@@ -9,7 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $u_id = $_SESSION['user_id'];
 
-$cart_query = "SELECT c.id AS cart_row_id, i.item_name, i.price_per_day, i.category, i.image 
+$cart_query = "SELECT c.id AS cart_row_id, i.item_name, i.price_per_day, i.category, i.image, 
+                      c.start_date, c.end_date 
                FROM cart c 
                JOIN item i ON c.item_id = i.item_id 
                WHERE c.user_id = '$u_id'";
@@ -74,18 +75,21 @@ $result = mysqli_query($conn, $cart_query);
                                         </label>
                                         
                                         <?php 
-                                            $imageSrc = !empty($row['image']) 
-                                                ? htmlspecialchars($row['image']) 
-                                                : '../../assets/images/catalog-fallback.svg';
-                                        ?>
-                                        <div class="cart-item-image">
-                                            <img 
-                                                src="<?php echo $imageSrc; ?>" 
-                                                alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-                                                class="cart-item-photo"
-                                                onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
-                                            >
-                                        </div>
+    // DITO ANG UPDATE: Idinugtong natin ang directory path bago ang filename
+    $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
+    
+    $imageSrc = !empty($imagePathFromDB) 
+        ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
+        : '../../assets/images/catalog-fallback.svg';
+?>
+<div class="cart-item-image">
+    <img 
+        src="<?php echo $imageSrc; ?>" 
+        alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+        class="cart-item-photo"
+        onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
+    >
+</div>
 
                                         <div class="cart-item-details">
                                             <div class="cart-item-header">

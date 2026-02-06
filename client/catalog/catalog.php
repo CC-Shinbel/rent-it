@@ -135,10 +135,10 @@ $result = mysqli_query($conn, $query);
                                     </span>
                                 </label>
                                 <label class="status-item">
-                                    <input type="checkbox" class="status-checkbox" value="repairing" title="Show machines under repair">
+                                    <input type="checkbox" class="status-checkbox" value="maintenance" title="Show machines under maintenance">
                                     <span class="status-label">
-                                        <span class="status-indicator repairing"></span>
-                                        Repairing
+                                        <span class="status-indicator maintenance"></span>
+                                        Under Maintenance
                                     </span>
                                 </label>
                             </div>
@@ -251,9 +251,9 @@ $result = mysqli_query($conn, $query);
                     
         <?php 
             $sampleImages = [
-                '../../assets/images/catalog-set-1.svg',
-                '../../assets/images/catalog-set-2.svg',
-                '../../assets/images/catalog-set-3.svg'
+                '../../assets/images/Karaoke-King.png',
+                '../../assets/images/EchoStream.png',
+                '../../assets/images/VStar.jpg'
             ];
             $imageFile = !empty($row['image'])
                 ? '../../assets/images/' . htmlspecialchars($row['image'])
@@ -266,9 +266,7 @@ $result = mysqli_query($conn, $query);
                   title="Open image in new tab"
                   onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
             
-            <span class="product-badge <?php echo strtolower($row['status'] ?? 'available'); ?>">
-                <?php echo htmlspecialchars($row['status'] ?? 'Available'); ?>
-            </span>
+         
         </div>
 
         <div class="product-content">
