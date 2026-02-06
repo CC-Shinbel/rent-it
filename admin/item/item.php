@@ -60,6 +60,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <option value="Booked">Booked</option>
                         <option value="Reserved">Reserved</option>
                         <option value="Under Maintenance">Under Maintenance</option>
+                        <option value="Repairing">Repairing</option>
                         <option value="Unavailable">Unavailable</option>
                     </select>
                     <button class="btn btn-secondary" id="refreshItemsBtn" title="Refresh items list">
@@ -83,6 +84,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <th>Price/Day</th>
                             <th>Status</th>
                             <th>Times Rented</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="itemsTableBody">

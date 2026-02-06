@@ -78,7 +78,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">8</span>
+                        <span class="stat-value" id="statInProgress">0</span>
                         <span class="stat-label">In Progress</span>
                     </div>
                 </div>
@@ -92,35 +92,33 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">3</span>
+                        <span class="stat-value" id="statAwaitingParts">0</span>
                         <span class="stat-label">Awaiting Parts</span>
                     </div>
                 </div>
                 
-                <div class="stat-card" title="Repairs completed this month">
+                <div class="stat-card" title="Repairs completed">
                     <div class="stat-icon success">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12"/>
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">12</span>
-                        <span class="stat-label">Completed This Month</span>
+                        <span class="stat-value" id="statCompleted">0</span>
+                        <span class="stat-label">Completed</span>
                     </div>
                 </div>
                 
-                <div class="stat-card" title="Items recommended for removal">
+                <div class="stat-card" title="Items set as unavailable">
                     <div class="stat-icon danger">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                            <line x1="10" y1="11" x2="10" y2="17"/>
-                            <line x1="14" y1="11" x2="14" y2="17"/>
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
                         </svg>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">2</span>
-                        <span class="stat-label">To Be Removed</span>
+                        <span class="stat-value" id="statUnavailable">0</span>
+                        <span class="stat-label">Unavailable</span>
                     </div>
                 </div>
             </div>
@@ -142,6 +140,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <option value="in-progress">In Progress</option>
                         <option value="awaiting-parts">Awaiting Parts</option>
                         <option value="completed">Completed</option>
+                        <option value="unavailable">Unavailable</option>
                         <option value="to-remove">To Be Removed</option>
                     </select>
                     <select id="priorityFilter" class="form-select" title="Filter by priority level">
@@ -178,307 +177,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </tr>
                     </thead>
                     <tbody id="repairsTableBody">
-                        <!-- Row 1 -->
-                        <tr data-ticket="RPR-001" data-status="in-progress" data-priority="high">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-001</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">KRK-001 Pro System</span>
-                                    <span class="equipment-category">Karaoke System</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">Audio Distortion</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge high" title="High priority - needs urgent attention">High</span>
-                            </td>
-                            <td>
-                                <span class="status-badge in-progress" title="Currently being repaired">In Progress</span>
-                            </td>
-                            <td class="date-cell">Jan 10, 2026</td>
-                            <td class="date-cell">Jan 20, 2026</td>
-                            <td class="cost-cell">₱2,500</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" title="Edit repair ticket" data-action="edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn complete-btn" title="Mark as completed" data-action="complete">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Row 2 -->
-                        <tr data-ticket="RPR-002" data-status="awaiting-parts" data-priority="medium">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-002</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">SPK-003 Subwoofer</span>
-                                    <span class="equipment-category">Speakers</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">Blown Woofer</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge medium" title="Medium priority">Medium</span>
-                            </td>
-                            <td>
-                                <span class="status-badge awaiting-parts" title="Waiting for replacement parts">Awaiting Parts</span>
-                            </td>
-                            <td class="date-cell">Jan 8, 2026</td>
-                            <td class="date-cell">Jan 25, 2026</td>
-                            <td class="cost-cell">₱4,500</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" title="Edit repair ticket" data-action="edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn parts-btn" title="Track parts order" data-action="parts">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="1" y="3" width="15" height="13"/>
-                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                                            <circle cx="5.5" cy="18.5" r="2.5"/>
-                                            <circle cx="18.5" cy="18.5" r="2.5"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Row 3 -->
-                        <tr data-ticket="RPR-003" data-status="completed" data-priority="low">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-003</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">MIC-002 Wireless Set</span>
-                                    <span class="equipment-category">Microphones</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">Signal Dropout</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge low" title="Low priority">Low</span>
-                            </td>
-                            <td>
-                                <span class="status-badge completed" title="Repair completed">Completed</span>
-                            </td>
-                            <td class="date-cell">Jan 5, 2026</td>
-                            <td class="date-cell">Jan 12, 2026</td>
-                            <td class="cost-cell">₱800</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn available-btn" title="Make available for rental" data-action="available">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                            <polyline points="22 4 12 14.01 9 11.01"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Row 4 -->
-                        <tr data-ticket="RPR-004" data-status="to-remove" data-priority="high">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-004</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">KRK-005 Basic Set</span>
-                                    <span class="equipment-category">Karaoke System</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">Multiple Failures</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge high" title="High priority - recommend removal">High</span>
-                            </td>
-                            <td>
-                                <span class="status-badge to-remove" title="Recommended for removal from catalog">To Be Removed</span>
-                            </td>
-                            <td class="date-cell">Dec 20, 2025</td>
-                            <td class="date-cell">N/A</td>
-                            <td class="cost-cell">₱15,000+</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn remove-btn" title="Remove from catalog" data-action="remove">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Row 5 -->
-                        <tr data-ticket="RPR-005" data-status="in-progress" data-priority="medium">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-005</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">LGT-001 LED Par Set</span>
-                                    <span class="equipment-category">Lighting</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">DMX Issue</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge medium" title="Medium priority">Medium</span>
-                            </td>
-                            <td>
-                                <span class="status-badge in-progress" title="Currently being repaired">In Progress</span>
-                            </td>
-                            <td class="date-cell">Jan 12, 2026</td>
-                            <td class="date-cell">Jan 18, 2026</td>
-                            <td class="cost-cell">₱1,200</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" title="Edit repair ticket" data-action="edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn complete-btn" title="Mark as completed" data-action="complete">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        <!-- Row 6 -->
-                        <tr data-ticket="RPR-006" data-status="awaiting-parts" data-priority="high">
-                            <td class="ticket-id">
-                                <span class="ticket-badge">RPR-006</span>
-                            </td>
-                            <td class="equipment-info">
-                                <div class="equipment-details">
-                                    <span class="equipment-name">KRK-002 Premium</span>
-                                    <span class="equipment-category">Karaoke System</span>
-                                </div>
-                            </td>
-                            <td class="issue-type">
-                                <span class="issue-badge">Power Board Failure</span>
-                            </td>
-                            <td>
-                                <span class="priority-badge high" title="High priority - needs urgent attention">High</span>
-                            </td>
-                            <td>
-                                <span class="status-badge awaiting-parts" title="Waiting for replacement parts">Awaiting Parts</span>
-                            </td>
-                            <td class="date-cell">Jan 11, 2026</td>
-                            <td class="date-cell">Feb 1, 2026</td>
-                            <td class="cost-cell">₱6,800</td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn view-btn" title="View repair details" data-action="view">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                            <circle cx="12" cy="12" r="3"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" title="Edit repair ticket" data-action="edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="action-btn parts-btn" title="Track parts order" data-action="parts">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <rect x="1" y="3" width="15" height="13"/>
-                                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                                            <circle cx="5.5" cy="18.5" r="2.5"/>
-                                            <circle cx="18.5" cy="18.5" r="2.5"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        <!-- Rows populated by JavaScript from database -->
+                        <tr><td colspan="9" style="text-align:center; padding:2rem; color:var(--admin-text-muted);">Loading repairs...</td></tr>
                     </tbody>
                 </table>
             </div>
             
             <!-- Pagination -->
-            <div class="pagination">
-                <span class="pagination-info">Showing 1-6 of 25 repairs</span>
-                <div class="pagination-controls">
-                    <button class="pagination-btn" disabled title="Previous page">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="15 18 9 12 15 6"/>
-                        </svg>
-                    </button>
-                    <button class="pagination-btn active">1</button>
-                    <button class="pagination-btn">2</button>
-                    <button class="pagination-btn">3</button>
-                    <button class="pagination-btn">4</button>
-                    <button class="pagination-btn">5</button>
-                    <button class="pagination-btn" title="Next page">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6"/>
-                        </svg>
-                    </button>
-                </div>
+            <div class="pagination" id="repairsPagination" style="display:none;">
+                <span class="pagination-info" id="paginationInfo">Showing 0 repairs</span>
             </div>
         </div>
-        
-        <!-- Footer (injected via JS) -->
-        <footer id="admin-footer"></footer>
-    </main>
     
     <!-- Repair Detail Modal -->
     <div class="modal" id="repairModal">
@@ -585,11 +294,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         </div>
     </div>
     
-        </div>
-        </main>
-        
-        <!-- Footer Container (injected via JS) -->
-        <div id="footerContainer"></div>
+    </main>
     </div>
     
     <!-- Toast Container -->
