@@ -328,7 +328,7 @@
     box-shadow: 0 0 0 3px var(--success-muted, rgba(34, 197, 94, 0.15));
 }
 
-.status-indicator.maintenance {
+.status-indicator.repairing {
     background: var(--warning-color, #f59e0b);
     box-shadow: 0 0 0 3px var(--warning-muted, rgba(245, 158, 11, 0.15));
 }
@@ -826,6 +826,11 @@
 
 .product-badge.booked {
     background: rgba(239, 68, 68, 0.9);
+    color: white;
+}
+
+.product-badge.repairing {
+    background: rgba(245, 158, 11, 0.9);
     color: white;
 }
 
@@ -1475,7 +1480,7 @@
     background: var(--danger-color, #ef4444);
 }
 
-.modal-product-badge.maintenance {
+.modal-product-badge.repairing {
     background: var(--warning-color, #f59e0b);
 }
 

@@ -107,7 +107,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
             <div class="card-header">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <h2>Customer Information</h2>
-                <button class="btn-edit-info">Edit</button>
+                <a href="../../shared/js/myprofile.php" class="btn-edit-info" style="text-decoration: none;">Edit</a>
             </div>
             <div class="customer-details">
                 <div class="detail-row">
@@ -151,11 +151,12 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
         </div>
     </label>
 
-    <label class="delivery-option">
-        <input type="radio" name="delivery" value="pickup" data-price="0">
+    <label class="delivery-option disabled" title="Ongoing feature">
+        <input type="radio" name="delivery" value="pickup" data-price="0" disabled>
         <div class="option-content">
             <div class="option-info">
                 <span class="option-name">Store Pickup</span>
+                <span class="coming-soon-tag">Coming Soon</span>
             </div>
             <span class="option-price">Free</span>
         </div>
@@ -214,8 +215,8 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <h3>Payment Method</h3>
                 <div class="payment-options">
                     <label class="payment-option selected"><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label>
-                    <label class="payment-option"><input type="radio" name="payment" value="gcash"> GCash</label>
-                    <label class="payment-option"><input type="radio" name="payment" value="bt"> Bank Transfer</label>
+                    <label class="payment-option disabled" title="Ongoing feature"><input type="radio" name="payment" value="gcash" disabled> GCash <span class="coming-soon-tag">Coming Soon</span></label>
+                    <label class="payment-option disabled" title="Ongoing feature"><input type="radio" name="payment" value="bt" disabled> Bank Transfer <span class="coming-soon-tag">Coming Soon</span></label>
                 </div>
             </div>
 

@@ -135,8 +135,8 @@
             if (badge) {
                 if (badge.classList.contains('booked') || badge.textContent.toLowerCase().includes('booked')) {
                     status = 'booked';
-                } else if (badge.classList.contains('maintenance') || badge.textContent.toLowerCase().includes('maintenance')) {
-                    status = 'maintenance';
+                } else if (badge.classList.contains('repairing') || badge.textContent.toLowerCase().includes('repair')) {
+                    status = 'repairing';
                 }
             }
             
