@@ -89,6 +89,8 @@ function formatDate(dateStr) {
 function renderCustomerRow(customer) {
     const initial = getInitial(customer.name);
     const booking = customer.booking;
+    const bookings = customer.bookings || [];
+    const hasMultipleBookings = bookings.length > 1;
     
     // Handle customers without bookings
     let itemsText = 'No bookings';
@@ -98,8 +100,25 @@ function renderCustomerRow(customer) {
     let durationText = '';
     let statusHtml = '<span class="status-badge inactive">No Rentals</span>';
     let paymentHtml = '<span class="payment-badge none">-</span>';
+    let actionsHtml = '';
     
-    if (booking && booking.items && booking.items.length > 0) {
+    if (hasMultipleBookings) {
+        // Multiple bookings - show dropdown
+        const defaultBooking = bookings[0];
+        const dropdownOptions = bookings.map(b => 
+            `<option value="${b.order_id}" data-booking='${JSON.stringify(b).replace(/'/g, "&#39;")}'>${b.id}</option>`
+        ).join('');
+        
+        bookingIdHtml = `<select class="booking-dropdown" onchange="onBookingSelect(this, '${customer.id}')" data-customer-id="${customer.id}">${dropdownOptions}</select>`;
+        
+        // Show default (first) booking details
+        itemsText = getBookingItemsText(defaultBooking);
+        dateRangeHtml = getBookingDateHtml(defaultBooking);
+        durationText = getBookingDurationText(defaultBooking);
+        statusHtml = `<span class="status-badge ${defaultBooking.status}">${getStatusText(defaultBooking.status)}</span>`;
+        paymentHtml = `<span class="payment-badge ${defaultBooking.payment}">${getPaymentText(defaultBooking.payment)}</span>`;
+        actionsHtml = getBookingActionsHtml(defaultBooking, customer);
+    } else if (booking && booking.items && booking.items.length > 0) {
         itemsText = booking.items.length === 1 
             ? booking.items[0] 
             : `${booking.items[0]} +${booking.items.length - 1} more`;
@@ -110,7 +129,6 @@ function renderCustomerRow(customer) {
         statusHtml = `<span class="status-badge ${booking.status}">${getStatusText(booking.status)}</span>`;
         paymentHtml = `<span class="payment-badge ${booking.payment}">${getPaymentText(booking.payment)}</span>`;
     } else if (booking) {
-        // Customer has a booking but no items
         bookingIdHtml = `<a href="admin/orders/orderdetail.php?id=${booking.order_id}" class="booking-id">${booking.id}</a>`;
         if (booking.startDate && booking.endDate) {
             dateRangeHtml = `<span class="date-range">${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</span>`;
@@ -120,7 +138,34 @@ function renderCustomerRow(customer) {
         paymentHtml = `<span class="payment-badge ${booking.payment}">${getPaymentText(booking.payment)}</span>`;
     }
     
-    const itemCountText = booking?.totalItems ? `${booking.totalItems} item${booking.totalItems !== 1 ? 's' : ''}` : '';
+    const itemCountText = hasMultipleBookings 
+        ? (bookings[0].totalItems ? `${bookings[0].totalItems} item${bookings[0].totalItems !== 1 ? 's' : ''}` : '')
+        : (booking?.totalItems ? `${booking.totalItems} item${booking.totalItems !== 1 ? 's' : ''}` : '');
+    
+    // Build actions HTML for non-dropdown case
+    if (!hasMultipleBookings) {
+        actionsHtml = `
+            <div class="actions-cell">
+                ${booking ? `<button class="action-btn view" title="View details" onclick="viewCustomer('${customer.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>` : ''}
+                <button class="action-btn email" title="Send email" onclick="sendEmail('${customer.email}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </button>
+                <button class="action-btn call" title="Show phone number" onclick="toggleCustomerPhone(this, '${customer.phone}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+    }
     
     return `
         <tr data-customer-id="${customer.id}">
@@ -140,47 +185,138 @@ function renderCustomerRow(customer) {
             <td>
                 ${bookingIdHtml}
             </td>
-            <td>
+            <td data-cell="items">
                 <div class="items-cell">
                     <span class="item-name">${itemsText}</span>
                     ${itemCountText ? `<span class="item-count">${itemCountText}</span>` : ''}
                 </div>
             </td>
-            <td>
+            <td data-cell="dates">
                 <div class="dates-cell">
                     ${dateRangeHtml}
                     ${durationText ? `<span class="date-duration">${durationText}</span>` : ''}
                 </div>
             </td>
-            <td>
+            <td data-cell="status">
                 ${statusHtml}
             </td>
-            <td>
+            <td data-cell="payment">
                 ${paymentHtml}
             </td>
-            <td>
-                <div class="actions-cell">
-                    ${booking ? `<button class="action-btn view" title="View details" onclick="viewCustomer('${customer.id}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </button>` : ''}
-                    <button class="action-btn email" title="Send email" onclick="sendEmail('${customer.email}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                            <polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                    </button>
-                    <button class="action-btn call" title="Show phone number" onclick="toggleCustomerPhone(this, '${customer.phone}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                    </button>
-                </div>
+            <td data-cell="actions">
+                ${actionsHtml}
             </td>
         </tr>
     `;
+}
+
+/**
+ * Helper: Get items text from a booking object
+ */
+function getBookingItemsText(booking) {
+    if (!booking || !booking.items || booking.items.length === 0) return 'No items';
+    return booking.items.length === 1 
+        ? booking.items[0] 
+        : `${booking.items[0]} +${booking.items.length - 1} more`;
+}
+
+/**
+ * Helper: Get date HTML from a booking object
+ */
+function getBookingDateHtml(booking) {
+    if (!booking || !booking.startDate || !booking.endDate) return '<span class="no-booking">-</span>';
+    return `<span class="date-range">${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}</span>`;
+}
+
+/**
+ * Helper: Get duration text from a booking object
+ */
+function getBookingDurationText(booking) {
+    if (!booking || !booking.duration) return '';
+    return `${booking.duration} day${booking.duration !== 1 ? 's' : ''}`;
+}
+
+/**
+ * Helper: Get actions HTML for a booking with dropdown
+ */
+function getBookingActionsHtml(booking, customer) {
+    return `
+        <div class="actions-cell">
+            <button class="action-btn view" title="View details" onclick="window.location.href='admin/orders/orderdetail.php?id=${booking.order_id}'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </button>
+            <button class="action-btn email" title="Send email" onclick="sendEmail('${customer.email}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </button>
+            <button class="action-btn call" title="Show phone number" onclick="toggleCustomerPhone(this, '${customer.phone}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+            </button>
+        </div>
+    `;
+}
+
+/**
+ * Handle booking dropdown selection - updates Items, Rental Period, Status, Payment, Actions columns
+ */
+function onBookingSelect(selectEl, customerId) {
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    const bookingData = JSON.parse(selectedOption.getAttribute('data-booking'));
+    const row = selectEl.closest('tr');
+    const customer = customersData.find(c => c.id === customerId);
+    
+    if (!row || !bookingData) return;
+    
+    // Update Items column
+    const itemsCell = row.querySelector('[data-cell="items"]');
+    if (itemsCell) {
+        const itemsText = getBookingItemsText(bookingData);
+        const itemCountText = bookingData.totalItems ? `${bookingData.totalItems} item${bookingData.totalItems !== 1 ? 's' : ''}` : '';
+        itemsCell.innerHTML = `
+            <div class="items-cell">
+                <span class="item-name">${itemsText}</span>
+                ${itemCountText ? `<span class="item-count">${itemCountText}</span>` : ''}
+            </div>
+        `;
+    }
+    
+    // Update Rental Period column
+    const datesCell = row.querySelector('[data-cell="dates"]');
+    if (datesCell) {
+        const dateRangeHtml = getBookingDateHtml(bookingData);
+        const durationText = getBookingDurationText(bookingData);
+        datesCell.innerHTML = `
+            <div class="dates-cell">
+                ${dateRangeHtml}
+                ${durationText ? `<span class="date-duration">${durationText}</span>` : ''}
+            </div>
+        `;
+    }
+    
+    // Update Status column
+    const statusCell = row.querySelector('[data-cell="status"]');
+    if (statusCell) {
+        statusCell.innerHTML = `<span class="status-badge ${bookingData.status}">${getStatusText(bookingData.status)}</span>`;
+    }
+    
+    // Update Payment column
+    const paymentCell = row.querySelector('[data-cell="payment"]');
+    if (paymentCell) {
+        paymentCell.innerHTML = `<span class="payment-badge ${bookingData.payment}">${getPaymentText(bookingData.payment)}</span>`;
+    }
+    
+    // Update Actions column
+    const actionsCell = row.querySelector('[data-cell="actions"]');
+    if (actionsCell && customer) {
+        actionsCell.innerHTML = getBookingActionsHtml(bookingData, customer);
+    }
 }
 
 /**
@@ -305,8 +441,10 @@ function filterCustomers() {
             const nameMatch = customer.name.toLowerCase().includes(searchTerm);
             const emailMatch = customer.email.toLowerCase().includes(searchTerm);
             const bookingIdMatch = customer.booking?.id?.toLowerCase().includes(searchTerm);
+            const allBookingIdsMatch = customer.bookings?.some(b => b.id?.toLowerCase().includes(searchTerm));
             const itemsMatch = customer.booking?.items?.some(item => item.toLowerCase().includes(searchTerm));
-            return nameMatch || emailMatch || bookingIdMatch || itemsMatch;
+            const allItemsMatch = customer.bookings?.some(b => b.items?.some(item => item.toLowerCase().includes(searchTerm)));
+            return nameMatch || emailMatch || bookingIdMatch || allBookingIdsMatch || itemsMatch || allItemsMatch;
         });
     }
 
