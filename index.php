@@ -417,7 +417,7 @@ $userName = $_SESSION['user_name'] ?? '';
                 <div class="footer-col">
                     <h5>Admin</h5>
                     <nav class="footer-nav">
-                        <a href="<?= BASE_URL ?>/admin/auth/login.html" class="footer-link">Admin Login</a>
+                        <a href="<?= BASE_URL ?>/admin/auth/login.php" class="footer-link">Admin Login</a>
                     </nav>
                 </div>
             </div>

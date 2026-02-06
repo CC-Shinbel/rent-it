@@ -135,10 +135,10 @@ $result = mysqli_query($conn, $query);
                                     </span>
                                 </label>
                                 <label class="status-item">
-                                    <input type="checkbox" class="status-checkbox" value="maintenance" title="Show machines under maintenance">
+                                    <input type="checkbox" class="status-checkbox" value="repairing" title="Show machines under repair">
                                     <span class="status-label">
-                                        <span class="status-indicator maintenance"></span>
-                                        Under Maintenance
+                                        <span class="status-indicator repairing"></span>
+                                        Repairing
                                     </span>
                                 </label>
                             </div>
