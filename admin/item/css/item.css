@@ -16,4 +16,114 @@
 .status-info { background: #E0F2FE; color: #075985; }
 .status-danger { background: #FEE2E2; color: #991B1B; }
 .status-default { background: var(--admin-surface-200); color: var(--admin-text); }
-@media (max-width: 768px) { .items-toolbar { flex-direction: column; align-items: stretch; } .items-search { width: 100%; } .items-filters { width: 100%; justify-content: space-between; } }
+
+/* =====================================================
+   ACTION BUTTONS
+   ===================================================== */
+.item-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.item-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: var(--admin-surface-200);
+    color: var(--admin-text);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.item-action-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.item-action-btn svg { flex-shrink: 0; }
+
+.item-action-repair { border-color: #3B82F6; color: #3B82F6; }
+.item-action-repair:hover { background: #3B82F6; color: #fff; }
+
+.item-action-unavailable { border-color: #EF4444; color: #EF4444; }
+.item-action-unavailable:hover { background: #EF4444; color: #fff; }
+
+.item-action-available { border-color: #22C55E; color: #22C55E; }
+.item-action-available:hover { background: #22C55E; color: #fff; }
+
+.item-action-disabled {
+    display: inline-flex;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    opacity: 0.6;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
+
+/* Responsive table: scroll horizontally on narrower screens */
+@media (max-width: 1024px) {
+    .items-table-container {
+        overflow-x: auto;
+    }
+
+    .items-table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .items-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .items-search {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .items-filters {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .item-desc {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 600px) {
+    .item-thumb {
+        width: 40px;
+        height: 40px;
+    }
+
+    .item-actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .item-action-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .items-toolbar {
+        gap: 8px;
+    }
+
+    .items-search input {
+        width: 100%;
+    }
+
+    .items-filters {
+        flex-direction: column;
+    }
+
+    .items-filters select {
+        width: 100%;
+    }
+}

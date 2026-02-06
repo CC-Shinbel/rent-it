@@ -1,475 +1,521 @@
 /**
- * =====================================================
  * REPAIRS MANAGEMENT - JavaScript
- * Interactive repairs functionality
- * ===================================================== */
+ * Fetches repair tickets from the database and renders them dynamically
+ */
 
+// Initialize admin components
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize admin components
     AdminComponents.initPage('repairs');
-    
-    // Initialize repairs functionality
-    RepairsManager.init();
+    fetchRepairs();
+    attachEventListeners();
 });
 
-const RepairsManager = {
-    /**
-     * Initialize repairs manager
-     */
-    init() {
-        this.bindEvents();
-    },
-    
-    /**
-     * Bind event listeners
-     */
-    bindEvents() {
-        // Search
-        document.getElementById('searchRepairs')?.addEventListener('input', (e) => this.searchRepairs(e.target.value));
-        
-        // Filters
-        document.getElementById('statusFilter')?.addEventListener('change', (e) => this.filterByStatus(e.target.value));
-        document.getElementById('priorityFilter')?.addEventListener('change', (e) => this.filterByPriority(e.target.value));
-        document.getElementById('categoryFilter')?.addEventListener('change', (e) => this.filterByCategory(e.target.value));
-        
-        // New repair button
-        document.getElementById('newRepairBtn')?.addEventListener('click', () => this.showNewRepairModal());
-        
-        // Export button
-        document.getElementById('exportRepairsBtn')?.addEventListener('click', () => this.exportRepairs());
-        
-        // Table action buttons
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const action = e.currentTarget.dataset.action;
-                const row = e.currentTarget.closest('tr');
-                const ticketId = row?.dataset.ticket;
-                this.handleAction(action, ticketId, row);
-            });
-        });
-        
-        // Modal close
-        document.getElementById('closeRepairModal')?.addEventListener('click', () => this.closeModal());
-        document.getElementById('cancelRepairModalBtn')?.addEventListener('click', () => this.closeModal());
-        document.getElementById('repairModal')?.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal') || e.target.classList.contains('modal-overlay')) {
-                this.closeModal();
-            }
-        });
-        
-        // Edit repair button
-        document.getElementById('editRepairBtn')?.addEventListener('click', () => {
-            AdminComponents.showToast('Edit functionality would open repair form', 'info');
-            this.closeModal();
-        });
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.closeModal();
-        });
-        
-        // Pagination
-        document.querySelectorAll('.pagination-btn:not(:disabled)').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                AdminComponents.showToast('Page navigation (demo)', 'info');
-            });
-        });
-    },
-    
-    /**
-     * Search repairs
-     */
-    searchRepairs(query) {
-        const rows = document.querySelectorAll('#repairsTableBody tr');
-        const searchTerm = query.toLowerCase().trim();
-        
-        rows.forEach(row => {
-            const ticketId = row.dataset.ticket?.toLowerCase() || '';
-            const equipmentName = row.querySelector('.equipment-name')?.textContent.toLowerCase() || '';
-            
-            if (searchTerm === '' || ticketId.includes(searchTerm) || equipmentName.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    },
-    
-    /**
-     * Filter by status
-     */
-    filterByStatus(status) {
-        const rows = document.querySelectorAll('#repairsTableBody tr');
-        
-        rows.forEach(row => {
-            if (status === 'all' || row.dataset.status === status) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        AdminComponents.showToast(`Filtered by: ${status === 'all' ? 'All statuses' : status}`, 'info');
-    },
-    
-    /**
-     * Filter by priority
-     */
-    filterByPriority(priority) {
-        const rows = document.querySelectorAll('#repairsTableBody tr');
-        
-        rows.forEach(row => {
-            if (priority === 'all' || row.dataset.priority === priority) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-        
-        AdminComponents.showToast(`Filtered by: ${priority === 'all' ? 'All priorities' : priority + ' priority'}`, 'info');
-    },
-    
-    /**
-     * Filter by category
-     */
-    filterByCategory(category) {
-        // Demo - would filter by category attribute
-        AdminComponents.showToast(`Category filter: ${category === 'all' ? 'All categories' : category}`, 'info');
-    },
-    
-    /**
-     * Handle table action
-     */
-    handleAction(action, ticketId, row) {
-        switch (action) {
-            case 'view':
-                this.showRepairDetails(ticketId);
-                break;
-            case 'edit':
-                this.editRepair(ticketId);
-                break;
-            case 'complete':
-                this.markComplete(ticketId, row);
-                break;
-            case 'available':
-                this.makeAvailable(ticketId, row);
-                break;
-            case 'parts':
-                this.trackParts(ticketId);
-                break;
-            case 'remove':
-                this.confirmRemove(ticketId, row);
-                break;
-            default:
-                console.warn('Unknown action:', action);
+const baseHref = document.querySelector('base')?.href || `${window.location.origin}/`;
+function buildUrl(path) {
+    const normalized = path.startsWith('/') ? path.slice(1) : path;
+    return new URL(normalized, baseHref).toString();
+}
+
+let repairsData = [];
+
+/* =================================================================
+   DATA FETCHING
+   ================================================================= */
+async function fetchRepairs() {
+    const tbody = document.getElementById('repairsTableBody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:2rem; color:var(--admin-text-muted);">Loading repairs...</td></tr>';
+
+    try {
+        const response = await fetch(buildUrl('admin/api/get_repairs.php'));
+        if (!response.ok) throw new Error('Network error');
+        const result = await response.json();
+
+        if (result.success) {
+            repairsData = result.data || [];
+            updateStats(result.stats || {});
+            renderRepairs(repairsData);
+        } else {
+            showTableError(result.message || 'Failed to load repairs');
         }
-    },
-    
-    /**
-     * Show repair details
-     */
-    showRepairDetails(ticketId) {
-        // Mock data - in real app, fetch from backend
-        const mockData = {
-            'RPR-001': {
-                ticketId: 'RPR-001',
-                equipment: 'KRK-001 Pro System',
-                category: 'Karaoke System',
-                serial: 'KRK-2024-001',
-                status: 'In Progress',
-                priority: 'High',
-                technician: 'Mike Rodriguez',
-                cost: '₱2,500',
-                description: 'Audio distortion detected during quality check after last rental. Customer reported crackling sound at higher volumes. Suspected amplifier board issue requiring component-level diagnosis.'
-            },
-            'RPR-002': {
-                ticketId: 'RPR-002',
-                equipment: 'SPK-003 Subwoofer',
-                category: 'Speakers',
-                serial: 'SPK-2023-003',
-                status: 'Awaiting Parts',
-                priority: 'Medium',
-                technician: 'John Santos',
-                cost: '₱4,500',
-                description: 'Woofer cone damage from overdriving. Replacement 12" woofer driver ordered from supplier. Expected delivery in 2 weeks.'
-            },
-            'RPR-004': {
-                ticketId: 'RPR-004',
-                equipment: 'KRK-005 Basic Set',
-                category: 'Karaoke System',
-                serial: 'KRK-2022-005',
-                status: 'To Be Removed',
-                priority: 'High',
-                technician: 'Tech Team',
-                cost: '₱15,000+',
-                description: 'Multiple component failures: amplifier board, display screen, and power supply. Repair cost exceeds 70% of replacement value. Recommended for catalog removal and parts salvage.'
-            }
-        };
-        
-        const data = mockData[ticketId] || mockData['RPR-001'];
-        
-        // Populate modal
-        document.getElementById('modalTicketId').textContent = data.ticketId;
-        document.getElementById('modalEquipment').textContent = data.equipment;
-        document.getElementById('modalCategory').textContent = data.category;
-        document.getElementById('modalSerial').textContent = data.serial;
-        document.getElementById('modalTechnician').textContent = data.technician;
-        document.getElementById('modalCost').textContent = data.cost;
-        document.getElementById('modalDescription').textContent = data.description;
-        
-        // Update status badge
-        const statusBadge = document.getElementById('modalStatus');
-        statusBadge.textContent = data.status;
-        statusBadge.className = 'status-badge ' + data.status.toLowerCase().replace(/\s+/g, '-');
-        
-        // Update priority badge
-        const priorityBadge = document.getElementById('modalPriority');
-        priorityBadge.textContent = data.priority;
-        priorityBadge.className = 'priority-badge ' + data.priority.toLowerCase();
-        
-        // Show modal
-        document.getElementById('repairModal')?.classList.add('open');
-    },
-    
-    /**
-     * Edit repair
-     */
-    editRepair(ticketId) {
-        AdminComponents.showToast(`Editing repair ${ticketId}...`, 'info');
-    },
-    
-    /**
-     * Mark repair as complete
-     */
-    markComplete(ticketId, row) {
+    } catch (err) {
+        console.error('Fetch repairs error:', err);
+        showTableError('Failed to load repairs from server');
+    }
+}
+
+/* =================================================================
+   STATS
+   ================================================================= */
+function updateStats(stats) {
+    setStatValue('statInProgress', stats.in_progress || 0);
+    setStatValue('statAwaitingParts', stats.awaiting_parts || 0);
+    setStatValue('statCompleted', stats.completed || 0);
+    setStatValue('statUnavailable', stats.unavailable || 0);
+}
+
+function setStatValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+/* =================================================================
+   RENDERING
+   ================================================================= */
+function showTableError(message) {
+    const tbody = document.getElementById('repairsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:var(--admin-text-muted);">${escapeHtml(message)}</td></tr>`;
+    updatePaginationInfo(0);
+}
+
+function renderRepairs(repairs) {
+    const tbody = document.getElementById('repairsTableBody');
+    if (!tbody) return;
+
+    if (!repairs.length) {
+        showTableError('No repair tickets found');
+        return;
+    }
+
+    tbody.innerHTML = repairs.map(renderRepairRow).join('');
+    bindActionButtons();
+    updatePaginationInfo(repairs.length);
+}
+
+function renderRepairRow(repair) {
+    const ticketId = `RPR-${String(repair.repair_id).padStart(3, '0')}`;
+    const statusKey = normalizeStatus(repair.status);
+    const priorityKey = (repair.priority || 'medium').toLowerCase();
+    const statusLabel = formatStatusLabel(repair.status);
+    const priorityLabel = capitalize(priorityKey);
+    const createdDate = formatDate(repair.created_date);
+    const etaDate = repair.eta_date ? formatDate(repair.eta_date) : 'N/A';
+    const cost = repair.estimated_cost ? `₱${Number(repair.estimated_cost).toLocaleString('en-US', { minimumFractionDigits: 0 })}` : '₱0';
+    const itemName = repair.item_name || `Item #${repair.item_id}`;
+    const category = repair.category || 'Uncategorized';
+
+    const actionButtons = buildActionButtons(repair, statusKey);
+
+    return `
+        <tr data-repair-id="${repair.repair_id}" data-status="${statusKey}" data-priority="${priorityKey}">
+            <td class="ticket-id">
+                <span class="ticket-badge">${ticketId}</span>
+            </td>
+            <td class="equipment-info">
+                <div class="equipment-details">
+                    <span class="equipment-name">${escapeHtml(itemName)}</span>
+                    <span class="equipment-category">${escapeHtml(category)}</span>
+                </div>
+            </td>
+            <td class="issue-type">
+                <span class="issue-badge">${escapeHtml(repair.issue_type || 'General')}</span>
+            </td>
+            <td>
+                <span class="priority-badge ${priorityKey}" title="${priorityLabel} priority">${priorityLabel}</span>
+            </td>
+            <td>
+                <span class="status-badge ${statusKey}" title="${statusLabel}">${statusLabel}</span>
+            </td>
+            <td class="date-cell">${createdDate}</td>
+            <td class="date-cell">${etaDate}</td>
+            <td class="cost-cell">${cost}</td>
+            <td class="actions-cell">
+                <div class="action-buttons">
+                    ${actionButtons}
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+function buildActionButtons(repair, statusKey) {
+    const id = repair.repair_id;
+    let buttons = '';
+
+    // View button (always shown)
+    buttons += `
+        <button class="action-btn view-btn" title="View repair details" data-action="view" data-repair-id="${id}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>`;
+
+    if (statusKey === 'in-progress' || statusKey === 'awaiting-parts') {
+        // Mark complete
+        buttons += `
+            <button class="action-btn complete-btn" title="Mark as completed" data-action="complete" data-repair-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </button>`;
+        // Mark unavailable
+        buttons += `
+            <button class="action-btn unavailable-btn" title="Set item as unavailable" data-action="unavailable" data-repair-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+            </button>`;
+    } else if (statusKey === 'completed' || statusKey === 'unavailable') {
+        // Make available (return to rental pool)
+        buttons += `
+            <button class="action-btn available-btn" title="Make available for rental" data-action="available" data-repair-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </button>`;
+    }
+
+    // Delete button (always shown)
+    buttons += `
+        <button class="action-btn remove-btn" title="Delete repair ticket" data-action="delete" data-repair-id="${id}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+        </button>`;
+
+    return buttons;
+}
+
+/* =================================================================
+   ACTION HANDLERS
+   ================================================================= */
+function bindActionButtons() {
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const button = e.currentTarget;
+            const repairId = button.dataset.repairId;
+            const action = button.dataset.action;
+            handleRepairAction(repairId, action);
+        });
+    });
+}
+
+function handleRepairAction(repairId, action) {
+    const repair = repairsData.find(r => String(r.repair_id) === String(repairId));
+    const itemName = repair ? (repair.item_name || `Item #${repair.item_id}`) : `Repair #${repairId}`;
+
+    switch (action) {
+        case 'view':
+            showRepairDetailModal(repair);
+            break;
+        case 'complete':
+            confirmAction(repairId, 'complete', `Mark repair for <strong>${escapeHtml(itemName)}</strong> as completed?`, 'Mark Complete');
+            break;
+        case 'available':
+            confirmAction(repairId, 'available', `Complete repair and set <strong>${escapeHtml(itemName)}</strong> back to Available for rental?`, 'Set Available');
+            break;
+        case 'unavailable':
+            confirmAction(repairId, 'unavailable', `Set <strong>${escapeHtml(itemName)}</strong> as Unavailable? The item will be removed from the rental pool.`, 'Set Unavailable', 'danger');
+            break;
+        case 'delete':
+            confirmAction(repairId, 'delete', `Delete this repair ticket for <strong>${escapeHtml(itemName)}</strong>? The item will be set back to Available.`, 'Delete Ticket', 'danger');
+            break;
+    }
+}
+
+function confirmAction(repairId, action, message, confirmText, type) {
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
         AdminComponents.showModal({
-            title: 'Mark Repair Complete',
-            content: `
-                <p>Are you sure you want to mark <strong>${ticketId}</strong> as completed?</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label class="form-label">Actual Cost (₱)</label>
-                    <input type="number" class="form-input" id="actualCostInput" placeholder="Enter actual repair cost">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Completion Notes</label>
-                    <textarea class="form-input" id="completionNotes" rows="3" placeholder="Enter any notes about the repair"></textarea>
-                </div>
-            `,
-            confirmText: 'Mark Complete',
+            title: confirmText,
+            content: `<p>${message}</p>`,
+            confirmText: confirmText,
             cancelText: 'Cancel',
-            onConfirm: () => {
-                // Update row status
-                const statusBadge = row.querySelector('.status-badge');
-                if (statusBadge) {
-                    statusBadge.textContent = 'Completed';
-                    statusBadge.className = 'status-badge completed';
-                }
-                row.dataset.status = 'completed';
-                
-                AdminComponents.showToast(`${ticketId} marked as completed!`, 'success');
-            }
+            type: type || 'default',
+            onConfirm: () => executeRepairAction(repairId, action)
         });
-    },
-    
-    /**
-     * Make equipment available
-     */
-    makeAvailable(ticketId, row) {
-        AdminComponents.showModal({
-            title: 'Make Available for Rental',
-            content: `
-                <p>This will return <strong>${ticketId}</strong> to the rental catalog.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label class="form-label">Quality Check Status</label>
-                    <select class="form-select" id="qualityStatus" style="width: 100%;">
-                        <option value="passed">Passed - Ready for rental</option>
-                        <option value="limited">Limited - Minor issues noted</option>
-                    </select>
-                </div>
-            `,
-            confirmText: 'Make Available',
-            cancelText: 'Cancel',
-            onConfirm: () => {
-                // Remove row from table (demo)
-                row.style.opacity = '0.5';
-                setTimeout(() => {
-                    row.remove();
-                }, 500);
-                
-                AdminComponents.showToast('Equipment returned to catalog and available for rental!', 'success');
-            }
+    } else {
+        const plain = message.replace(/<[^>]*>/g, '');
+        if (confirm(plain)) {
+            executeRepairAction(repairId, action);
+        }
+    }
+}
+
+async function executeRepairAction(repairId, action) {
+    try {
+        const response = await fetch(buildUrl('admin/api/update_repair_status.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ repair_id: repairId, action: action })
         });
-    },
-    
-    /**
-     * Track parts order
-     */
-    trackParts(ticketId) {
-        AdminComponents.showModal({
-            title: 'Parts Order Tracking',
-            content: `
-                <div class="parts-tracking">
-                    <div class="tracking-info" style="margin-bottom: 1rem;">
-                        <p><strong>Order ID:</strong> PO-2026-0158</p>
-                        <p><strong>Supplier:</strong> AudioParts Philippines</p>
-                        <p><strong>Items:</strong> 12" Woofer Driver (x1)</p>
-                    </div>
-                    <div class="tracking-timeline">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0;">
-                            <span style="width: 10px; height: 10px; background: #22C55E; border-radius: 50%;"></span>
-                            <span>Order placed - Jan 8, 2026</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0;">
-                            <span style="width: 10px; height: 10px; background: #22C55E; border-radius: 50%;"></span>
-                            <span>Processing confirmed - Jan 9, 2026</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0;">
-                            <span style="width: 10px; height: 10px; background: var(--admin-orange-500); border-radius: 50%; animation: pulse 2s infinite;"></span>
-                            <span>In transit - ETA Jan 22, 2026</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; opacity: 0.5;">
-                            <span style="width: 10px; height: 10px; background: var(--admin-border-color); border-radius: 50%;"></span>
-                            <span>Delivered</span>
-                        </div>
-                    </div>
-                </div>
-            `,
-            confirmText: 'Update Tracking',
-            cancelText: 'Close',
-            onConfirm: () => {
-                AdminComponents.showToast('Parts tracking info updated', 'info');
+        const result = await response.json();
+
+        if (result.success) {
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(result.message, 'success');
             }
-        });
-    },
-    
-    /**
-     * Confirm removal from catalog
-     */
-    confirmRemove(ticketId, row) {
-        AdminComponents.showModal({
-            title: 'Remove from Catalog',
-            content: `
-                <div style="color: #EF4444; margin-bottom: 1rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px; display: block; margin: 0 auto 0.5rem;">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                </div>
-                <p style="text-align: center;"><strong>This action cannot be undone.</strong></p>
-                <p style="text-align: center; margin-top: 0.5rem;">The equipment associated with <strong>${ticketId}</strong> will be permanently removed from the rental catalog.</p>
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label class="form-label">Removal Reason</label>
-                    <select class="form-select" id="removalReason" style="width: 100%;">
-                        <option value="unrepairable">Unrepairable - Beyond economic repair</option>
-                        <option value="obsolete">Obsolete - No longer meets standards</option>
-                        <option value="damaged">Severely Damaged - Write-off</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Salvage Parts?</label>
-                    <select class="form-select" id="salvageParts" style="width: 100%;">
-                        <option value="yes">Yes - Salvage usable components</option>
-                        <option value="no">No - Dispose completely</option>
-                    </select>
-                </div>
-            `,
-            confirmText: 'Remove Equipment',
-            cancelText: 'Cancel',
-            type: 'danger',
-            onConfirm: () => {
-                // Remove row
-                row.style.opacity = '0.5';
-                row.style.transform = 'translateX(20px)';
-                setTimeout(() => {
-                    row.remove();
-                }, 300);
-                
-                AdminComponents.showToast('Equipment removed from catalog', 'warning');
+            fetchRepairs();
+        } else {
+            const msg = result.message || 'Action failed';
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(msg, 'danger');
+            } else {
+                alert(msg);
             }
+        }
+    } catch (err) {
+        console.error('Repair action error:', err);
+        const msg = 'Error performing action';
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast(msg, 'danger');
+        } else {
+            alert(msg);
+        }
+    }
+}
+
+/* =================================================================
+   REPAIR DETAIL MODAL
+   ================================================================= */
+function showRepairDetailModal(repair) {
+    if (!repair) return;
+
+    const ticketId = `RPR-${String(repair.repair_id).padStart(3, '0')}`;
+    const statusKey = normalizeStatus(repair.status);
+    const statusLabel = formatStatusLabel(repair.status);
+    const priorityKey = (repair.priority || 'medium').toLowerCase();
+    const priorityLabel = capitalize(priorityKey);
+
+    // Populate modal fields
+    setText('modalTicketId', ticketId);
+    setText('modalEquipment', repair.item_name || `Item #${repair.item_id}`);
+    setText('modalCategory', repair.category || 'Uncategorized');
+    setText('modalSerial', `ITEM-${repair.item_id}`);
+
+    // Status badge
+    const statusEl = document.getElementById('modalStatus');
+    if (statusEl) {
+        statusEl.textContent = statusLabel;
+        statusEl.className = `status-badge ${statusKey}`;
+    }
+
+    // Priority badge
+    const priorityEl = document.getElementById('modalPriority');
+    if (priorityEl) {
+        priorityEl.textContent = priorityLabel;
+        priorityEl.className = `priority-badge ${priorityKey}`;
+    }
+
+    setText('modalTechnician', '—');
+    setText('modalCost', repair.estimated_cost ? `₱${Number(repair.estimated_cost).toLocaleString()}` : '₱0');
+
+    // Description
+    const descEl = document.getElementById('modalDescription');
+    if (descEl) descEl.textContent = repair.notes || repair.issue_type || 'No description provided.';
+
+    // Show modal
+    const modal = document.getElementById('repairModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeRepairModal() {
+    const modal = document.getElementById('repairModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function setText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+}
+
+/* =================================================================
+   SEARCH & FILTERS
+   ================================================================= */
+function attachEventListeners() {
+    // Search
+    const searchInput = document.getElementById('searchRepairs');
+    if (searchInput) {
+        let timer;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(timer);
+            timer = setTimeout(applyFilters, 250);
         });
-    },
-    
-    /**
-     * Close modal
-     */
-    closeModal() {
-        document.getElementById('repairModal')?.classList.remove('open');
-    },
-    
-    /**
-     * Show new repair modal
-     */
-    showNewRepairModal() {
+    }
+
+    // Filters
+    document.getElementById('statusFilter')?.addEventListener('change', applyFilters);
+    document.getElementById('priorityFilter')?.addEventListener('change', applyFilters);
+    document.getElementById('categoryFilter')?.addEventListener('change', applyFilters);
+
+    // Modal close
+    document.getElementById('closeRepairModal')?.addEventListener('click', closeRepairModal);
+    document.getElementById('cancelRepairModalBtn')?.addEventListener('click', closeRepairModal);
+    document.querySelector('#repairModal .modal-overlay')?.addEventListener('click', closeRepairModal);
+
+    // New Repair button
+    document.getElementById('newRepairBtn')?.addEventListener('click', showNewRepairModal);
+
+    // Export button
+    document.getElementById('exportRepairsBtn')?.addEventListener('click', exportRepairs);
+}
+
+function applyFilters() {
+    const searchTerm = (document.getElementById('searchRepairs')?.value || '').toLowerCase();
+    const statusValue = document.getElementById('statusFilter')?.value || 'all';
+    const priorityValue = document.getElementById('priorityFilter')?.value || 'all';
+    const categoryValue = document.getElementById('categoryFilter')?.value || 'all';
+
+    let filtered = repairsData;
+
+    // Search
+    if (searchTerm) {
+        filtered = filtered.filter(r => {
+            const ticketId = `RPR-${String(r.repair_id).padStart(3, '0')}`.toLowerCase();
+            return ticketId.includes(searchTerm) ||
+                (r.item_name || '').toLowerCase().includes(searchTerm) ||
+                (r.issue_type || '').toLowerCase().includes(searchTerm);
+        });
+    }
+
+    // Status filter
+    if (statusValue !== 'all') {
+        filtered = filtered.filter(r => normalizeStatus(r.status) === statusValue);
+    }
+
+    // Priority filter
+    if (priorityValue !== 'all') {
+        filtered = filtered.filter(r => (r.priority || 'medium').toLowerCase() === priorityValue);
+    }
+
+    // Category filter
+    if (categoryValue !== 'all') {
+        filtered = filtered.filter(r => (r.category || '').toLowerCase().includes(categoryValue));
+    }
+
+    renderRepairs(filtered);
+}
+
+/* =================================================================
+   NEW REPAIR MODAL
+   ================================================================= */
+function showNewRepairModal() {
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
         AdminComponents.showModal({
             title: 'New Repair Ticket',
             content: `
-                <form class="new-repair-form">
-                    <div class="form-group">
-                        <label class="form-label">Equipment *</label>
-                        <select class="form-select" id="equipmentSelect" required style="width: 100%;">
-                            <option value="">Select equipment</option>
-                            <option value="KRK-001">KRK-001 Pro System</option>
-                            <option value="KRK-002">KRK-002 Premium</option>
-                            <option value="KRK-003">KRK-003 Standard</option>
-                            <option value="SPK-001">SPK-001 Speaker Set</option>
-                            <option value="SPK-002">SPK-002 Subwoofer</option>
-                            <option value="MIC-001">MIC-001 Wireless</option>
-                            <option value="LGT-001">LGT-001 LED Par Set</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Issue Type *</label>
-                        <input type="text" class="form-input" id="issueType" placeholder="e.g., Audio Distortion, Power Failure" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Priority *</label>
-                        <select class="form-select" id="prioritySelect" required style="width: 100%;">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Assign To</label>
-                        <select class="form-select" id="technicianSelect" style="width: 100%;">
-                            <option value="">Unassigned</option>
-                            <option value="mike">Mike Rodriguez</option>
-                            <option value="john">John Santos</option>
-                            <option value="external">External Technician</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Estimated Cost (₱)</label>
-                        <input type="number" class="form-input" id="estimatedCost" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-input" id="issueDescription" rows="3" placeholder="Describe the issue in detail..."></textarea>
-                    </div>
-                </form>
+                <p style="margin-bottom: 1rem; color: var(--admin-text-muted); font-size: 0.875rem;">
+                    To create a repair ticket, go to the <strong>Items</strong> page and click the <em>Repairing</em> button on the item you want to send for repair.
+                </p>
+                <p style="color: var(--admin-text-muted); font-size: 0.875rem;">
+                    This ensures the item status is properly synchronized with the repair ticket.
+                </p>
             `,
-            confirmText: 'Create Ticket',
+            confirmText: 'Go to Items',
             cancelText: 'Cancel',
             onConfirm: () => {
-                const ticketId = 'RPR-' + String(Math.floor(Math.random() * 900) + 100).padStart(3, '0');
-                AdminComponents.showToast(`Repair ticket ${ticketId} created successfully!`, 'success');
+                window.location.href = buildUrl('admin/item/item.php');
             }
         });
-    },
-    
-    /**
-     * Export repairs data
-     */
-    exportRepairs() {
-        AdminComponents.showToast('Exporting repairs data to CSV...', 'info');
-        
-        // Simulate export delay
-        setTimeout(() => {
-            AdminComponents.showToast('Repairs data exported successfully!', 'success');
-        }, 1500);
     }
-};
+}
+
+/* =================================================================
+   EXPORT
+   ================================================================= */
+function exportRepairs() {
+    if (!repairsData.length) {
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast('No repair data to export', 'warning');
+        }
+        return;
+    }
+
+    const headers = ['Ticket ID', 'Equipment', 'Category', 'Issue Type', 'Priority', 'Status', 'Created', 'ETA', 'Est. Cost', 'Notes'];
+    const rows = repairsData.map(r => [
+        `RPR-${String(r.repair_id).padStart(3, '0')}`,
+        r.item_name || '',
+        r.category || '',
+        r.issue_type || '',
+        r.priority || '',
+        r.status || '',
+        r.created_date || '',
+        r.eta_date || '',
+        r.estimated_cost || 0,
+        (r.notes || '').replace(/"/g, '""')
+    ]);
+
+    let csv = headers.join(',') + '\n';
+    rows.forEach(row => {
+        csv += row.map(v => `"${v}"`).join(',') + '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `repairs_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    if (typeof AdminComponents !== 'undefined') {
+        AdminComponents.showToast('Repairs exported successfully', 'success');
+    }
+}
+
+/* =================================================================
+   PAGINATION INFO
+   ================================================================= */
+function updatePaginationInfo(count) {
+    const paginationEl = document.getElementById('repairsPagination');
+    const infoEl = document.getElementById('paginationInfo');
+    if (paginationEl && infoEl) {
+        if (count > 0) {
+            paginationEl.style.display = 'flex';
+            infoEl.textContent = `Showing ${count} repair${count !== 1 ? 's' : ''}`;
+        } else {
+            paginationEl.style.display = 'none';
+        }
+    }
+}
+
+/* =================================================================
+   UTILITIES
+   ================================================================= */
+function normalizeStatus(status) {
+    if (!status) return 'in-progress';
+    const s = status.toLowerCase().replace(/[_ ]/g, '-');
+    if (s.includes('progress')) return 'in-progress';
+    if (s.includes('awaiting') || s.includes('parts')) return 'awaiting-parts';
+    if (s.includes('completed') || s.includes('complete')) return 'completed';
+    if (s.includes('unavailable')) return 'unavailable';
+    if (s.includes('remove')) return 'to-remove';
+    return s;
+}
+
+function formatStatusLabel(status) {
+    if (!status) return 'In Progress';
+    const key = normalizeStatus(status);
+    const labels = {
+        'in-progress': 'In Progress',
+        'awaiting-parts': 'Awaiting Parts',
+        'completed': 'Completed',
+        'unavailable': 'Unavailable',
+        'to-remove': 'To Be Removed'
+    };
+    return labels[key] || capitalize(status);
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return 'N/A';
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+        return dateStr;
+    }
+}
+
+function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}

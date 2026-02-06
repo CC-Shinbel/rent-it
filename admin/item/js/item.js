@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchItems() {
     const tbody = document.getElementById('itemsTableBody');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+    if (tbody) tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
 
     try {
         const response = await fetch(buildUrl('admin/api/get_items.php'));
@@ -40,7 +40,7 @@ async function fetchItems() {
 function renderError(message) {
     const tbody = document.getElementById('itemsTableBody');
     if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:1rem; color:var(--admin-text-muted);">${message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:1rem; color:var(--admin-text-muted);">${message}</td></tr>`;
 }
 
 function renderItems(items) {
@@ -53,12 +53,51 @@ function renderItems(items) {
     }
 
     tbody.innerHTML = items.map(renderItemRow).join('');
+
+    // Bind action buttons after rendering
+    bindActionButtons();
 }
 
 function renderItemRow(item) {
     const statusClass = getStatusClass(item.status);
     const image = item.image ? `assets/images/items/${item.image}` : '';
     const price = Number(item.price_per_day || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const normalizedStatus = (item.status || '').toLowerCase();
+    const isBooked = normalizedStatus.includes('booked') || normalizedStatus.includes('reserved');
+    const isRepairing = normalizedStatus.includes('repair') || normalizedStatus.includes('maintenance');
+    const isUnavailable = normalizedStatus.includes('unavailable');
+    const isAvailable = normalizedStatus.includes('available');
+
+    let actionButtons = '';
+
+    if (isAvailable) {
+        actionButtons = `
+            <button class="item-action-btn item-action-repair" data-item-id="${item.item_id}" data-action="Repairing" title="Set to Repairing">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+                Repairing
+            </button>
+            <button class="item-action-btn item-action-unavailable" data-item-id="${item.item_id}" data-action="Unavailable" title="Set to Unavailable">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+                Unavailable
+            </button>`;
+    } else if (isRepairing || isUnavailable) {
+        actionButtons = `
+            <button class="item-action-btn item-action-available" data-item-id="${item.item_id}" data-action="Available" title="Set to Available">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Available
+            </button>`;
+    } else if (isBooked) {
+        actionButtons = `<span class="item-action-disabled">In Use</span>`;
+    }
+
     return `
         <tr>
             <td>${item.item_id}</td>
@@ -77,8 +116,182 @@ function renderItemRow(item) {
             <td>₱${price}</td>
             <td><span class="status-badge ${statusClass}">${escapeHtml(item.status || 'Unknown')}</span></td>
             <td>${item.total_times_rented || 0}</td>
+            <td>
+                <div class="item-actions">
+                    ${actionButtons}
+                </div>
+            </td>
         </tr>
     `;
+}
+
+/**
+ * Bind click events for action buttons
+ */
+function bindActionButtons() {
+    document.querySelectorAll('.item-action-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const button = e.currentTarget;
+            const itemId = button.dataset.itemId;
+            const action = button.dataset.action;
+            handleItemStatusChange(itemId, action);
+        });
+    });
+}
+
+/**
+ * Handle status change with confirmation
+ */
+function handleItemStatusChange(itemId, newStatus) {
+    const item = itemsData.find(i => String(i.item_id) === String(itemId));
+    const itemName = item ? item.item_name : `Item #${itemId}`;
+
+    if (newStatus === 'Repairing') {
+        showRepairingModal(itemId, itemName);
+    } else if (newStatus === 'Unavailable') {
+        showUnavailableModal(itemId, itemName);
+    } else if (newStatus === 'Available') {
+        showAvailableModal(itemId, itemName);
+    }
+}
+
+/**
+ * Show modal for setting item to Repairing
+ */
+function showRepairingModal(itemId, itemName) {
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
+        AdminComponents.showModal({
+            title: 'Set Item to Repairing',
+            content: `
+                <p>Set <strong>${escapeHtml(itemName)}</strong> to <em>Repairing</em> status? This item will not be available for rent.</p>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Issue Type</label>
+                    <input type="text" class="form-input" id="repairIssueType" placeholder="e.g., Audio Distortion, Power Failure">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="repairPriority" style="width: 100%;">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estimated Cost (₱)</label>
+                    <input type="number" class="form-input" id="repairCost" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ETA (Expected Completion)</label>
+                    <input type="date" class="form-input" id="repairEta">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input" id="repairNotes" rows="2" placeholder="Describe the issue..."></textarea>
+                </div>
+            `,
+            confirmText: 'Set to Repairing',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                const payload = {
+                    item_id: itemId,
+                    status: 'Repairing',
+                    issue_type: document.getElementById('repairIssueType')?.value || 'General Maintenance',
+                    priority: document.getElementById('repairPriority')?.value || 'medium',
+                    estimated_cost: parseFloat(document.getElementById('repairCost')?.value) || 0,
+                    eta_date: document.getElementById('repairEta')?.value || '',
+                    notes: document.getElementById('repairNotes')?.value || ''
+                };
+                updateItemStatus(payload);
+            }
+        });
+    } else {
+        if (confirm(`Set "${itemName}" to Repairing status?`)) {
+            updateItemStatus({ item_id: itemId, status: 'Repairing' });
+        }
+    }
+}
+
+/**
+ * Show modal for setting item to Unavailable
+ */
+function showUnavailableModal(itemId, itemName) {
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
+        AdminComponents.showModal({
+            title: 'Set Item to Unavailable',
+            content: `
+                <p>Set <strong>${escapeHtml(itemName)}</strong> to <em>Unavailable</em>? This item will not be available for rent on the client side.</p>
+            `,
+            confirmText: 'Set to Unavailable',
+            cancelText: 'Cancel',
+            type: 'danger',
+            onConfirm: () => {
+                updateItemStatus({ item_id: itemId, status: 'Unavailable' });
+            }
+        });
+    } else {
+        if (confirm(`Set "${itemName}" to Unavailable?`)) {
+            updateItemStatus({ item_id: itemId, status: 'Unavailable' });
+        }
+    }
+}
+
+/**
+ * Show modal for setting item back to Available
+ */
+function showAvailableModal(itemId, itemName) {
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
+        AdminComponents.showModal({
+            title: 'Set Item to Available',
+            content: `
+                <p>Set <strong>${escapeHtml(itemName)}</strong> back to <em>Available</em>? This item will be available for rent again.</p>
+            `,
+            confirmText: 'Set to Available',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                updateItemStatus({ item_id: itemId, status: 'Available' });
+            }
+        });
+    } else {
+        if (confirm(`Set "${itemName}" back to Available?`)) {
+            updateItemStatus({ item_id: itemId, status: 'Available' });
+        }
+    }
+}
+
+/**
+ * Send status update to the API
+ */
+async function updateItemStatus(payload) {
+    try {
+        const response = await fetch(buildUrl('admin/api/update_item_status.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.success) {
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(result.message, 'success');
+            }
+            // Refresh the items list
+            fetchItems();
+        } else {
+            const msg = result.message || 'Failed to update status';
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(msg, 'danger');
+            } else {
+                alert(msg);
+            }
+        }
+    } catch (err) {
+        console.error('Status update error:', err);
+        const msg = 'Error updating item status';
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast(msg, 'danger');
+        } else {
+            alert(msg);
+        }
+    }
 }
 
 function getStatusClass(status) {

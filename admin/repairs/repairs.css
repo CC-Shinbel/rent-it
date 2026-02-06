@@ -453,6 +453,21 @@
     color: white;
 }
 
+.action-btn.unavailable-btn {
+    background: var(--admin-danger-bg);
+    color: var(--admin-danger);
+}
+
+.action-btn.unavailable-btn:hover {
+    background: var(--admin-danger);
+    color: white;
+}
+
+.status-badge.unavailable {
+    background: var(--admin-danger-bg);
+    color: var(--admin-danger);
+}
+
 /* =====================================================
    PAGINATION
    ===================================================== */
