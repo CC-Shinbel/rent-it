@@ -1,3 +1,11 @@
+<?php
+session_start();
+// If already logged in as admin, redirect to dashboard
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header('Location: /rent-it/admin/dashboard/dashboard.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

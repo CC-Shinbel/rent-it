@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/../../config.php';
 
+// Admin auth check - redirect to login if not authenticated
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: /rent-it/admin/auth/login.php');
+    exit();
+}
+
 // Fetch KPI Data
 // Total Revenue (this month)
 $currentMonth = date('Y-m');

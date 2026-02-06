@@ -596,7 +596,10 @@ const AdminComponents = {
             onConfirm: () => {
                 localStorage.removeItem('admin-user');
                 localStorage.removeItem('admin-token');
-                window.location.href = this.baseUrl('admin/auth/login.php');
+                localStorage.removeItem('certicode_admin_session');
+                sessionStorage.removeItem('certicode_admin_session');
+                // Use PHP logout to destroy server session
+                window.location.href = this.baseUrl('admin/api/admin_logout.php');
             }
         });
     },
