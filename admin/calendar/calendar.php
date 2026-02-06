@@ -49,19 +49,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     </div>
                     <div class="admin-page-actions">
                         <div class="filter-group">
+                            <div class="calendar-search">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                                <input type="text" id="calendarSearchInput" class="form-input" placeholder="Search items..." />
+                            </div>
                             <select class="form-select" id="assetTypeFilter" title="Filter by asset type">
                                 <option value="all">All Asset Types</option>
                                 <option value="karaoke">Karaoke Machines</option>
                                 <option value="speaker">Speaker Sets</option>
                                 <option value="microphone">Microphones</option>
                                 <option value="accessory">Accessories</option>
-                            </select>
-                            <select class="form-select" id="statusFilter" title="Filter by status">
-                                <option value="all">All Status</option>
-                                <option value="booked">Booked</option>
-                                <option value="repair">In Repair</option>
-                                <option value="cleaning">Cleaning</option>
-                                <option value="available">Available</option>
                             </select>
                         </div>
                         <a href="admin/newitem/newitem.php" class="btn btn-primary" id="addNewItemBtn" title="Add a new rental item">
@@ -84,10 +84,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <div class="legend-item">
                             <span class="legend-color repair"></span>
                             <span class="legend-label">In Repair</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-color cleaning"></span>
-                            <span class="legend-label">Cleaning</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color available"></span>
@@ -192,17 +188,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <div class="summary-content">
                             <span class="summary-value" id="statRepair">0</span>
                             <span class="summary-label">In Repair</span>
-                        </div>
-                    </div>
-                    <div class="summary-card" title="Items being cleaned">
-                        <div class="summary-icon warning">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
-                            </svg>
-                        </div>
-                        <div class="summary-content">
-                            <span class="summary-value" id="statCleaning">0</span>
-                            <span class="summary-label">Cleaning</span>
                         </div>
                     </div>
                     <div class="summary-card" title="Equipment ready for rental">

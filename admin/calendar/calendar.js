@@ -99,8 +99,17 @@ const CalendarManager = {
         if (items.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 2rem;">
-                        No items found in the database.
+                    <td colspan="7">
+                        <div class="calendar-empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <h3>No items found</h3>
+                            <p>There are no rental items in the database yet.</p>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -257,10 +266,13 @@ const CalendarManager = {
         if (!this.calendarData) return;
         const { stats } = this.calendarData;
         
-        document.getElementById('statBookings').textContent = stats.bookingsThisWeek || 0;
-        document.getElementById('statRepair').textContent = stats.inRepair || 0;
-        document.getElementById('statCleaning').textContent = stats.cleaning || 0;
-        document.getElementById('statAvailable').textContent = stats.available || 0;
+        const statBookings = document.getElementById('statBookings');
+        const statRepair = document.getElementById('statRepair');
+        const statAvailable = document.getElementById('statAvailable');
+        
+        if (statBookings) statBookings.textContent = stats.bookingsThisWeek || 0;
+        if (statRepair) statRepair.textContent = stats.inRepair || 0;
+        if (statAvailable) statAvailable.textContent = stats.available || 0;
     },
     
     /**
@@ -291,7 +303,16 @@ const CalendarManager = {
         
         // Filters
         document.getElementById('assetTypeFilter')?.addEventListener('change', (e) => this.filterByAssetType(e.target.value));
-        document.getElementById('statusFilter')?.addEventListener('change', (e) => this.filterByStatus(e.target.value));
+        
+        // Calendar search
+        const calSearchInput = document.getElementById('calendarSearchInput');
+        if (calSearchInput) {
+            let debounceTimer;
+            calSearchInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => this.filterBySearch(calSearchInput.value), 300);
+            });
+        }
         
         // Modal
         document.getElementById('closeBookingModal')?.addEventListener('click', () => this.closeModal());
@@ -397,25 +418,90 @@ const CalendarManager = {
     },
     
     /**
-     * Filter by asset type
+     * Filter by search term — show only matching items
      */
-    filterByAssetType(type) {
+    filterBySearch(term) {
+        const searchTerm = term.toLowerCase().trim();
         const rows = document.querySelectorAll('#calendarBody tr');
+        let visibleCount = 0;
+        
         rows.forEach(row => {
-            if (type === 'all' || row.dataset.type === type) {
+            if (!row.dataset.asset) return; // skip non-data rows
+            const assetName = row.querySelector('.asset-name')?.textContent?.toLowerCase() || '';
+            const assetId = row.querySelector('.asset-id')?.textContent?.toLowerCase() || '';
+            if (!searchTerm || assetName.includes(searchTerm) || assetId.includes(searchTerm)) {
                 row.style.display = '';
+                visibleCount++;
             } else {
                 row.style.display = 'none';
             }
         });
-        AdminComponents.showToast(`Filtered by: ${type === 'all' ? 'All types' : type}`, 'info');
+        
+        // Show empty state if no results
+        const tbody = document.getElementById('calendarBody');
+        const existingEmpty = tbody.querySelector('.calendar-search-empty');
+        if (existingEmpty) existingEmpty.remove();
+        
+        if (visibleCount === 0 && searchTerm) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.className = 'calendar-search-empty';
+            emptyRow.innerHTML = `
+                <td colspan="7">
+                    <div class="calendar-empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <h3>No items match "${this.escapeHtml(term)}"</h3>
+                        <p>Try a different search term.</p>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(emptyRow);
+        }
     },
-    
+
     /**
-     * Filter by status
+     * Filter by asset type
      */
-    filterByStatus(status) {
-        AdminComponents.showToast(`Filter applied: ${status === 'all' ? 'All statuses' : status}`, 'info');
+    filterByAssetType(type) {
+        const rows = document.querySelectorAll('#calendarBody tr:not(.calendar-search-empty):not(.calendar-filter-empty)');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            if (type === 'all' || row.dataset.type === type) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Remove existing filter empty state
+        const tbody = document.getElementById('calendarBody');
+        const existingEmpty = tbody?.querySelector('.calendar-filter-empty');
+        if (existingEmpty) existingEmpty.remove();
+
+        // Show empty state if no results
+        if (visibleCount === 0 && type !== 'all' && tbody) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.className = 'calendar-filter-empty';
+            emptyRow.innerHTML = `
+                <td colspan="7">
+                    <div class="calendar-empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                        </svg>
+                        <h3>No ${this.escapeHtml(type)} items found</h3>
+                        <p>There are no items in this category. Try a different filter.</p>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(emptyRow);
+        }
+
+        AdminComponents.showToast(`Filtered by: ${type === 'all' ? 'All types' : type}`, 'info');
     },
     
     /**

@@ -120,8 +120,10 @@ mysqli_stmt_close($stmtRepair);
 
 // Calculate stats
 $totalBookingsThisWeek = count(array_unique(array_column($bookings, 'order_id')));
-$itemsInRepair = count(array_filter($repairs, function($r) { return $r['status'] !== 'Resolved'; }));
-$itemsCleaning = 0; // No cleaning table, could track via item status
+// Count unique items in repair (not individual repair records)
+$activeRepairs = array_filter($repairs, function($r) { return $r['status'] !== 'Resolved'; });
+$uniqueRepairItemIds = array_unique(array_column($activeRepairs, 'item_id'));
+$itemsInRepair = count($uniqueRepairItemIds);
 $availableItems = count(array_filter($items, function($i) { return $i['status'] === 'Available'; }));
 
 // Return response
@@ -137,7 +139,6 @@ echo json_encode([
     'stats' => [
         'bookingsThisWeek' => $totalBookingsThisWeek,
         'inRepair' => $itemsInRepair,
-        'cleaning' => $itemsCleaning,
         'available' => $availableItems
     ]
 ]);
