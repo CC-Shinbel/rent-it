@@ -42,7 +42,7 @@ $monthEnd = date('Y-m-t');
 while ($customer = mysqli_fetch_assoc($result)) {
     $totalCustomers++;
     
-    // Fetch latest rental for this customer with items
+    // Fetch ALL rentals for this customer with items
     $rentalQuery = "SELECT 
         r.order_id, 
         r.rental_status, 
@@ -59,14 +59,18 @@ while ($customer = mysqli_fetch_assoc($result)) {
     LEFT JOIN item i ON ri.item_id = i.item_id
     WHERE r.user_id = ?
     GROUP BY r.order_id
-    ORDER BY r.start_date DESC
-    LIMIT 1";
+    ORDER BY r.start_date DESC";
     
     $stmt = mysqli_prepare($conn, $rentalQuery);
     mysqli_stmt_bind_param($stmt, "i", $customer['id']);
     mysqli_stmt_execute($stmt);
     $rentalResult = mysqli_stmt_get_result($stmt);
-    $latestRental = mysqli_fetch_assoc($rentalResult);
+    
+    $allRentals = [];
+    while ($rental = mysqli_fetch_assoc($rentalResult)) {
+        $allRentals[] = $rental;
+    }
+    $latestRental = !empty($allRentals) ? $allRentals[0] : null;
     mysqli_stmt_close($stmt);
 
     // Get all rentals count for stats
@@ -131,18 +135,73 @@ while ($customer = mysqli_fetch_assoc($result)) {
         }
     }
 
-    // Build items array for display
+    // Build items array for display (from latest rental)
     $itemNames = [];
     if ($latestRental && $latestRental['item_names']) {
         $itemNames = array_map('trim', explode(',', $latestRental['item_names']));
     }
 
-    // Calculate duration
+    // Calculate duration (from latest rental)
     $duration = 0;
     if ($latestRental && $latestRental['start_date'] && $latestRental['end_date']) {
         $start = new DateTime($latestRental['start_date']);
         $end = new DateTime($latestRental['end_date']);
         $duration = $start->diff($end)->days + 1;
+    }
+
+    // Build ALL bookings array
+    $bookingsArray = [];
+    foreach ($allRentals as $rentalRow) {
+        // Determine status for each rental
+        $rStatus = $rentalRow['rental_status'] ?? '';
+        $bStatus = 'inactive';
+        $pStatus = 'none';
+
+        if (in_array($rStatus, ['Active', 'Booked', 'Confirmed', 'In Transit'])) {
+            $bStatus = 'active';
+            $pStatus = 'paid';
+        } elseif ($rStatus === 'Pending') {
+            $bStatus = 'pending';
+            $pStatus = 'pending';
+        } elseif ($rStatus === 'Pending Return') {
+            if ($rentalRow['end_date'] < $today) {
+                $bStatus = 'overdue';
+                $pStatus = 'overdue';
+            } else {
+                $bStatus = 'active';
+                $pStatus = 'paid';
+            }
+        } elseif (in_array($rStatus, ['Returned', 'Completed'])) {
+            $bStatus = 'completed';
+            $pStatus = 'paid';
+        }
+
+        // Items for this rental
+        $rItemNames = [];
+        if ($rentalRow['item_names']) {
+            $rItemNames = array_map('trim', explode(',', $rentalRow['item_names']));
+        }
+
+        // Duration for this rental
+        $rDuration = 0;
+        if ($rentalRow['start_date'] && $rentalRow['end_date']) {
+            $rStart = new DateTime($rentalRow['start_date']);
+            $rEnd = new DateTime($rentalRow['end_date']);
+            $rDuration = $rStart->diff($rEnd)->days + 1;
+        }
+
+        $bookingsArray[] = [
+            'id' => 'BK-' . str_pad($rentalRow['order_id'], 5, '0', STR_PAD_LEFT),
+            'order_id' => intval($rentalRow['order_id']),
+            'items' => $rItemNames,
+            'totalItems' => intval($rentalRow['item_count'] ?? 0),
+            'startDate' => $rentalRow['start_date'],
+            'endDate' => $rentalRow['end_date'],
+            'duration' => $rDuration,
+            'status' => $bStatus,
+            'payment' => $pStatus,
+            'total' => floatval($rentalRow['total_price'] ?? 0)
+        ];
     }
 
     $customers[] = [
@@ -172,6 +231,7 @@ while ($customer = mysqli_fetch_assoc($result)) {
             'payment' => $paymentStatus,
             'total' => floatval($latestRental['total_price'] ?? 0)
         ] : null,
+        'bookings' => $bookingsArray,
         'createdAt' => $customer['created_at'],
         'updatedAt' => $customer['updated_at']
     ];
