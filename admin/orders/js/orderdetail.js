@@ -79,7 +79,7 @@ function displayOrderDetail(order) {
     populateDelivery(order.delivery, order.dates);
     populatePayment(order.payment);
     populateTimeline(order.timeline);
-    populateStatusProgress(order.status);
+    populateStatusAction(order.status);
     populateNotes(order.notes);
 }
 
@@ -265,6 +265,21 @@ function populateItems(items, duration) {
     const listContainer = document.getElementById('rentalItemsList');
     document.getElementById('itemCountBadge').textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
 
+    if (!items || items.length === 0) {
+        listContainer.innerHTML = `
+            <div class="rental-items-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <p class="rental-items-empty-title">No items in this order</p>
+                <p class="rental-items-empty-text">This order has no rental items associated with it</p>
+            </div>
+        `;
+        return;
+    }
+
     const itemsHtml = items.map(item => `
         <div class="rental-item">
             <div class="rental-item-image">
@@ -374,56 +389,12 @@ function populateTimeline(timeline) {
 }
 
 /**
- * Populate status progress
+ * Populate status action button
  */
-function populateStatusProgress(status) {
-    const statuses = [
-        { id: 'pending', label: 'Pending' },
-        { id: 'confirmed', label: 'Confirmed' },
-        { id: 'out_for_delivery', label: 'Out for Delivery' },
-        { id: 'active', label: 'Active' },
-        { id: 'return_scheduled', label: 'Return Scheduled' },
-        { id: 'returned', label: 'Returned' },
-        { id: 'completed', label: 'Completed' }
-    ];
-
-    let currentIndex = statuses.findIndex(s => s.id === status);
-    // Handle cancelled status
-    if (status === 'cancelled') {
-        currentIndex = -1;
-    }
-    // Handle late status — treat as between active and return_scheduled
-    if (status === 'late') {
-        currentIndex = 3; // Active position, but flagged as late
-    }
-    
-    const progressHtml = statuses.map((s, index) => {
-        const isCompleted = currentIndex >= 0 && index < currentIndex;
-        const isCurrent = index === currentIndex;
-        const isLate = status === 'late' && isCurrent;
-        
-        return `
-            <div class="status-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''} ${isLate ? 'late' : ''}">
-                <div class="status-step-indicator">
-                    ${isCompleted ? `
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                    ` : isCurrent ? `
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="12" cy="12" r="4"/>
-                        </svg>
-                    ` : ''}
-                </div>
-                <span class="status-step-label">${isLate ? 'Late' : s.label}</span>
-            </div>
-        `;
-    }).join('');
-
-    document.getElementById('statusProgress').innerHTML = progressHtml;
-
-    // Add action button based on status
+function populateStatusAction(status) {
     const actionContainer = document.getElementById('statusActionContainer');
+    if (!actionContainer) return;
+
     let actionHtml = '';
 
     switch (status) {

@@ -258,6 +258,34 @@
     color: var(--admin-text-muted);
 }
 
+/* Rental Items Empty State */
+.rental-items-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--admin-spacing-xl) var(--admin-spacing-lg);
+    text-align: center;
+}
+
+.rental-items-empty svg {
+    color: var(--admin-text-muted);
+    opacity: 0.5;
+    margin-bottom: var(--admin-spacing-md);
+}
+
+.rental-items-empty-title {
+    font-size: var(--admin-font-md);
+    font-weight: var(--admin-font-semibold);
+    color: var(--admin-text-primary);
+    margin-bottom: var(--admin-spacing-xs);
+}
+
+.rental-items-empty-text {
+    font-size: var(--admin-font-sm);
+    color: var(--admin-text-muted);
+}
+
 /* ============================
    TIMELINE
    ============================ */

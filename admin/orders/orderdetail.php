@@ -133,27 +133,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
                     <!-- Right Column -->
                     <div class="order-detail-right">
-                        <!-- Order Status -->
-                        <section class="detail-card status-card">
-                            <div class="detail-card-header">
-                                <h2 class="detail-card-title">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                        <polyline points="22 4 12 14.01 9 11.01"/>
-                                    </svg>
-                                    Order Status
-                                </h2>
-                            </div>
-                            <div class="detail-card-body">
-                                <div class="status-progress" id="statusProgress">
-                                    <!-- Status progress will be populated -->
-                                </div>
-                                <div class="status-action" id="statusActionContainer">
-                                    <!-- Status action button -->
-                                </div>
-                            </div>
-                        </section>
-
                         <!-- Delivery Information -->
                         <section class="detail-card">
                             <div class="detail-card-header">
@@ -187,6 +166,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="info-row">
                                     <span class="info-label">Notes</span>
                                     <span class="info-value" id="deliveryNotes">Leave at front desk if not available</span>
+                                </div>
+                                <div class="status-action" id="statusActionContainer">
+                                    <!-- Status action button will be populated by JS -->
                                 </div>
                             </div>
                         </section>
