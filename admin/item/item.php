@@ -81,8 +81,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <th>ID</th>
                             <th>Item</th>
                             <th>Category</th>
-                            <th>Price/Day</th>
-                            <th>Status</th>
+                            <th>Pricing</th>
+                            <th>Status &amp; Visibility</th>
+                            <th>Tags</th>
                             <th>Times Rented</th>
                             <th>Actions</th>
                         </tr>

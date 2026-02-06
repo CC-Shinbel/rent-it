@@ -83,16 +83,16 @@ mysqli_stmt_close($stmt);
 $repairsQuery = "SELECT 
     repair_id,
     item_id,
-    damage_description,
-    repair_status,
-    repair_cost,
-    reported_date,
-    resolved_date
+    issue_type,
+    status AS repair_status,
+    estimated_cost,
+    created_date,
+    eta_date
 FROM repair
 WHERE 
-    (reported_date <= ? AND (resolved_date IS NULL OR resolved_date >= ?))
-    OR (reported_date >= ? AND reported_date <= ?)
-ORDER BY reported_date";
+    (created_date <= ? AND (eta_date IS NULL OR eta_date >= ?))
+    OR (created_date >= ? AND created_date <= ?)
+ORDER BY created_date";
 
 $stmtRepair = mysqli_prepare($conn, $repairsQuery);
 mysqli_stmt_bind_param($stmtRepair, "ssss", $endDate, $startDate, $startDate, $endDate);
@@ -105,11 +105,11 @@ while ($repair = mysqli_fetch_assoc($repairsResult)) {
         'id' => 'RP-' . str_pad($repair['repair_id'], 5, '0', STR_PAD_LEFT),
         'repair_id' => intval($repair['repair_id']),
         'item_id' => intval($repair['item_id']),
-        'description' => $repair['damage_description'] ?? '',
-        'status' => $repair['repair_status'] ?? 'Pending',
-        'cost' => floatval($repair['repair_cost'] ?? 0),
-        'reported_date' => $repair['reported_date'],
-        'resolved_date' => $repair['resolved_date']
+        'description' => $repair['issue_type'] ?? '',
+        'status' => $repair['repair_status'] ?? 'in-progress',
+        'cost' => floatval($repair['estimated_cost'] ?? 0),
+        'reported_date' => $repair['created_date'],
+        'resolved_date' => $repair['eta_date']
     ];
 }
 mysqli_stmt_close($stmtRepair);

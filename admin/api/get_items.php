@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../config.php';
 
 header('Content-Type: application/json');
 
-$query = "SELECT item_id, item_name, description, category, image, price_per_day, deposit, `condition`, status, maintenance_notes, total_times_rented, rating, reviews
+$query = "SELECT item_id, item_name, description, category, image, price_per_day, deposit, `condition`, status, maintenance_notes, total_times_rented, rating, reviews, total_units, available_units, is_visible, is_featured, tags
           FROM item
           ORDER BY item_id DESC";
 
