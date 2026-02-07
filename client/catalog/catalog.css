@@ -849,6 +849,13 @@
     overflow: hidden;
 }
 
+.product-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+}
+
 .product-image {
     width: 100%;
     height: 100%;
@@ -1512,6 +1519,13 @@
     overflow: hidden;
     background: var(--bg-secondary);
     aspect-ratio: 4/3;
+}
+
+.modal-product-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
 }
 
 .modal-product-image {

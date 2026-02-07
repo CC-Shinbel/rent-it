@@ -861,7 +861,7 @@ function openProductModal(card) {
         '../../assets/images/catalog-set-2.svg',
         '../../assets/images/catalog-set-3.svg'
     ];
-    const productImageRaw = card.querySelector('.product-image img')?.src || '';
+    const productImageRaw = card.querySelector('.product-image')?.src || '';
     const productImage = productImageRaw && !productImageRaw.includes('placeholder')
         ? productImageRaw
         : fallbackImages[productId % fallbackImages.length];
@@ -873,11 +873,12 @@ function openProductModal(card) {
         modalImage.src = productImage;
         modalImage.alt = productName;
         modalImage.title = 'Open image in new tab';
-        modalImage.style.cursor = 'zoom-in';
-        modalImage.onclick = (e) => {
-            e.preventDefault();
-            window.open(modalImage.src, '_blank');
-        };
+    }
+
+    const modalImageLink = document.getElementById('modalProductImageLink');
+    if (modalImageLink) {
+        modalImageLink.href = productImage;
+        modalImageLink.title = 'Open image in new tab';
     }
     document.getElementById('modalProductName').textContent = productName;
     document.getElementById('modalProductPrice').innerHTML = productPrice;

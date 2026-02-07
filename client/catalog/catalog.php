@@ -260,11 +260,13 @@ $result = mysqli_query($conn, $query);
                 : $sampleImages[$row['item_id'] % count($sampleImages)];
         ?>
         <div class="product-image-wrap">
-              <img src="<?php echo $imageFile; ?>"
-                  alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-                  class="product-image"
-                  title="Open image in new tab"
-                  onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+              <a class="product-image-link" href="<?php echo $imageFile; ?>" target="_blank" rel="noopener" title="Open image in new tab">
+                  <img src="<?php echo $imageFile; ?>"
+                      alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                      class="product-image"
+                      title="Open image in new tab"
+                      onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+              </a>
             
             <span class="product-badge <?php echo strtolower($row['status'] ?? 'available'); ?>">
                 <?php echo htmlspecialchars($row['status'] ?? 'Available'); ?>
@@ -351,7 +353,9 @@ $result = mysqli_query($conn, $query);
             <div class="modal-body product-modal-body">
                 <!-- Product Image Section -->
                 <div class="modal-product-image-section">
-                    <img src="" alt="" class="modal-product-image" id="modalProductImage" onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+                    <a class="modal-product-image-link" id="modalProductImageLink" href="" target="_blank" rel="noopener" title="Open image in new tab">
+                        <img src="" alt="" class="modal-product-image" id="modalProductImage" onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+                    </a>
                     <span class="modal-product-badge" id="modalProductBadge">Available</span>
                 </div>
 
