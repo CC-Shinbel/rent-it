@@ -55,6 +55,13 @@
     aspect-ratio: 4/3;
 }
 
+.main-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+}
+
 .main-image {
     width: 100%;
     height: 100%;

@@ -211,9 +211,15 @@ function updateRatingStars(rating) {
  */
 function initImageGallery() {
     const mainImage = document.getElementById('mainImage');
+    const mainImageLink = document.getElementById('mainImageLink');
     const thumbnailGallery = document.getElementById('thumbnailGallery');
 
     if (!thumbnailGallery || !mainImage) return;
+
+    if (mainImageLink && mainImage.src) {
+        mainImageLink.href = mainImage.src;
+        mainImageLink.title = 'Open image in new tab';
+    }
 
     const thumbnails = thumbnailGallery.querySelectorAll('.thumbnail');
 
@@ -222,6 +228,9 @@ function initImageGallery() {
             const imgSrc = this.dataset.img;
             if (imgSrc) {
                 mainImage.src = imgSrc;
+                if (mainImageLink) {
+                    mainImageLink.href = imgSrc;
+                }
                 
                 // Update active state
                 thumbnails.forEach(t => t.classList.remove('active'));

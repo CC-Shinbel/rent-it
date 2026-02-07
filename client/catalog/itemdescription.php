@@ -65,8 +65,10 @@ if ($item_id > 0) {
                     <!-- Left Column - Images & Gallery -->
                     <div class="product-gallery">
                         <div class="main-image-wrap">
-                            <img src="assets/images/products/karaoke-king-v2.jpg" alt="Karaoke King Pro v2" class="main-image" id="mainImage"
-                                 onerror="this.onerror=null; this.src='/assets/images/brokenimg.svg'">
+                            <a class="main-image-link" id="mainImageLink" href="assets/images/products/karaoke-king-v2.jpg" target="_blank" rel="noopener" title="Open image in new tab">
+                                <img src="assets/images/products/karaoke-king-v2.jpg" alt="Karaoke King Pro v2" class="main-image" id="mainImage"
+                                     onerror="this.onerror=null; this.src='/assets/images/brokenimg.svg'">
+                            </a>
                             <span class="product-status available" id="productStatus">Available</span>
                         </div>
                         <div class="thumbnail-gallery" id="thumbnailGallery">
