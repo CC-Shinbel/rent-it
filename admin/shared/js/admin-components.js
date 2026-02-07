@@ -356,66 +356,6 @@ const AdminComponents = {
                         </svg>
                     </button>
                     
-                    <div class="dropdown" id="notificationDropdown">
-                        <button class="header-btn" id="notificationBtn" title="View notifications">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                            </svg>
-                            <span class="notification-badge">3</span>
-                        </button>
-                        <div class="dropdown-menu notification-dropdown" id="notificationMenu">
-                            <div class="dropdown-header">
-                                <h4>Notifications</h4>
-                                <span class="mark-read" id="markAllReadBtn">Mark all read</span>
-                            </div>
-                            <div class="notification-list">
-                                <div class="notification-item unread">
-                                    <div class="notification-icon warning">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <polyline points="12 6 12 12 16 14"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">New Booking Request</div>
-                                        <div class="notification-text">Juan dela Cruz requested Karaoke System A for Feb 15-17</div>
-                                        <div class="notification-time">5 minutes ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon success">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                            <polyline points="22 4 12 14.01 9 11.01"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Item Returned</div>
-                                        <div class="notification-text">Speaker System B has been returned and needs inspection</div>
-                                        <div class="notification-time">2 hours ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon info">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="12" y1="1" x2="12" y2="23"/>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Late Fee Payment</div>
-                                        <div class="notification-text">₱1,500 late fee received from Maria Santos</div>
-                                        <div class="notification-time">Yesterday</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="notification-footer">
-                                <a href="${this.baseUrl('admin/notification/notification.php')}">View all notifications</a>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="dropdown" id="profileDropdown">
                         <button class="header-btn profile-btn" id="profileBtn" title="Profile menu">
                             <div class="profile-avatar">${initial}</div>
@@ -506,15 +446,6 @@ const AdminComponents = {
             document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
         });
 
-        // Mark all notifications as read
-        const markAllReadBtn = document.getElementById('markAllReadBtn');
-        if (markAllReadBtn) {
-            markAllReadBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.markAllNotificationsRead();
-            });
-        }
-
         // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
@@ -528,22 +459,6 @@ const AdminComponents = {
                 this.toggleTheme();
             }
         });
-    },
-
-    /**
-     * Mark all notifications as read
-     */
-    markAllNotificationsRead() {
-        const notifications = document.querySelectorAll('.notification-item.unread');
-        notifications.forEach(item => item.classList.remove('unread'));
-        
-        // Update badge
-        const badge = document.querySelector('.notification-badge');
-        if (badge) {
-            badge.style.display = 'none';
-        }
-        
-        this.showToast('All notifications marked as read', 'success');
     },
 
     /**
@@ -791,7 +706,6 @@ const AdminComponents = {
             dispatch: 'Dispatch',
             settings: 'Settings',
             newitem: 'New Item',
-            notification: 'Notifications',
             profile: 'Profile'
         };
         const pageTitle = pageTitles[activePage] || '';
