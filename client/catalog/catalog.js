@@ -21,6 +21,8 @@
         initProductModal();
         initPagination();
         initCartFavoriteButtons();
+        initCatalogEmptyState();
+        updateProductCount();
     }
 
 
@@ -78,7 +80,22 @@
                     priceSlider.value = priceSlider.max;
                     updatePriceDisplay(priceSlider.value);
                 }
+
+                const searchInput = document.getElementById('catalogSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
                 
+                filterProducts();
+            });
+        }
+    }
+
+    function initCatalogEmptyState() {
+        const resetBtn = document.getElementById('catalogResetBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                document.querySelector('.reset-filters')?.click();
                 filterProducts();
             });
         }
@@ -173,6 +190,21 @@
         const countEl = document.querySelector('.products-count');
         if (countEl) {
             countEl.textContent = `(${visibleProducts} models found)`;
+        }
+
+        const emptyState = document.getElementById('catalogEmptyState');
+        const grid = document.querySelector('.products-grid');
+        const pagination = document.querySelector('.pagination');
+        const isEmpty = visibleProducts === 0;
+
+        if (emptyState) {
+            emptyState.classList.toggle('hidden', !isEmpty);
+        }
+        if (grid) {
+            grid.classList.toggle('is-empty', isEmpty);
+        }
+        if (pagination) {
+            pagination.classList.toggle('is-hidden', isEmpty);
         }
     }
 

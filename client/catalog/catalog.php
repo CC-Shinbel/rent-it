@@ -304,6 +304,13 @@ $result = mysqli_query($conn, $query);
     <?php } ?>
 </div>
 
+                        <div id="catalogEmptyState" class="catalog-empty-state hidden">
+                            <div class="catalog-empty-icon">🔎</div>
+                            <h3 class="catalog-empty-title">No matches found</h3>
+                            <p class="catalog-empty-text">Try clearing filters or searching a different term.</p>
+                            <button type="button" class="catalog-empty-action" id="catalogResetBtn">Reset Filters</button>
+                        </div>
+
 
 
                         <!-- Pagination -->
