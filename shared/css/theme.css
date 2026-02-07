@@ -467,3 +467,106 @@
         display: none;
     }
 }
+
+/* Marketing page skeleton layout */
+.page-skeleton-overlay[data-skeleton="marketing"] {
+    align-items: flex-start;
+}
+
+.page-skeleton-marketing {
+    width: min(1180px, 100%);
+    display: grid;
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.marketing-topbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    padding: 14px 18px;
+}
+
+.marketing-logo {
+    width: 90px;
+    height: 18px;
+}
+
+.marketing-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.marketing-pill {
+    height: 12px;
+    width: 70px;
+}
+
+.marketing-cta {
+    height: 28px;
+    width: 110px;
+    border-radius: 12px;
+}
+
+.marketing-hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
+    align-items: center;
+}
+
+.marketing-hero-text {
+    background: var(--bg-card);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    display: grid;
+    gap: 14px;
+}
+
+.marketing-line {
+    height: 14px;
+}
+
+.marketing-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.marketing-button {
+    height: 36px;
+    width: 120px;
+    border-radius: 14px;
+}
+
+.marketing-hero-media {
+    height: 240px;
+    border-radius: 20px;
+}
+
+.marketing-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.marketing-card {
+    height: 140px;
+    border-radius: 18px;
+}
+
+@media (max-width: 960px) {
+    .marketing-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .marketing-cards {
+        grid-template-columns: 1fr;
+    }
+}
