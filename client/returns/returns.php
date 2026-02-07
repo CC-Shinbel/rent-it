@@ -181,7 +181,12 @@ $extensions_count = mysqli_num_rows($extensions_result);
                                 <div class="return-body">
                                     <div class="return-item">
                                         <div class="return-item-image">
-                                            <img src="../../assets/images/<?php echo $row['image'] ?: 'default.png'; ?>" alt="Item">
+                                            <?php
+                                                $imageFile = !empty($row['image'])
+                                                    ? '/rent-it/assets/images/products/' . htmlspecialchars($row['image'])
+                                                    : '/rent-it/assets/images/catalog-fallback.svg';
+                                            ?>
+                                            <img src="<?php echo $imageFile; ?>" alt="Item" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
                                         </div>
                                         <div class="return-item-info">
                                             <h3 class="return-item-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
@@ -198,7 +203,12 @@ $extensions_count = mysqli_num_rows($extensions_result);
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <p>No active Return.</p>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📦</div>
+                                <h3>No active returns</h3>
+                                <p>Return requests will appear here once submitted.</p>
+                                <a href="../myrentals/myrentals.php" class="empty-state-link">View My Rentals</a>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </section>
@@ -233,7 +243,12 @@ $extensions_count = mysqli_num_rows($extensions_result);
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <p>No active extension.</p>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <h3>No active extensions</h3>
+                                <p>Extension requests will appear here once submitted.</p>
+                                <a href="../myrentals/myrentals.php" class="empty-state-link">View My Rentals</a>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </section>
