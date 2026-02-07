@@ -127,6 +127,7 @@
     box-shadow: var(--shadow-card);
     border: 1px solid var(--border-color);
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .kpi-card:hover {
@@ -269,6 +270,7 @@
     box-shadow: var(--shadow-card);
     border: 1px solid var(--border-color);
     transition: var(--transition);
+    cursor: pointer;
 }
 
 .rental-card:hover {
