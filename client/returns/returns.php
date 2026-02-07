@@ -132,8 +132,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
             <div class="content-area">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Returns & Extensions</h1>
-                        <p class="page-subtitle">Manage your pending return and extension requests.</p>
+                        <h1 class="page-title">Manage your pending return and extension requests.</h1>
                     </div>
                 </div>
 
@@ -186,7 +185,9 @@ $extensions_count = mysqli_num_rows($extensions_result);
                                                     ? '/rent-it/assets/images/products/' . htmlspecialchars($row['image'])
                                                     : '/rent-it/assets/images/catalog-fallback.svg';
                                             ?>
-                                            <img src="<?php echo $imageFile; ?>" alt="Item" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                                            <a href="<?php echo $imageFile; ?>" target="_blank" rel="noopener noreferrer" class="return-image-link" title="View image">
+                                                <img src="<?php echo $imageFile; ?>" alt="Item" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                                            </a>
                                         </div>
                                         <div class="return-item-info">
                                             <h3 class="return-item-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
@@ -253,6 +254,9 @@ $extensions_count = mysqli_num_rows($extensions_result);
                     </div>
                 </section>
             </div>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
         </main>
     </div>
 
@@ -262,6 +266,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
             if (typeof Components !== 'undefined') {
                 Components.injectSidebar('sidebarContainer', 'returns', 'client');
                 Components.injectTopbar('topbarContainer', 'Returns & Extensions');
+                Components.injectFooter('footerContainer');
             }
         });
     </script>
