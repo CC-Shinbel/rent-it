@@ -290,6 +290,9 @@ const Components = {
                 ${this.generateTableContent(tabId)}
             </div>
         `;
+
+        const isLoading = contentArea.querySelector('.loader-state');
+        document.querySelector('.app-container')?.classList.toggle('sidebar-neutral', !!isLoading);
     },
 
     /**
@@ -366,10 +369,37 @@ const Components = {
     generateEmptyState() {
         return `
             <div class="empty-state loader-state" role="status" aria-live="polite">
-                <div class="loader-spinner" aria-hidden="true"></div>
-                <h3 class="empty-state-title">Loading content…</h3>
-                <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
-                <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
+                <div class="loader-skeleton" aria-hidden="true">
+                    <div class="skeleton-header">
+                        <span class="skeleton-line skeleton-title"></span>
+                        <span class="skeleton-pill"></span>
+                    </div>
+                    <div class="skeleton-table">
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-35"></span>
+                            <span class="skeleton-cell w-25"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-30"></span>
+                            <span class="skeleton-cell w-30"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-40"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="loader-message">
+                    <h3 class="empty-state-title">Loading content…</h3>
+                    <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
+                    <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
+                </div>
             </div>
         `;
     },

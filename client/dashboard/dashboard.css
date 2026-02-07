@@ -626,6 +626,69 @@
     animation: spin 0.9s linear infinite;
 }
 
+.loader-skeleton {
+    width: min(920px, 100%);
+    display: grid;
+    gap: 18px;
+    margin: 8px auto 4px;
+}
+
+.skeleton-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.skeleton-line,
+.skeleton-pill,
+.skeleton-cell {
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.08));
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 999px;
+}
+
+.skeleton-title {
+    height: 14px;
+    width: 220px;
+}
+
+.skeleton-pill {
+    height: 36px;
+    width: 120px;
+    border-radius: 10px;
+}
+
+.skeleton-table {
+    display: grid;
+    gap: 10px;
+}
+
+.skeleton-row {
+    display: grid;
+    grid-template-columns: 2fr 1.6fr 1fr 0.8fr;
+    gap: 12px;
+}
+
+.skeleton-cell {
+    height: 12px;
+    border-radius: 6px;
+}
+
+.skeleton-cell.w-40 { width: 100%; }
+.skeleton-cell.w-35 { width: 100%; }
+.skeleton-cell.w-30 { width: 92%; }
+.skeleton-cell.w-25 { width: 82%; }
+.skeleton-cell.w-20 { width: 72%; }
+.skeleton-cell.w-15 { width: 60%; }
+
+.loader-message {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -993,6 +1056,16 @@
 
 .nav-item.active {
     background: var(--primary-color);
+    color: var(--white);
+}
+
+.app-container.sidebar-neutral .nav-item.active {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.app-container.sidebar-neutral .nav-item.active:hover {
+    background: rgba(255, 255, 255, 0.1);
     color: var(--white);
 }
 
