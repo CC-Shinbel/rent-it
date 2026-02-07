@@ -197,10 +197,14 @@ $total_records = mysqli_num_rows($history_result);
 
                                     <?php endwhile; ?>
                                 <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" style="text-align: center; padding: 40px; opacity: 1;">
-                                            <p>No booking history found.</p>
-                                            <a href="../catalog/catalog.php" class="btn-new" style="margin-top: 15px; display: inline-block;">Browse Catalog</a>
+                                    <tr class="history-empty">
+                                        <td colspan="6">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">🗂️</div>
+                                                <h3 class="empty-state-title">No booking history yet</h3>
+                                                <p class="empty-state-text">Your completed rentals will show up here.</p>
+                                                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

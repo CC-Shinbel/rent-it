@@ -186,7 +186,7 @@
 }
 
 .tab-link:hover {
-    color: var(--text);
+    color: var(--accent);
 }
 
 .tab-link.active {
@@ -203,6 +203,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     border-radius: 3px;
 }
+
 
 /* History Section */
 .history-section {
@@ -250,6 +251,47 @@
 
 .history-table tbody tr:hover {
     background: var(--bg-elevated);
+}
+
+.history-empty td {
+    padding: 24px 16px;
+    background: var(--bg-secondary);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.empty-state-icon {
+    font-size: 28px;
+}
+
+.empty-state-title {
+    margin: 0;
+    color: var(--heading-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.empty-state-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.empty-state-link {
+    color: var(--brand-primary-light, #F59E0B);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.empty-state-link:hover {
+    text-decoration: underline;
 }
 
 /* Item Cell */
