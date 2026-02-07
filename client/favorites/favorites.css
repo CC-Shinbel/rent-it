@@ -70,6 +70,7 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+    background: var(--bg-secondary);
 }
 
 .favorite-card:hover .favorite-image {
@@ -247,8 +248,8 @@
     text-align: center;
     padding: clamp(32px, 4vw, 56px);
     animation: fadeIn 0.4s ease-out;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+    border: 1px dashed var(--border-color);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
     display: flex;
@@ -259,13 +260,21 @@
 }
 
 .empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 12px;
 }
 
 .empty-title {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--heading-primary);
     margin-bottom: 8px;
 }
@@ -273,6 +282,7 @@
 .empty-text {
     font-size: 15px;
     color: var(--text-secondary);
+    max-width: 420px;
     margin-bottom: 24px;
 }
 
