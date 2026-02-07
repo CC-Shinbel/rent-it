@@ -100,6 +100,50 @@
     margin-bottom: 32px;
 }
 
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.empty-state-card {
+    grid-column: 1 / -1;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.empty-state-icon {
+    font-size: 28px;
+}
+
+.empty-state-title {
+    margin: 0;
+    color: var(--heading-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.empty-state-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.empty-state-link {
+    color: var(--brand-primary-light, #F59E0B);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.empty-state-link:hover {
+    text-decoration: underline;
+}
+
 .rental-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -341,6 +385,11 @@
     background: var(--bg-elevated);
 }
 
+.history-empty td {
+    padding: 24px 16px;
+    background: var(--bg-secondary);
+}
+
 /* History Item Cell */
 .history-item {
     display: flex;
@@ -380,6 +429,10 @@
     font-size: 12px;
     color: var(--success);
     font-weight: 500;
+}
+
+.period-status.status-inactive {
+    color: var(--text-tertiary);
 }
 
 .amount-cell {
@@ -444,6 +497,15 @@
 
 .action-btn.action-muted:hover {
     background: var(--bg-elevated);
+}
+
+.action-btn.receipt-btn {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.action-btn.receipt-btn:hover {
+    background: var(--accent-hover);
 }
 
 /* Promo Banner */

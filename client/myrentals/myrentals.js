@@ -43,7 +43,14 @@ function renderActiveRentals(rentals) {
     if (!container) return;
 
     if (rentals.length === 0) {
-        container.innerHTML = `<div class="empty-state">No active rentals found.</div>`;
+        container.innerHTML = `
+            <div class="empty-state empty-state-card">
+                <div class="empty-state-icon">🎤</div>
+                <h3 class="empty-state-title">No active rentals yet</h3>
+                <p class="empty-state-text">Browse the catalog to book your first videoke set.</p>
+                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+            </div>
+        `;
         badge.textContent = "0 Units Active";
         return;
     }
@@ -80,9 +87,9 @@ function renderActiveRentals(rentals) {
                 </div>
             </div>
             <div class="card-image">
-                <img src="../../assets/images/${r.image}" 
+                <img src="/rent-it/assets/images/products/${r.image}" 
                      alt="${r.name}" 
-                     onerror="this.onerror=null; this.src='../../assets/images/default-item.png';">
+                     onerror="this.onerror=null; this.src='/rent-it/assets/images/catalog-fallback.svg';">
             </div>
             <div class="card-actions">
                 <button class="btn-extend" onclick="handleExtend('${orderId}', ${rate})">Extend</button>
@@ -164,7 +171,18 @@ function renderBookingHistory(history) {
     tbody.innerHTML = '';
 
     if (history.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No history found.</td></tr>';
+        tbody.innerHTML = `
+            <tr class="history-empty">
+                <td colspan="4">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🗂️</div>
+                        <h3 class="empty-state-title">No bookings yet</h3>
+                        <p class="empty-state-text">Your completed rentals will show up here.</p>
+                        <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                    </div>
+                </td>
+            </tr>
+        `;
         return;
     }
 
@@ -178,22 +196,19 @@ function renderBookingHistory(history) {
                 <div class="history-item">
                     <div class="history-thumb">🎤</div>
                     <div class="history-info">
-                        <div class="history-name" style="color: #1e293b; font-weight: 600;">${itemName}</div>
-                        <div class="history-id" style="color: #64748b; font-size: 0.85rem;">#${h.rental_code}</div>
+                        <div class="history-name">${itemName}</div>
+                        <div class="history-id">#${h.rental_code}</div>
                     </div>
                 </div>
             </td>
             <td>
-                <div class="period-dates" style="color: #475569;">${formatDate(h.start_date)} - ${formatDate(h.end_date)}</div>
-                <div class="period-status" style="font-weight: 500; color: ${h.rental_status === 'Active' ? '#10b981' : '#64748b'};">
-                    ${capitalize(h.rental_status)}
-                </div>
+                <div class="period-dates">${formatDate(h.start_date)} - ${formatDate(h.end_date)}</div>
+                <div class="period-status ${h.rental_status === 'Active' ? 'status-active' : 'status-inactive'}">${capitalize(h.rental_status)}</div>
             </td>
-            <td class="amount-cell" style="font-weight: 700; color: #1e293b;">₱${parseFloat(h.total_amount).toFixed(2)}</td>
+            <td class="amount-cell">₱${parseFloat(h.total_amount).toFixed(2)}</td>
             <td>
                 <button class="action-btn receipt-btn" 
-                        onclick='showReceipt(${rentalData})'
-                        style="background: #f97316; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                        onclick='showReceipt(${rentalData})'>
                     Receipt
                 </button>
             </td>
