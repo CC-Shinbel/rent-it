@@ -48,7 +48,7 @@
 }
 
 .tab-link:hover {
-    color: var(--text);
+    color: var(--accent);
 }
 
 .tab-link.active {
@@ -65,6 +65,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     border-radius: 3px;
 }
+
 
 /* Section Header */
 .section-header {
