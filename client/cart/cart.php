@@ -79,12 +79,14 @@ $result = mysqli_query($conn, $cart_query);
                                                 : '../../assets/images/catalog-fallback.svg';
                                         ?>
                                         <div class="cart-item-image">
-                                            <img 
-                                                src="<?php echo $imageSrc; ?>" 
-                                                alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-                                                class="cart-item-photo"
-                                                onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';"
-                                            >
+                                            <a class="cart-item-image-link" href="<?php echo $imageSrc; ?>" target="_blank" rel="noopener" title="Open image in new tab">
+                                                <img 
+                                                    src="<?php echo $imageSrc; ?>" 
+                                                    alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                                                    class="cart-item-photo"
+                                                    onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';"
+                                                >
+                                            </a>
                                         </div>
 
                                         <div class="cart-item-details">
