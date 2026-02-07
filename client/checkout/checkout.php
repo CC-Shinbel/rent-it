@@ -180,9 +180,16 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                     $subtotal = $item['price_per_day'] * 1; 
                     $total_subtotal += $subtotal;
                 ?>
+                <?php
+                    $imageSrc = !empty($item['image'])
+                        ? '../../assets/images/products/' . htmlspecialchars($item['image'])
+                        : '../../assets/images/catalog-fallback.svg';
+                ?>
                 <div class="order-item">
                     <div class="order-item-image">
-                        <img src="../../assets/images/products/<?php echo $item['image']; ?>" onerror="this.src='/rent-it/assets/images/catalog-fallback.svg'">
+                        <a class="order-item-image-link" href="<?php echo $imageSrc; ?>" target="_blank" rel="noopener" title="Open image in new tab">
+                            <img src="<?php echo $imageSrc; ?>" alt="<?php echo htmlspecialchars($item['item_name']); ?>" onerror="this.src='/rent-it/assets/images/catalog-fallback.svg'">
+                        </a>
                     </div>
                     <div class="order-item-details">
                         <h4 class="order-item-name"><?php echo htmlspecialchars($item['item_name']); ?></h4>
