@@ -150,7 +150,12 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <p style="grid-column: 1/-1; opacity: 0.6; padding: 20px;">No active rentals in your possession.</p>
+                            <div class="empty-state empty-state-card">
+                                <div class="empty-state-icon">🎤</div>
+                                <h3 class="empty-state-title">No active rentals yet</h3>
+                                <p class="empty-state-text">Browse the catalog to book your first videoke set.</p>
+                                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </section>
@@ -187,7 +192,16 @@ $member_status = $user_data['membership_level'] ?? 'Bronze';
                                     </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="4" style="text-align:center; opacity: 0.6; padding: 20px;">No transaction history.</td></tr>
+                                    <tr class="history-empty">
+                                        <td colspan="4">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">🗂️</div>
+                                                <h3 class="empty-state-title">No bookings yet</h3>
+                                                <p class="empty-state-text">Your completed rentals will show up here.</p>
+                                                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
