@@ -158,11 +158,6 @@
     color: var(--admin-text-secondary);
     box-shadow: var(--admin-shadow-md);
 }
-    z-index: 100;
-    transition: all var(--admin-transition-fast);
-    opacity: 1;
-    box-shadow: var(--admin-shadow-sm);
-}
 
 .sidebar-collapse-btn:hover {
     background: var(--admin-accent);

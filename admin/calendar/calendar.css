@@ -474,8 +474,9 @@
 
 .calendar-empty-state h3 {
     margin: 0 0 0.5rem;
-    font-size: var(--admin-font-md);
-    color: var(--admin-text-secondary);
+    font-size: var(--admin-font-lg);
+    font-weight: var(--admin-font-semibold);
+    color: var(--admin-text-primary);
 }
 
 .calendar-empty-state p {
