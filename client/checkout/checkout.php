@@ -181,7 +181,9 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                     $total_subtotal += $subtotal;
                 ?>
                 <div class="order-item">
-                    <img src="../../assets/images/products/<?php echo $item['image']; ?>" onerror="this.src='https://via.placeholder.com/50'">
+                    <div class="order-item-image">
+                        <img src="../../assets/images/products/<?php echo $item['image']; ?>" onerror="this.src='/rent-it/assets/images/catalog-fallback.svg'">
+                    </div>
                     <div class="order-item-details">
                         <h4 class="order-item-name"><?php echo htmlspecialchars($item['item_name']); ?></h4>
                         <span class="item-subtotal">₱<?php echo number_format($subtotal, 2); ?></span>
