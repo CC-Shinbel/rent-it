@@ -75,7 +75,7 @@ $result = mysqli_query($conn, $cart_query);
                                         
                                         <?php 
                                             $imageSrc = !empty($row['image']) 
-                                                ? htmlspecialchars($row['image']) 
+                                                ? '../../assets/images/products/' . htmlspecialchars($row['image']) 
                                                 : '../../assets/images/catalog-fallback.svg';
                                         ?>
                                         <div class="cart-item-image">
@@ -83,7 +83,7 @@ $result = mysqli_query($conn, $cart_query);
                                                 src="<?php echo $imageSrc; ?>" 
                                                 alt="<?php echo htmlspecialchars($row['item_name']); ?>"
                                                 class="cart-item-photo"
-                                                onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
+                                                onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';"
                                             >
                                         </div>
 
@@ -130,7 +130,10 @@ $result = mysqli_query($conn, $cart_query);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <div class="empty-cart">
-                                    <p>Your cart is empty.</p>
+                                    <div class="empty-icon">🛒</div>
+                                    <h2 class="empty-title">Your cart is empty</h2>
+                                    <p class="empty-text">Browse the catalog and add your first videoke set.</p>
+                                    <a href="../catalog/catalog.php" class="btn-browse-catalog">Browse Catalog</a>
                                 </div>
                             <?php endif; ?>
                         </div>
