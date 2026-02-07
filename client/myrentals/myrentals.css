@@ -16,7 +16,7 @@
 .page-header-info .page-title {
     font-size: 28px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--heading-primary);
     margin-bottom: 4px;
 }
 
@@ -265,6 +265,13 @@
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 16px;
+}
+
+.card-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
 }
 
 .card-image img {

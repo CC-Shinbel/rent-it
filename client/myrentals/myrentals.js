@@ -62,6 +62,9 @@ function renderActiveRentals(rentals) {
         const statusClass = r.days_left <= 1 ? 'status-expiring' : 'status-rented';
         const daysClass = r.days_left <= 1 ? 'days-danger' : '';
         const cardExpiring = r.days_left <= 1 ? 'card-expiring' : '';
+        const imageSrc = r.image
+            ? `/rent-it/assets/images/products/${r.image}`
+            : '/rent-it/assets/images/catalog-fallback.svg';
         
         const orderId = r.order_id;
         const rate = parseFloat(r.daily_rate) || 0;
@@ -87,9 +90,11 @@ function renderActiveRentals(rentals) {
                 </div>
             </div>
             <div class="card-image">
-                <img src="/rent-it/assets/images/products/${r.image}" 
-                     alt="${r.name}" 
-                     onerror="this.onerror=null; this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                <a class="card-image-link" href="${imageSrc}" target="_blank" rel="noopener" title="Open image in new tab">
+                    <img src="${imageSrc}" 
+                         alt="${r.name}" 
+                         onerror="this.onerror=null; this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                </a>
             </div>
             <div class="card-actions">
                 <button class="btn-extend" onclick="handleExtend('${orderId}', ${rate})">Extend</button>
