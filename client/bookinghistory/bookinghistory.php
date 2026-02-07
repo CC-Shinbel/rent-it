@@ -96,7 +96,7 @@ $total_records = mysqli_num_rows($history_result);
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
                      
-                        <p class="page-subtitle">Track all your past videoke rentals and manage receipts.</p>
+                        <h1 class="page-title">Track all your past videoke rentals and manage receipts.</h1>
                     </div>
                   
                 </div>

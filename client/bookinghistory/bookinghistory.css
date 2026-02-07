@@ -16,7 +16,7 @@
 .page-header-info .page-title {
     font-size: 28px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--heading-primary);
     margin-bottom: 4px;
 }
 
@@ -465,24 +465,35 @@
 
 .pagination-btn {
     padding: 8px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text);
+    color: #1e293b;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .pagination-btn:hover {
-    background: var(--bg-elevated);
-    border-color: var(--text-tertiary);
+    background: #f8fafc;
+    border-color: #94a3b8;
 }
 
 .pagination-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+[data-theme="dark"] .pagination-btn {
+    background: var(--bg-elevated);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .pagination-btn:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-tertiary);
 }
 
 /* Promo Banner */
