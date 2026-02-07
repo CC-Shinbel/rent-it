@@ -805,16 +805,16 @@ container.innerHTML = `
                         <div class="footer-col">
                             <h4 class="footer-heading">Support</h4>
                             <nav class="footer-nav">
-                                <a href="/pages/contactus.html">Contact Us</a>
-                                <a href="/pages/about.html">About</a>
-                                <a href="#">FAQs</a>
+                                <a href="/rent-it/pages/contactus.html">Contact Us</a>
+                                <a href="/rent-it/pages/aboutus.html">About</a>
+                                <a href="/rent-it/pages/contactus.html#faq-section">FAQs</a>
                             </nav>
                         </div>
                         <div class="footer-col">
                             <h4 class="footer-heading">Legal</h4>
                             <nav class="footer-nav">
-                                <a href="/pages/terms.html">Terms of Service</a>
-                                <a href="/pages/privacy.html">Privacy Policy</a>
+                                <a href="/rent-it/pages/terms.html">Terms of Service</a>
+                                <a href="/rent-it/pages/privacy-policy.html">Privacy Policy</a>
                             </nav>
                         </div>
                     </div>
