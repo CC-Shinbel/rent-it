@@ -65,7 +65,9 @@ $favoritesCount = $result->num_rows;
                                         ? '../../assets/images/products/' . htmlspecialchars($row['image'])
                                         : '../../assets/images/catalog-fallback.svg';
                                 ?>
-                                <img src="<?php echo $imageFile; ?>" alt="<?php echo $row['item_name']; ?>" class="favorite-image" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                                <a class="favorite-image-link" href="<?php echo $imageFile; ?>" target="_blank" rel="noopener" title="Open image in new tab">
+                                    <img src="<?php echo $imageFile; ?>" alt="<?php echo $row['item_name']; ?>" class="favorite-image" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                                </a>
                                 
                                 <span class="favorite-badge <?php echo strtolower($row['status']); ?>">
                                     <?php echo $row['status']; ?>

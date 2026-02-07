@@ -65,12 +65,20 @@
     overflow: hidden;
 }
 
+.favorite-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+}
+
 .favorite-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
     background: var(--bg-secondary);
+    cursor: zoom-in;
 }
 
 .favorite-card:hover .favorite-image {
