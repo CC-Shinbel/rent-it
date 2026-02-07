@@ -719,6 +719,27 @@
 
 .empty-state-link:hover { text-decoration: underline; }
 
+.loader-state .empty-state-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid transparent;
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.loader-state .empty-state-link:hover {
+    background: var(--accent-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
 .history-table th,
 .history-table td {
     padding: 16px 20px;
