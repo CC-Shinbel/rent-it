@@ -75,18 +75,22 @@
     --admin-success: #22C55E;
     --admin-success-bg: rgba(34, 197, 94, 0.15);
     --admin-success-border: rgba(34, 197, 94, 0.3);
+   --admin-success-subtle: rgba(34, 197, 94, 0.12);
     
     --admin-warning: #F59E0B;
     --admin-warning-bg: rgba(245, 158, 11, 0.15);
     --admin-warning-border: rgba(245, 158, 11, 0.3);
+   --admin-warning-subtle: rgba(245, 158, 11, 0.12);
     
     --admin-danger: #EF4444;
     --admin-danger-bg: rgba(239, 68, 68, 0.15);
     --admin-danger-border: rgba(239, 68, 68, 0.3);
+   --admin-error-subtle: rgba(239, 68, 68, 0.12);
     
     --admin-info: #3B82F6;
     --admin-info-bg: rgba(59, 130, 246, 0.15);
     --admin-info-border: rgba(59, 130, 246, 0.3);
+   --admin-info-subtle: rgba(59, 130, 246, 0.12);
     
     --admin-neutral: #6B7280;
     --admin-neutral-bg: rgba(107, 114, 128, 0.15);
@@ -161,18 +165,22 @@
     --admin-success: #16A34A;
     --admin-success-bg: rgba(22, 163, 74, 0.1);
     --admin-success-border: rgba(22, 163, 74, 0.2);
+   --admin-success-subtle: rgba(22, 163, 74, 0.1);
     
     --admin-warning: #D97706;
     --admin-warning-bg: rgba(217, 119, 6, 0.1);
     --admin-warning-border: rgba(217, 119, 6, 0.2);
+   --admin-warning-subtle: rgba(217, 119, 6, 0.1);
     
     --admin-danger: #DC2626;
     --admin-danger-bg: rgba(220, 38, 38, 0.1);
     --admin-danger-border: rgba(220, 38, 38, 0.2);
+   --admin-error-subtle: rgba(220, 38, 38, 0.1);
     
     --admin-info: #2563EB;
     --admin-info-bg: rgba(37, 99, 235, 0.1);
     --admin-info-border: rgba(37, 99, 235, 0.2);
+   --admin-info-subtle: rgba(37, 99, 235, 0.1);
     
     --admin-neutral: #6B7280;
     --admin-neutral-bg: rgba(107, 114, 128, 0.1);
