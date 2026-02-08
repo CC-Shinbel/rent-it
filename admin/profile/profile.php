@@ -15,6 +15,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <!-- Shared Styles -->
     <link rel="stylesheet" href="shared/css/globals.css">
     <link rel="stylesheet" href="shared/css/theme.css">
+    <link rel="stylesheet" href="admin/shared/css/admin-theme.css">
+    <link rel="stylesheet" href="admin/shared/css/admin-components.css">
     <link rel="stylesheet" href="admin/shared/css/admin-globals.css">
     <link rel="stylesheet" href="admin/shared/css/admin-sidebar.css">
     <link rel="stylesheet" href="admin/shared/css/admin-topbar.css">
@@ -22,6 +24,68 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <link rel="stylesheet" href="admin/profile/css/profile.css">
 </head>
 <body>
+    <div class="admin-skeleton-overlay" aria-hidden="true">
+        <div class="admin-skeleton-shell">
+            <aside class="admin-skeleton-sidebar">
+                <div class="admin-skeleton-logo"></div>
+                <div class="admin-skeleton-nav">
+                    <span class="admin-skeleton-pill w-70"></span>
+                    <span class="admin-skeleton-pill w-60"></span>
+                    <span class="admin-skeleton-pill w-80"></span>
+                    <span class="admin-skeleton-pill w-50"></span>
+                    <span class="admin-skeleton-pill w-70"></span>
+                </div>
+                <div class="admin-skeleton-user">
+                    <span class="admin-skeleton-circle"></span>
+                    <span class="admin-skeleton-line w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="admin-skeleton-main">
+                <div class="admin-skeleton-topbar">
+                    <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                    <span class="admin-skeleton-circle"></span>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row admin-skeleton-kpis">
+                        <span class="admin-skeleton-block w-60" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-50" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-70" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-40" style="height: 14px;"></span>
+                    </div>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                        <span class="admin-skeleton-pill w-20"></span>
+                    </div>
+                    <div class="admin-skeleton-table">
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-50" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-60" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-35" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-skeleton-loader">
+                    <span class="admin-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading admin content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <!-- Sidebar Component -->
     <aside id="admin-sidebar"></aside>
 
