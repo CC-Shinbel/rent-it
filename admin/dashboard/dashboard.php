@@ -148,6 +148,10 @@ function formatCurrency($amount) {
     <link rel="stylesheet" href="admin/shared/css/admin-globals.css">
     <link rel="stylesheet" href="admin/shared/css/admin-components.css">
     <link rel="stylesheet" href="admin/dashboard/css/dashboard-new.css">
+
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="admin-wrapper">
@@ -168,7 +172,7 @@ function formatCurrency($amount) {
                         <p class="admin-page-subtitle">Welcome back! Here's an overview of your rental business.</p>
                     </div>
                     <div class="admin-page-actions">
-                        <button class="btn btn-secondary" title="Export dashboard data as PDF">
+                        <button class="btn btn-secondary" title="Export dashboard data as PDF" onclick="exportDashboardPDF()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                 <polyline points="7 10 12 15 17 10"/>
@@ -528,6 +532,253 @@ function formatCurrency($amount) {
         // Edit booking
         function editBooking(orderId) {
             window.location.href = 'admin/orders/orderdetail.php?id=' + orderId + '&edit=true';
+        }
+
+        // Dashboard data from PHP
+        const dashboardData = {
+            totalRevenue: '<?php echo formatCurrency($totalRevenue); ?>',
+            revenueChange: '<?php echo ($revenueChange >= 0 ? "+" : "") . $revenueChange; ?>%',
+            activeRentals: <?php echo $activeRentals; ?>,
+            pendingDeliveries: <?php echo $pendingDeliveries; ?>,
+            machinesAvailable: <?php echo $machinesAvailable; ?>,
+            totalItems: <?php echo $totalItems; ?>,
+            itemsRented: <?php echo $itemsRented; ?>,
+            itemsRepair: <?php echo $itemsRepair; ?>,
+            itemsCleaning: <?php echo $itemsCleaning; ?>,
+            recentBookings: <?php echo json_encode(array_map(function($b) {
+                $start = new DateTime($b['start_date']);
+                $end = new DateTime($b['end_date']);
+                $duration = $start->diff($end)->days + 1;
+                return [
+                    'orderId' => 'ORD-' . str_pad($b['order_id'], 4, '0', STR_PAD_LEFT),
+                    'customer' => $b['customer_name'] ?? 'Unknown',
+                    'items' => $b['items'] ?? 'No items',
+                    'duration' => $start->format('M j') . ' - ' . $end->format('M j') . ' (' . $duration . ' day' . ($duration > 1 ? 's' : '') . ')',
+                    'status' => $b['rental_status']
+                ];
+            }, $recentBookings)); ?>,
+            todaySchedule: <?php echo json_encode(array_map(function($s) use ($today) {
+                $isDropoff = $s['start_date'] === $today;
+                $type = $isDropoff ? 'Drop-off' : 'Pick-up';
+                return [
+                    'type' => $type,
+                    'customer' => $s['customer_name'] ?? 'Unknown',
+                    'items' => $s['items'] ?? 'No items',
+                    'status' => $s['rental_status']
+                ];
+            }, $todaySchedule)); ?>
+        };
+
+        /**
+         * Export Dashboard as PDF
+         */
+        function exportDashboardPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+            let y = 15;
+
+            // Colors
+            const primary = [99, 102, 241];    // Indigo
+            const dark = [30, 30, 46];
+            const gray = [120, 120, 140];
+            const white = [255, 255, 255];
+
+            // ── Header ──
+            doc.setFillColor(...primary);
+            doc.rect(0, 0, pageWidth, 40, 'F');
+            doc.setTextColor(...white);
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('RentIt Dashboard Report', margin, 18);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const now = new Date();
+            doc.text('Generated: ' + now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }), margin, 28);
+            doc.text('Period: ' + now.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }), margin, 34);
+            y = 50;
+
+            // ── KPI Section ──
+            doc.setTextColor(...dark);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Key Performance Indicators', margin, y);
+            y += 8;
+
+            const kpis = [
+                { label: 'Total Revenue', value: dashboardData.totalRevenue, change: dashboardData.revenueChange },
+                { label: 'Active Rentals', value: String(dashboardData.activeRentals), change: 'In progress' },
+                { label: 'Pending Deliveries', value: String(dashboardData.pendingDeliveries), change: 'Next 2 days' },
+                { label: 'Machines Available', value: String(dashboardData.machinesAvailable), change: 'Ready to rent' }
+            ];
+
+            const cardW = (pageWidth - margin * 2 - 12) / 4;
+            kpis.forEach((kpi, i) => {
+                const x = margin + i * (cardW + 4);
+                // Card background
+                doc.setFillColor(245, 245, 250);
+                doc.roundedRect(x, y, cardW, 28, 3, 3, 'F');
+                // Label
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...gray);
+                doc.text(kpi.label, x + 4, y + 8);
+                // Value
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(...dark);
+                doc.text(kpi.value, x + 4, y + 18);
+                // Change
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...gray);
+                doc.text(kpi.change, x + 4, y + 24);
+            });
+            y += 38;
+
+            // ── Recent Bookings Table ──
+            doc.setTextColor(...dark);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Recent Bookings', margin, y);
+            y += 4;
+
+            if (dashboardData.recentBookings.length > 0) {
+                doc.autoTable({
+                    startY: y,
+                    margin: { left: margin, right: margin },
+                    head: [['Order ID', 'Customer', 'Items', 'Duration', 'Status']],
+                    body: dashboardData.recentBookings.map(b => [
+                        b.orderId, b.customer, b.items, b.duration, b.status
+                    ]),
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3,
+                        lineColor: [230, 230, 235],
+                        lineWidth: 0.3
+                    },
+                    headStyles: {
+                        fillColor: primary,
+                        textColor: white,
+                        fontStyle: 'bold',
+                        fontSize: 8
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 248, 252]
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 22 },
+                        4: { cellWidth: 28 }
+                    }
+                });
+                y = doc.lastAutoTable.finalY + 10;
+            } else {
+                y += 4;
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(...gray);
+                doc.text('No recent bookings found.', margin, y);
+                y += 10;
+            }
+
+            // ── Today's Schedule ──
+            doc.setTextColor(...dark);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Today's Schedule", margin, y);
+            y += 4;
+
+            if (dashboardData.todaySchedule.length > 0) {
+                doc.autoTable({
+                    startY: y,
+                    margin: { left: margin, right: margin },
+                    head: [['Type', 'Customer', 'Items', 'Status']],
+                    body: dashboardData.todaySchedule.map(s => [
+                        s.type, s.customer, s.items, s.status
+                    ]),
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3,
+                        lineColor: [230, 230, 235],
+                        lineWidth: 0.3
+                    },
+                    headStyles: {
+                        fillColor: [75, 85, 175],
+                        textColor: white,
+                        fontStyle: 'bold',
+                        fontSize: 8
+                    },
+                    alternateRowStyles: {
+                        fillColor: [248, 248, 252]
+                    }
+                });
+                y = doc.lastAutoTable.finalY + 10;
+            } else {
+                y += 4;
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(...gray);
+                doc.text('No scheduled deliveries or pickups for today.', margin, y);
+                y += 10;
+            }
+
+            // ── Inventory Health ──
+            doc.setTextColor(...dark);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Inventory Health', margin, y);
+            y += 4;
+
+            const inventory = [
+                ['Units Rented', dashboardData.itemsRented + ' / ' + dashboardData.totalItems],
+                ['In Repair', dashboardData.itemsRepair + ' unit(s)'],
+                ['Cleaning', dashboardData.itemsCleaning + ' unit(s)'],
+                ['Available', dashboardData.machinesAvailable + ' unit(s)']
+            ];
+
+            doc.autoTable({
+                startY: y,
+                margin: { left: margin, right: margin },
+                head: [['Category', 'Count']],
+                body: inventory,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    lineColor: [230, 230, 235],
+                    lineWidth: 0.3
+                },
+                headStyles: {
+                    fillColor: [60, 180, 100],
+                    textColor: white,
+                    fontStyle: 'bold',
+                    fontSize: 8
+                },
+                alternateRowStyles: {
+                    fillColor: [248, 252, 248]
+                },
+                columnStyles: {
+                    0: { cellWidth: 50 }
+                }
+            });
+
+            // ── Footer ──
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let p = 1; p <= pageCount; p++) {
+                doc.setPage(p);
+                const pageH = doc.internal.pageSize.getHeight();
+                doc.setFillColor(245, 245, 250);
+                doc.rect(0, pageH - 15, pageWidth, 15, 'F');
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...gray);
+                doc.text('RentIt Admin Dashboard Report \u2022 Confidential', margin, pageH - 6);
+                doc.text('Page ' + p + ' of ' + pageCount, pageWidth - margin, pageH - 6, { align: 'right' });
+            }
+
+            // Save
+            const filename = 'RentIt_Dashboard_' + now.toISOString().slice(0, 10) + '.pdf';
+            doc.save(filename);
         }
     </script>
 </body>
