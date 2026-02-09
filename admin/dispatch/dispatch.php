@@ -116,10 +116,15 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 <div class="dispatch-filters">
                     <div class="filter-tabs">
                         <button class="filter-tab active" data-filter="all">All</button>
-                        <button class="filter-tab" data-filter="delivery">Deliveries</button>
-                        <button class="filter-tab" data-filter="pickup">Pickups</button>
-                        <button class="filter-tab" data-filter="returning">Returning</button>
+                        <button class="filter-tab" data-filter="pending">Pending</button>
+                        <button class="filter-tab" data-filter="confirmed">Confirmed</button>
+                        <button class="filter-tab" data-filter="out_for_delivery">Out for Delivery</button>
+                        <button class="filter-tab" data-filter="active">Active</button>
+                        <button class="filter-tab" data-filter="return_scheduled">Return Scheduled</button>
+                        <button class="filter-tab" data-filter="returned">Returned</button>
                         <button class="filter-tab" data-filter="completed">Completed</button>
+                        <button class="filter-tab" data-filter="cancelled">Cancelled</button>
+                        <button class="filter-tab" data-filter="late">Late</button>
                     </div>
                     <div class="filter-search">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
