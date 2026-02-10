@@ -41,15 +41,15 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $cart_items = $stmt->get_result();
 
-
 $total_subtotal = 0;
 $items_list = []; 
 while($row = $cart_items->fetch_assoc()){
-   
     $d1 = new DateTime($row['start_date']);
     $d2 = new DateTime($row['end_date']);
-    $days = $d1->diff($d2)->days;
-    $days = ($days > 0) ? $days : 1; 
+    
+    // DIFF + 1 para maging inclusive (Feb 10 to Feb 11 = 2 days)
+    $diff = $d1->diff($d2);
+    $days = $diff->days + 1; 
 
     $row['rental_days'] = $days;
     $row['line_total'] = $row['price_per_day'] * $days;
@@ -57,7 +57,6 @@ while($row = $cart_items->fetch_assoc()){
     $total_subtotal += $row['line_total'];
     $items_list[] = $row;
 }
-
 
 $order_ref = "RIT-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
 
@@ -185,11 +184,15 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <h2>Order Items</h2>
                 <span class="item-count"><?php echo count($items_list); ?> items</span>
             </div>
-            <div class="order-items">
-    <?php foreach($items_list as $item): ?>
+
+          <div class="order-items">
+    <?php foreach($items_list as $item): 
+        // Image logic
+        $imgName = !empty($item['image']) ? $item['image'] : 'catalog-fallback.svg';
+    ?>
     <div class="order-item" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #eee;">
         <div style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; background: #fff; border: 1px solid #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
-            <img src="../../assets/images/<?php echo $item['image']; ?>" 
+            <img src="../../assets/images/<?php echo htmlspecialchars($imgName); ?>" 
                  style="max-width: 90%; max-height: 90%; object-fit: contain;"
                  onerror="this.src='../../assets/images/catalog-fallback.svg'">
         </div>
@@ -206,8 +209,8 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <div style="display: flex; justify-content: space-between;">
                     <span>End: <b><?php echo date('M d, Y', strtotime($item['end_date'])); ?></b></span>
                 </div>
-                <small style="color: #4f46e5; font-weight: 500;">
-                    (<?php echo $item['rental_days']; ?> day/s rental)
+                <small style="color: #4f46e5; font-weight: 600;">
+                    (<?php echo $item['rental_days']; ?> <?php echo ($item['rental_days'] > 1 ? 'days' : 'day'); ?> rental)
                 </small>
             </div>
 

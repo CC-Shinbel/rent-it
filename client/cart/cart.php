@@ -62,77 +62,85 @@ $result = mysqli_query($conn, $cart_query);
                         </div>
 
                         <div id="cartItemsList">
-                            <?php if (mysqli_num_rows($result) > 0): ?>
-                                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                                    <div class="cart-item-card" id="card-<?php echo $row['cart_row_id']; ?>" 
-                                         data-id="<?php echo $row['cart_row_id']; ?>" 
-                                         data-price="<?php echo $row['price_per_day']; ?>">
-                                        
-                                        <label class="cart-item-select">
-                                            <input type="checkbox" class="cart-checkbox item-checkbox" 
-                                                   data-id="<?php echo $row['cart_row_id']; ?>" 
-                                                   onchange="calculateTotal()">
-                                        </label>
-                                        
-                                        <?php 
-    // DITO ANG UPDATE: Idinugtong natin ang directory path bago ang filename
-    $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
+    <?php if (mysqli_num_rows($result) > 0): ?>
+        <?php while ($row = mysqli_fetch_assoc($result)): 
+            // 1. Calculate inclusive days (+1) logic
+            $startDateVal = $row['start_date'] ?: date('Y-m-d');
+            $endDateVal = $row['end_date'] ?: date('Y-m-d', strtotime('+1 day'));
+
+            $startDateObj = new DateTime($startDateVal);
+            $endDateObj = new DateTime($endDateVal);
+            
+            $diff = $startDateObj->diff($endDateObj);
+            $days = $diff->days + 1; // Inclusive count
+            $itemSubtotal = $days * $row['price_per_day'];
+
+            // 2. Image Path Logic
+            $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
+            $imageSrc = !empty($imagePathFromDB) 
+                ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
+                : '../../assets/images/catalog-fallback.svg';
+        ?>
+            <div class="cart-item-card" id="card-<?php echo $row['cart_row_id']; ?>" 
+                 data-id="<?php echo $row['cart_row_id']; ?>" 
+                 data-price="<?php echo $row['price_per_day']; ?>">
+                
+                <label class="cart-item-select">
+                    <input type="checkbox" class="cart-checkbox item-checkbox" 
+                           data-id="<?php echo $row['cart_row_id']; ?>" 
+                           onchange="calculateTotal()">
+                </label>
+                
+                <div class="cart-item-image">
+                    <img src="<?php echo $imageSrc; ?>" 
+                         alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                         class="cart-item-photo"
+                         onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+                </div>
+
+                <div class="cart-item-details">
+                    <div class="cart-item-header">
+                        <div class="cart-item-info">
+                            <h3 class="cart-item-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
+                            <span class="cart-item-category"><?php echo htmlspecialchars($row['category']); ?></span>
+                        </div>
+                        <div class="cart-item-price-wrap">
+                            <span class="cart-item-price">₱<?php echo number_format($row['price_per_day']); ?><span>/day</span></span>
+                        </div>
+                    </div>
+
+                    <div class="cart-item-rental-period">
+                        <div class="rental-dates-row">
+                            <div class="date-picker-group">
+                                <label>Start Date</label>
+                                <input type="date" class="cart-date-input start-date" 
+                                       id="start-<?php echo $row['cart_row_id']; ?>"
+                                       value="<?php echo $startDateVal; ?>" 
+                                       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
+                            </div>
+                            <span class="date-arrow">→</span>
+                            <div class="date-picker-group">
+                                <label>End Date</label>
+                                <input type="date" class="cart-date-input end-date" 
+                                       id="end-<?php echo $row['cart_row_id']; ?>"
+                                       value="<?php echo $endDateVal; ?>" 
+                                       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
+                            </div>
+                        </div>
+                        
+                        <div class="rental-summary">
+                            <span class="days-count" id="days-<?php echo $row['cart_row_id']; ?>">
+                                <?php echo $days . ($days > 1 ? " days" : " day"); ?>
+                            </span>
+                            <span class="cart-item-subtotal" id="subtotal-<?php echo $row['cart_row_id']; ?>">
+                                ₱<?php echo number_format($itemSubtotal); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endwhile; ?>
     
-    $imageSrc = !empty($imagePathFromDB) 
-        ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
-        : '../../assets/images/catalog-fallback.svg';
-?>
-<div class="cart-item-image">
-    <img 
-        src="<?php echo $imageSrc; ?>" 
-        alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-        class="cart-item-photo"
-        onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
-    >
-</div>
-
-                                        <div class="cart-item-details">
-                                            <div class="cart-item-header">
-                                                <div class="cart-item-info">
-                                                    <h3 class="cart-item-name"><?php echo $row['item_name']; ?></h3>
-                                                    <span class="cart-item-category"><?php echo $row['category']; ?></span>
-                                                </div>
-                                                <div class="cart-item-price-wrap">
-                                                    <span class="cart-item-price">₱<?php echo number_format($row['price_per_day']); ?><span>/day</span></span>
-                                                </div>
-                                            </div>
-
-                                            <div class="cart-item-rental-period">
-                                                <div class="rental-dates-row">
-                                                    <div class="date-picker-group">
-                                                        <label>Start Date</label>
-                                                        <input type="date" class="cart-date-input start-date" 
-       id="start-<?php echo $row['cart_row_id']; ?>"
-       value="<?php echo !empty($row['start_date']) ? $row['start_date'] : date('Y-m-d'); ?>" 
-       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
-                                                    </div>
-                                                    <span class="date-arrow">→</span>
-                                                    <div class="date-picker-group">
-                                                        <label>End Date</label>
-                                                        <input type="date" class="cart-date-input end-date" 
-       id="end-<?php echo $row['cart_row_id']; ?>"
-
-       value="<?php echo !empty($row['end_date']) ? $row['end_date'] : date('Y-m-d', strtotime('+1 day')); ?>" 
-       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
-                                                    </div>
-                                                </div>
-                                                <div class="rental-summary">
-                                                    <span class="days-count" id="days-<?php echo $row['cart_row_id']; ?>">1 day</span>
-                                                    <span class="cart-item-subtotal" id="subtotal-<?php echo $row['cart_row_id']; ?>">
-                                                        ₱<?php echo number_format($row['price_per_day']); ?>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                      
-                                    </div>
-                                <?php endwhile; ?>
                             <?php else: ?>
                                 <div class="empty-cart">
                                     <p>Your cart is empty.</p>
