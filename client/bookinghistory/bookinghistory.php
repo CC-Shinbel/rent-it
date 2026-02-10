@@ -157,6 +157,7 @@ $total_records = mysqli_num_rows($history_result);
 
                 <!-- Tabs Navigation -->
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link">Active Rentals</a>
                     <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link active">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>

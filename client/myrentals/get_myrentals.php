@@ -26,11 +26,11 @@ try {
         r.end_date,
         r.rental_status AS status,
         i.image AS image,
-        DATEDIFF(r.end_date, CURDATE()) AS days_left
+        (DATEDIFF(r.end_date, CURDATE()) + 1) AS days_left
     FROM rental r
     LEFT JOIN rental_item ri ON r.order_id = ri.order_id
     LEFT JOIN item i ON ri.item_id = i.item_id 
-    WHERE r.user_id = ? AND r.rental_status = 'Active'
+    WHERE r.user_id = ? AND r.rental_status = 'Booked'
     ";
 
     $stmtActive = $conn->prepare($activeQuery);

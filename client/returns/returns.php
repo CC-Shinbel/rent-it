@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     header("Location: returns.php");
     exit();
 }
-// Kunin ang bilang ng mga items na binalik dahil may sira (Status: Returned)
+
 $res_count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Returned'");
 $returned_count = mysqli_fetch_assoc($res_count)['total'] ?? 0;
 
@@ -194,6 +194,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
                 </div>
 
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
     <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
     <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
     <a href="returns.php" class="tab-link active">Returns & Extensions</a>
@@ -252,12 +253,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
                                         </div>
                                     </div>
                                 </div>
-                                <div class="return-footer">
-                                    <form method="POST">
-                                        <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-                                        <button type="submit" name="action" value="cancel_request" class="btn-cancel-return" onclick="return confirm('Cancel request?')">Cancel Request</button>
-                                    </form>
-                                </div>
+                               
                             </article>
                             <?php endwhile; ?>
                         <?php else: ?>

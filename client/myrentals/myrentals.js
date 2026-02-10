@@ -63,7 +63,7 @@ function renderActiveRentals(rentals) {
         const daysClass = r.days_left <= 1 ? 'days-danger' : '';
         const cardExpiring = r.days_left <= 1 ? 'card-expiring' : '';
         const imageSrc = r.image
-            ? `/rent-it/assets/images/products/${r.image}`
+            ? `/rent-it/assets/images/${r.image}`
             : '/rent-it/assets/images/catalog-fallback.svg';
         
         const orderId = r.order_id;

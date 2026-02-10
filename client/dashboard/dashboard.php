@@ -32,7 +32,7 @@ $user_data = mysqli_fetch_assoc($user_query);
 $res_spent = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
 $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
-$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Active','Rented', 'Pending Extension')");
+$res_active = mysqli_query($conn, "SELECT COUNT(*) AS active_count FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Booked','Rented', 'Pending Extension')");
 $active_count = mysqli_fetch_assoc($res_active)['active_count'] ?? 0;
 
 $res_upcoming = mysqli_query($conn, "SELECT COUNT(*) AS upcoming FROM RENTAL WHERE user_id = $user_id AND rental_status IN ('Returned')");
@@ -41,7 +41,7 @@ $upcoming_returns = mysqli_fetch_assoc($res_upcoming)['upcoming'] ?? 0;
 $active_rentals_query = "SELECT r.*, i.item_name FROM RENTAL r 
                          LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                          LEFT JOIN ITEM i ON ri.item_id = i.item_id 
-                         WHERE r.user_id = $user_id AND r.rental_status IN ('Active','Rented', 'Pending Extension')
+                         WHERE r.user_id = $user_id AND r.rental_status IN ('Booked','Rented', 'Pending Extension')
                          GROUP BY r.order_id";
 $active_result = mysqli_query($conn, $active_rentals_query);
 
@@ -56,7 +56,7 @@ $history_query = "SELECT r.*, i.item_name FROM RENTAL r
                   LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id 
                   LEFT JOIN ITEM i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
-                  AND r.rental_status IN ('Active', 'Returned', 'Extended') 
+                  AND r.rental_status IN ('Booked', 'Returned', 'Extended') 
                   ORDER BY r.start_date DESC LIMIT 5";
 $history_result = mysqli_query($conn, $history_query);
 

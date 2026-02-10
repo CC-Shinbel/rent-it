@@ -141,6 +141,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
 
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link active">Active Rentals</a>
                     <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
