@@ -372,6 +372,10 @@
     padding-left: 6px;
 }
 
+.page-skeleton-loader > span:not(.page-skeleton-spinner) {
+    display: none;
+}
+
 .page-skeleton-spinner {
     width: 18px;
     height: 18px;

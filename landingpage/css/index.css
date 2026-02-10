@@ -599,43 +599,9 @@ body:has(.mobile-nav.open)::before {
     color: var(--section-text);
 }
 
-/* Tabs */
-.tabs-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Section Header */
+.section-header {
     margin-bottom: 28px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.tabs {
-    display: flex;
-    gap: 8px;
-}
-
-.tab {
-    padding: 10px 20px;
-    border-radius: 999px;
-    border: 1px solid var(--tab-border);
-    background: transparent;
-    color: var(--tab-text);
-    font-weight: 500;
-    font-size: 14px;
-    transition: var(--transition);
-    cursor: pointer;
-}
-
-.tab:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-}
-
-.tab.active {
-    background: var(--accent);
-    color: var(--section-title);
-    border-color: var(--accent);
 }
 
 /* Machine Cards Grid */
@@ -833,6 +799,49 @@ body:has(.mobile-nav.open)::before {
     font-size: 28px;
     font-weight: 800;
     color: var(--text);
+}
+
+/* Delivery Right Column */
+.delivery-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.delivery-illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 280px;
+    height: 280px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.delivery-illustration:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent);
+    transform: scale(1.05);
+}
+
+.delivery-truck-icon {
+    width: 140px;
+    height: 140px;
+    color: var(--accent);
+    transition: var(--transition);
+}
+
+.delivery-illustration:hover .delivery-truck-icon {
+    transform: translateX(10px);
+}
+
+@media (max-width: 1024px) {
+    .delivery-right {
+        display: none;
+    }
 }
 
 /* Estimator Card */
@@ -1391,11 +1400,6 @@ body:has(.mobile-nav.open)::before {
         font-size: 16px;
     }
 
-    .tabs-row {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
     .cards {
         grid-template-columns: 1fr;
     }
@@ -1459,10 +1463,6 @@ body:has(.mobile-nav.open)::before {
 
     .stat-num {
         font-size: 26px;
-    }
-
-    .tabs {
-        flex-wrap: wrap;
     }
 
     .cta-card {

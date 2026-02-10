@@ -160,16 +160,9 @@ $userName = $_SESSION['user_name'] ?? '';
              ============================ -->
         <section id="machines" class="choose">
             <div class="container">
-                <div class="tabs-row">
-                    <div class="section-header animate-on-scroll">
-                        <h2 class="section-title">Choose Your Machine</h2>
-                        <p class="section-subtitle">Select from our range of high-performance videoke setups.</p>
-                    </div>
-                    <div class="tabs">
-                        <button class="tab active">All Machines</button>
-                        <button class="tab">Standard</button>
-                        <button class="tab">Premium</button>
-                    </div>
+                <div class="section-header animate-on-scroll">
+                    <h2 class="section-title">Choose Your Machine</h2>
+                    <p class="section-subtitle">Select from our range of high-performance videoke setups.</p>
                 </div>
 
                 <div class="cards">
@@ -299,7 +292,16 @@ $userName = $_SESSION['user_name'] ?? '';
                     </div>
                 </div>
 
-                
+                <!-- Right Column - Delivery Truck Icon -->
+                <div class="delivery-right animate-on-scroll">
+                    <div class="delivery-illustration">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="delivery-truck-icon">
+                            <path d="M1 3h15v13H1zM16 8h4l3 4v5h-7V8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="5.5" cy="18.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -398,7 +400,7 @@ $userName = $_SESSION['user_name'] ?? '';
                         <p class="brand-sub">
                             Making celebrations louder and more memorable with premium videoke rentals since 2018.
                         </p>
-                        <p class="powered-by">Powered by <a href="https://certicode.com" target="_blank" rel="noopener">CertiCode</a></p>
+                        <p class="powered-by">Powered by <a href="https://www.certicode.tech/" target="_blank" rel="noopener">CertiCode</a></p>
                         <div class="social-links">
                             <a href="https://www.facebook.com/CertiCode" class="social" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -430,17 +432,6 @@ $userName = $_SESSION['user_name'] ?? '';
                         <a href="<?= BASE_URL ?>/pages/aboutus.html" class="footer-link">About Us</a>
                         <a href="<?= BASE_URL ?>/pages/contactus.html" class="footer-link">Contact</a>
                         <a href="<?= BASE_URL ?>/pages/terms.html" class="footer-link">Terms of Service</a>
-                    </nav>
-                </div>
-
-                <!-- Support Links -->
-                <div class="footer-col">
-                    <h5>Support</h5>
-                    <nav class="footer-nav">
-                        <a href="<?= BASE_URL ?>/pages/wip.html" class="footer-link">How It Works</a>
-                        <a href="#pricing" class="footer-link">Pricing Packages</a>
-                        <a href="<?= BASE_URL ?>/pages/wip.html" class="footer-link">Safety Guidelines</a>
-                        <a href="<?= BASE_URL ?>/pages/wip.html" class="footer-link">Delivery Areas</a>
                     </nav>
                 </div>
 
