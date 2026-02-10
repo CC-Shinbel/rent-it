@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 06, 2026 at 03:08 AM
+-- Generation Time: Feb 10, 2026 at 02:14 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,26 @@ CREATE TABLE `cart` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `driver`
+--
+
+CREATE TABLE `driver` (
+  `driver_id` int(11) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `license_number` varchar(50) DEFAULT NULL,
+  `status` enum('available','on_delivery','off_duty') DEFAULT 'available',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -61,6 +80,13 @@ CREATE TABLE `favorites` (
   `item_id` int(11) NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `favorites`
+--
+
+INSERT INTO `favorites` (`favorite_id`, `id`, `item_id`, `added_at`) VALUES
+(1, 8, 1, '2026-02-09 01:02:58');
 
 -- --------------------------------------------------------
 
@@ -100,7 +126,10 @@ INSERT INTO `item` (`item_id`, `item_name`, `description`, `category`, `image`, 
 (4, 'HomeParty Ultra', 'Best seller. Features YouTube integration and scoring system.', 'Premium', 'homeparty-ultra.jpg', 4.8, 56, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
 (5, 'MiniSing Pocket', 'Ultra-portable. Fits in a backpack. Surprise your friends anywhere!', 'Portable', 'minising-pocket.jpg', 3.5, 12, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
 (6, 'Pro-Ject Rockbox', 'Heavy duty casing with high-fidelity sound output for outdoor events.', 'Professional', 'rockbox-pro.jpg', 4.7, 15, 180.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(7, 'Longganisa Maker', 'qweqwe', 'portable', 'item_1770294426_69848c9ac4c86.jpg', NULL, 0, 100.00, 80.00, 'good', 'Repairing', NULL, 0, 1, 1, 1, 0, NULL);
+(7, 'Longganisa Maker', 'qweqwe', 'portable', 'item_1770294426_69848c9ac4c86.jpg', NULL, 0, 100.00, 80.00, 'good', 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(8, 'macmac test', 'lakas neto', 'Portable', 'item_1770355768_69857c38382e9.jpg', NULL, 0, 300.00, 50.00, 'excellent', 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(9, 'macmac pogi', 'pogi ako', 'Professional', 'item_1770355915_69857ccb89fb5.png', NULL, 0, 500.00, 50.00, 'good', 'Repairing', NULL, 0, 1, 1, 1, 1, 'malakas'),
+(10, 'leander gwapings', 'gwapo magcode', 'Premium', 'item_1770363559_69859aa7d4266.png', NULL, 0, 250.00, 50.00, 'good', 'Available', NULL, 0, 1, 1, 1, 1, 'gwapings');
 
 -- --------------------------------------------------------
 
@@ -128,22 +157,29 @@ CREATE TABLE `rental` (
   `order_id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `rental_status` varchar(50) DEFAULT NULL,
+  `return_reason` text DEFAULT NULL,
+  `extension_days` int(11) DEFAULT 0,
   `total_price` decimal(10,2) DEFAULT NULL,
   `late_fee` decimal(10,2) DEFAULT 0.00,
   `venue` varchar(255) DEFAULT NULL,
   `customer_address` text DEFAULT NULL,
   `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL
+  `end_date` date DEFAULT NULL,
+  `driver_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rental`
 --
 
-INSERT INTO `rental` (`order_id`, `user_id`, `rental_status`, `total_price`, `late_fee`, `venue`, `customer_address`, `start_date`, `end_date`) VALUES
-(502, 3, 'In Transit', 6500.00, 0.00, NULL, NULL, '2026-02-03', '2026-02-08'),
-(503, 3, 'Pending Return', 1500.00, 0.00, NULL, NULL, '2023-12-01', '2023-12-05'),
-(504, 3, 'Pending Return', 320.00, 0.00, 'Home Delivery', NULL, '2026-02-03', '2026-02-04');
+INSERT INTO `rental` (`order_id`, `user_id`, `rental_status`, `return_reason`, `extension_days`, `total_price`, `late_fee`, `venue`, `customer_address`, `start_date`, `end_date`, `driver_id`) VALUES
+(1, NULL, NULL, NULL, 0, NULL, 0.00, NULL, NULL, NULL, NULL, NULL),
+(2, 8, 'Completed', 'asd', 0, 320.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
+(3, 8, 'Pending Return', NULL, 0, 1270.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
+(4, 8, 'Pending Return', NULL, 0, 700.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
+(5, 8, 'Returned', 'asd', 0, 450.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
+(6, 8, 'Active', NULL, 0, 500.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
+(7, 8, 'Active', NULL, 0, 300.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL);
 
 -- --------------------------------------------------------
 
@@ -164,7 +200,14 @@ CREATE TABLE `rental_item` (
 --
 
 INSERT INTO `rental_item` (`rental_item_id`, `order_id`, `item_id`, `item_price`, `item_status`) VALUES
-(8, 504, 1, 120.00, 'Reserved');
+(1, 2, 1, 120.00, 'Returned'),
+(2, 3, 1, 120.00, 'Reserved'),
+(3, 3, 8, 300.00, 'Reserved'),
+(4, 3, 9, 500.00, 'Reserved'),
+(5, 4, 9, 500.00, 'Reserved'),
+(6, 5, 10, 250.00, 'Rented'),
+(7, 6, 8, 300.00, 'Rented'),
+(8, 7, 7, 100.00, 'Rented');
 
 -- --------------------------------------------------------
 
@@ -189,8 +232,7 @@ CREATE TABLE `repair` (
 --
 
 INSERT INTO `repair` (`repair_id`, `item_id`, `issue_type`, `priority`, `status`, `created_date`, `eta_date`, `estimated_cost`, `notes`) VALUES
-(1, 7, 'power failure', 'medium', 'completed', '2026-02-06', '2026-02-13', 2000.00, 'sana matapos agad'),
-(2, 7, 'power failure', 'high', 'in-progress', '2026-02-06', '2026-02-17', 2000.00, 'macmacmalakas');
+(4, 9, 'Autodisassemble', 'medium', 'in-progress', '2026-02-09', '2026-02-20', 6000.00, '');
 
 -- --------------------------------------------------------
 
@@ -242,7 +284,8 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password`, `profile_p
 (4, 'Via', 'viavinusumali@gmail.com', '09746873322', '$2y$10$ZkMHx7N1X0ThH/yGvjdqKO6dAZAEKyTxS8ggAauO750ik1qGJQxpi', NULL, NULL, NULL, NULL, 'customer', '2026-01-29 19:16:37', '2026-01-29 19:16:37', NULL, NULL, 'Bronze'),
 (5, 'try try', 'via@gmail.com', '09124567890', '$2y$10$Lx42t0tANSNowiJw2lk0cORb8BpuRfR1LRWNMovb5M1JzXYb0BHHy', NULL, NULL, NULL, NULL, 'customer', '2026-01-29 19:20:15', '2026-01-29 19:20:15', NULL, NULL, 'Bronze'),
 (6, 'via', 'viaa@gmail.com', '09124466897', '$2y$10$Fx8uDn7O52YpdLr5Zhq3F.i7gxoiti.LWSqOBvRxRXXF0Qd6xo1LW', NULL, NULL, NULL, NULL, 'customer', '2026-01-29 19:21:01', '2026-01-29 19:21:01', NULL, NULL, 'Bronze'),
-(7, 'lean', 'qwerty@gmail.com', '+63 032 216 1665', '$2y$10$Dwuyb8FLC1mwgK3ntLXJ9ev2LwAB9dVYi54XGp7SErANyOuaW8J6.', NULL, NULL, NULL, NULL, 'customer', '2026-02-05 12:33:06', '2026-02-05 12:33:06', NULL, NULL, 'Bronze');
+(7, 'lean', 'qwerty@gmail.com', '+63 032 216 1665', '$2y$10$Dwuyb8FLC1mwgK3ntLXJ9ev2LwAB9dVYi54XGp7SErANyOuaW8J6.', NULL, NULL, NULL, NULL, 'customer', '2026-02-05 12:33:06', '2026-02-05 12:33:06', NULL, NULL, 'Bronze'),
+(8, 'macmac', 'macmacpalo@gmail.com', '+63 092 222 3333', '$2y$10$pZqWSpV4PPg7qXiYDJJh.evrD4xYXsdeGkx3HfkOCsJt2n6UaOD3O', NULL, NULL, NULL, NULL, 'customer', '2026-02-09 01:02:30', '2026-02-09 05:35:27', NULL, NULL, 'Bronze');
 
 -- --------------------------------------------------------
 
@@ -277,6 +320,12 @@ ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `driver`
+--
+ALTER TABLE `driver`
+  ADD PRIMARY KEY (`driver_id`);
+
+--
 -- Indexes for table `favorites`
 --
 ALTER TABLE `favorites`
@@ -303,7 +352,8 @@ ALTER TABLE `penalty_tracker`
 --
 ALTER TABLE `rental`
   ADD PRIMARY KEY (`order_id`),
-  ADD KEY `fk_user_rental` (`user_id`);
+  ADD KEY `fk_user_rental` (`user_id`),
+  ADD KEY `fk_rental_driver` (`driver_id`);
 
 --
 -- Indexes for table `rental_item`
@@ -356,19 +406,25 @@ ALTER TABLE `calendar`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `driver`
+--
+ALTER TABLE `driver`
+  MODIFY `driver_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `favorite_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `favorite_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `penalty_tracker`
@@ -380,7 +436,7 @@ ALTER TABLE `penalty_tracker`
 -- AUTO_INCREMENT for table `rental`
 --
 ALTER TABLE `rental`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=505;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `rental_item`
@@ -392,7 +448,7 @@ ALTER TABLE `rental_item`
 -- AUTO_INCREMENT for table `repair`
 --
 ALTER TABLE `repair`
-  MODIFY `repair_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `repair_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `review`
@@ -404,7 +460,7 @@ ALTER TABLE `review`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user_settings`
@@ -440,6 +496,7 @@ ALTER TABLE `penalty_tracker`
 -- Constraints for table `rental`
 --
 ALTER TABLE `rental`
+  ADD CONSTRAINT `fk_rental_driver` FOREIGN KEY (`driver_id`) REFERENCES `driver` (`driver_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_user_rental` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
