@@ -35,60 +35,6 @@ $result = mysqli_query($conn, $cart_query);
     <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
 </head>
 <body>
-    <div class="page-skeleton-overlay" aria-hidden="true">
-        <div class="page-skeleton-shell">
-            <aside class="page-skeleton-sidebar">
-                <div class="page-skeleton-logo skeleton-shape"></div>
-                <div class="page-skeleton-nav">
-                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                </div>
-                <div class="page-skeleton-user">
-                    <span class="page-skeleton-circle skeleton-shape"></span>
-                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
-                </div>
-            </aside>
-            <section class="page-skeleton-main">
-                <div class="page-skeleton-topbar">
-                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
-                    <span class="page-skeleton-circle skeleton-shape"></span>
-                </div>
-                <div class="page-skeleton-card">
-                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
-                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
-                    </div>
-                    <div class="page-skeleton-table">
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="page-skeleton-loader">
-                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
-                    <span>Loading content...</span>
-                </div>
-            </section>
-        </div>
-    </div>
     <div class="app-container">
         <div id="sidebarContainer"></div>
         
@@ -129,20 +75,21 @@ $result = mysqli_query($conn, $cart_query);
                                         </label>
                                         
                                         <?php 
-                                            $imageSrc = !empty($row['image']) 
-                                                ? '../../assets/images/products/' . htmlspecialchars($row['image']) 
-                                                : '../../assets/images/catalog-fallback.svg';
-                                        ?>
-                                        <div class="cart-item-image">
-                                            <a class="cart-item-image-link" href="<?php echo $imageSrc; ?>" target="_blank" rel="noopener" title="Open image in new tab">
-                                                <img 
-                                                    src="<?php echo $imageSrc; ?>" 
-                                                    alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-                                                    class="cart-item-photo"
-                                                    onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';"
-                                                >
-                                            </a>
-                                        </div>
+    // DITO ANG UPDATE: Idinugtong natin ang directory path bago ang filename
+    $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
+    
+    $imageSrc = !empty($imagePathFromDB) 
+        ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
+        : '../../assets/images/catalog-fallback.svg';
+?>
+<div class="cart-item-image">
+    <img 
+        src="<?php echo $imageSrc; ?>" 
+        alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+        class="cart-item-photo"
+        onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';"
+    >
+</div>
 
                                         <div class="cart-item-details">
                                             <div class="cart-item-header">
@@ -160,17 +107,18 @@ $result = mysqli_query($conn, $cart_query);
                                                     <div class="date-picker-group">
                                                         <label>Start Date</label>
                                                         <input type="date" class="cart-date-input start-date" 
-                                                               id="start-<?php echo $row['cart_row_id']; ?>"
-                                                               value="<?php echo date('Y-m-d'); ?>" 
-                                                               onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
+       id="start-<?php echo $row['cart_row_id']; ?>"
+       value="<?php echo !empty($row['start_date']) ? $row['start_date'] : date('Y-m-d'); ?>" 
+       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
                                                     </div>
                                                     <span class="date-arrow">→</span>
                                                     <div class="date-picker-group">
                                                         <label>End Date</label>
                                                         <input type="date" class="cart-date-input end-date" 
-                                                               id="end-<?php echo $row['cart_row_id']; ?>"
-                                                               value="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" 
-                                                               onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
+       id="end-<?php echo $row['cart_row_id']; ?>"
+
+       value="<?php echo !empty($row['end_date']) ? $row['end_date'] : date('Y-m-d', strtotime('+1 day')); ?>" 
+       onchange="updateItemTotal(<?php echo $row['cart_row_id']; ?>)">
                                                     </div>
                                                 </div>
                                                 <div class="rental-summary">
@@ -187,10 +135,7 @@ $result = mysqli_query($conn, $cart_query);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <div class="empty-cart">
-                                    <div class="empty-icon">🛒</div>
-                                    <h2 class="empty-title">Your cart is empty</h2>
-                                    <p class="empty-text">Browse the catalog and add your first videoke set.</p>
-                                    <a href="../catalog/catalog.php" class="btn-browse-catalog">Browse Catalog</a>
+                                    <p>Your cart is empty.</p>
                                 </div>
                             <?php endif; ?>
                         </div>

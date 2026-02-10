@@ -1,7 +1,6 @@
 <?php
 session_start();
 include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
-// 1. Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../auth/login.php");
     exit();
@@ -9,31 +8,30 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. Kunin ang Customer Information mula sa database
+
 $user_query = "SELECT full_name, email, phone, address FROM users WHERE id = ?";
 $stmt = $conn->prepare($user_query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_data = $stmt->get_result()->fetch_assoc();
 
-// --- UPDATE: FILTERING LOGIC ---
-// Kunin ang listahan ng IDs mula sa URL (?items=1,2,3)
+
 $items_to_show = isset($_GET['items']) ? $_GET['items'] : '';
 
 if (empty($items_to_show)) {
-    // Kung walang sineselect, ibalik sa cart page
+
     header("Location: ../cart/cart.php");
     exit();
 }
 
-// Linisin ang input para sa security (numbers at commas lang)
+
 $ids_array = explode(',', $items_to_show);
 $clean_ids = implode(',', array_map('intval', $ids_array));
 
-// 3. Get SELECTED Cart Items with Dates
-// Gagamit tayo ng "WHERE user_id = ? AND c.id IN ($clean_ids)" para mafilter ang clinger items
+
+
 $cart_query = "SELECT c.id as cart_row_id, i.item_name, i.category, i.price_per_day, i.image,
-                      c.start_date, c.end_date
+                      c.start_date, c.end_date 
                FROM cart c 
                JOIN item i ON c.item_id = i.item_id 
                WHERE c.user_id = ? AND c.id IN ($clean_ids)";
@@ -43,15 +41,15 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $cart_items = $stmt->get_result();
 
-// Calculate Subtotal gamit ang Rental Days multiplier
+
 $total_subtotal = 0;
 $items_list = []; 
 while($row = $cart_items->fetch_assoc()){
-    // Kunin ang diff ng dates mula sa database
+   
     $d1 = new DateTime($row['start_date']);
     $d2 = new DateTime($row['end_date']);
     $days = $d1->diff($d2)->days;
-    $days = ($days > 0) ? $days : 1; // Minimum 1 day
+    $days = ($days > 0) ? $days : 1; 
 
     $row['rental_days'] = $days;
     $row['line_total'] = $row['price_per_day'] * $days;
@@ -60,7 +58,7 @@ while($row = $cart_items->fetch_assoc()){
     $items_list[] = $row;
 }
 
-// 4. Generate Order Reference (Random ID)
+
 $order_ref = "RIT-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
 
 $delivery_fee = 150;
@@ -89,63 +87,9 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     <link rel="stylesheet" href="../checkout/checkout.css">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/assets/images/rIT_logo_tp.png">
 </head>
 <body>
-    <div class="page-skeleton-overlay" aria-hidden="true">
-        <div class="page-skeleton-shell">
-            <aside class="page-skeleton-sidebar">
-                <div class="page-skeleton-logo skeleton-shape"></div>
-                <div class="page-skeleton-nav">
-                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
-                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                </div>
-                <div class="page-skeleton-user">
-                    <span class="page-skeleton-circle skeleton-shape"></span>
-                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
-                </div>
-            </aside>
-            <section class="page-skeleton-main">
-                <div class="page-skeleton-topbar">
-                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
-                    <span class="page-skeleton-circle skeleton-shape"></span>
-                </div>
-                <div class="page-skeleton-card">
-                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
-                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
-                    </div>
-                    <div class="page-skeleton-table">
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                        <div class="page-skeleton-row">
-                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="page-skeleton-loader">
-                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
-                    <span>Loading content...</span>
-                </div>
-            </section>
-        </div>
-    </div>
     <div class="app-container">
         <!-- Sidebar Container (Injected by JS) -->
         <div id="sidebarContainer"></div>
@@ -242,31 +186,38 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <span class="item-count"><?php echo count($items_list); ?> items</span>
             </div>
             <div class="order-items">
-                <?php 
-                $total_subtotal = 0;
-                $cart_items->data_seek(0);
-                while($item = $cart_items->fetch_assoc()): 
-                    $subtotal = $item['price_per_day'] * 1; 
-                    $total_subtotal += $subtotal;
-                ?>
-                <?php
-                    $imageSrc = !empty($item['image'])
-                        ? '../../assets/images/products/' . htmlspecialchars($item['image'])
-                        : '../../assets/images/catalog-fallback.svg';
-                ?>
-                <div class="order-item">
-                    <div class="order-item-image">
-                        <a class="order-item-image-link" href="<?php echo $imageSrc; ?>" target="_blank" rel="noopener" title="Open image in new tab">
-                            <img src="<?php echo $imageSrc; ?>" alt="<?php echo htmlspecialchars($item['item_name']); ?>" onerror="this.src='/rent-it/assets/images/catalog-fallback.svg'">
-                        </a>
-                    </div>
-                    <div class="order-item-details">
-                        <h4 class="order-item-name"><?php echo htmlspecialchars($item['item_name']); ?></h4>
-                        <span class="item-subtotal">₱<?php echo number_format($subtotal, 2); ?></span>
-                    </div>
+    <?php foreach($items_list as $item): ?>
+    <div class="order-item" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #eee;">
+        <div style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; background: #fff; border: 1px solid #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
+            <img src="../../assets/images/<?php echo $item['image']; ?>" 
+                 style="max-width: 90%; max-height: 90%; object-fit: contain;"
+                 onerror="this.src='../../assets/images/catalog-fallback.svg'">
+        </div>
+        
+        <div class="order-item-details" style="flex: 1;">
+            <h4 class="order-item-name" style="margin: 0; font-size: 0.95rem; color: #333;">
+                <?php echo htmlspecialchars($item['item_name']); ?>
+            </h4>
+            
+            <div style="font-size: 0.8rem; color: #666; margin: 4px 0;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Start: <b><?php echo date('M d, Y', strtotime($item['start_date'])); ?></b></span>
                 </div>
-                <?php endwhile; ?>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>End: <b><?php echo date('M d, Y', strtotime($item['end_date'])); ?></b></span>
+                </div>
+                <small style="color: #4f46e5; font-weight: 500;">
+                    (<?php echo $item['rental_days']; ?> day/s rental)
+                </small>
             </div>
+
+            <span class="item-subtotal" style="font-weight: 600; color: #f38630;">
+                ₱<?php echo number_format($item['line_total'], 2); ?>
+            </span>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
         </div>
 
         <div class="checkout-card order-summary-card">
@@ -344,7 +295,6 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     });
 });
 </script>
-
 <script>
 document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -352,9 +302,13 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     const totalElement = document.getElementById('summaryTotal');
     const grandTotal = totalElement ? parseFloat(totalElement.innerText.replace(/[^\d.]/g, '')) : 0;
 
-    // Kunin lahat ng input sa loob ng form (kasama na yung hidden rental_days)
     const formData = new FormData(this); 
     
+    // --- ETO ANG DAGDAG ---
+    // Ipinapasa nito yung string ng IDs (e.g., "12,15") sa place_order.php
+    formData.append('cart_ids', '<?php echo $items_to_show; ?>'); 
+    // ---------------------
+
     formData.append('grand_total', grandTotal);
     
     const delivery = document.querySelector('input[name="delivery"]:checked');
@@ -371,43 +325,42 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         didOpen: () => { Swal.showLoading(); }
     });
 
-fetch('place_order.php', {
-    method: 'POST',
-    body: formData
-})
-.then(response => response.text()) 
-.then(text => {
-    Swal.close(); 
-
-    try {
-        const data = JSON.parse(text); 
-        if (data.status === 'success') {
+    fetch('place_order.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text()) 
+    .then(text => {
+        Swal.close(); 
+        try {
+            const data = JSON.parse(text); 
+            if (data.status === 'success') {
+                Swal.fire({
+                    title: 'Order Confirmed!',
+                    text: 'Your Order ID is: ' + data.order_id,
+                    icon: 'success',
+                    confirmButtonText: 'View My Rentals',
+                    confirmButtonColor: '#4f46e5'
+                }).then(() => {
+                    window.location.href = '../myrentals/myrentals.php';
+                });
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        } catch (err) {
+            console.error("Server Error Response:", text);
             Swal.fire({
-                title: 'Order Confirmed!',
-                text: 'Your Order ID is: ' + data.order_id,
-                icon: 'success',
-                confirmButtonText: 'View My Rentals',
-                confirmButtonColor: '#4f46e5'
-            }).then(() => {
-                window.location.href = '../myrentals/myrentals.php';
+                title: 'System Error',
+                text: 'Maling response mula sa server.',
+                icon: 'error'
             });
-        } else {
-            Swal.fire('Error', data.message, 'error');
         }
-    } catch (err) {
-        console.error("Server Error Response:", text);
-        Swal.fire({
-            title: 'System Error',
-            text: 'May error sa server side. Tingnan ang "Response" sa Network Tab.',
-            icon: 'error'
-        });
-    }
-})
-.catch(error => {
-    Swal.close(); 
-    console.error('Fetch Error:', error);
-    Swal.fire('Error', 'Hindi makakonekta sa server.', 'error');
-});
+    })
+    .catch(error => {
+        Swal.close(); 
+        console.error('Fetch Error:', error);
+        Swal.fire('Error', 'Hindi makakonekta sa server.', 'error');
+    });
 });
 </script>
     <!-- Scripts -->
