@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPaymentOptions();
     initPromoCode();
     initConfirmOrder();
-    loadCartData();
+  
 });
 
 /**
@@ -138,116 +138,28 @@ function applyDiscount(percentage) {
     
     updateOrderSummary();
 }
-
 function updateOrderSummary() {
     const subtotalEl = document.getElementById('summarySubtotal');
     const deliveryEl = document.getElementById('summaryDelivery');
     const totalEl = document.getElementById('summaryTotal');
-    const discountRow = document.getElementById('discountRow');
 
     if (!subtotalEl || !deliveryEl || !totalEl) return;
 
-    const subtotal = subtotalEl.dataset.value 
-        ? parseFloat(subtotalEl.dataset.value) 
-        : parseFloat(subtotalEl.textContent.replace(/[₱,]/g, ''));
+    // Kunin ang subtotal at tanggalin ang lahat ng non-numeric characters maliban sa decimal point
+    const subtotal = parseFloat(subtotalEl.textContent.replace(/[^\d.]/g, ''));
     
     const selectedDelivery = document.querySelector('input[name="delivery"]:checked');
     const deliveryType = selectedDelivery ? selectedDelivery.value : 'standard';
     const deliveryFee = DELIVERY_FEES[deliveryType];
 
-    deliveryEl.textContent = deliveryFee === 0 ? 'Free' : `₱${deliveryFee.toLocaleString()}`;
+    deliveryEl.textContent = deliveryFee === 0 ? 'Free' : `₱${deliveryFee.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 
+    // Siguraduhin na SERVICE_FEE ay defined sa taas ng JS mo (50)
     let total = subtotal + deliveryFee + SERVICE_FEE;
-
-    const discountAmount = parseFloat(discountRow.dataset.discount) || 0;
-    if (discountRow.style.display !== 'none') {
-        total -= discountAmount;
-    }
 
     totalEl.textContent = `₱${total.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 }
 
-
-function initConfirmOrder() {
-    const confirmBtn = document.getElementById('btnConfirmOrder');
-    
-    if (!confirmBtn) return;
-    
-    confirmBtn.addEventListener('click', () => {
-        // Validate customer info
-        const customerName = document.getElementById('customerName')?.textContent;
-        const customerEmail = document.getElementById('customerEmail')?.textContent;
-        
-        if (!customerName || customerName === 'Not set' || !customerEmail || customerEmail === 'Not set') {
-            showToast('Please complete your customer information', 'error');
-            return;
-        }
-        
-        // Show processing state
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = `
-            <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
-                <circle cx="12" cy="12" r="10" stroke-dasharray="31.4" stroke-dashoffset="10"/>
-            </svg>
-            Processing...
-        `;
-        
-        // Simulate order processing
-        setTimeout(() => {
-            // Update receipt status
-            const statusBadge = document.querySelector('.status-badge');
-            if (statusBadge) {
-                statusBadge.textContent = 'Confirmed';
-                statusBadge.classList.remove('pending');
-                statusBadge.classList.add('confirmed');
-            }
-            
-            // Update button
-            confirmBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Order Confirmed!
-            `;
-            confirmBtn.style.background = 'var(--success-color, #22C55E)';
-            confirmBtn.style.boxShadow = '0 4px 15px rgba(34, 197, 94, 0.3)';
-            
-            // Clear cart from localStorage
-            localStorage.removeItem('rentit_cart');
-            
-            showToast('Order placed successfully! You will receive a confirmation email.', 'success');
-            
-            // Redirect to rentals page after delay
-            setTimeout(() => {
-                window.location.href = '/client/myrentals/myrentals.html';
-            }, 3000);
-        }, 2000);
-    });
-}
-
-/**
- * Load cart data from localStorage
- * In a real app, this would be passed from the cart page
- */
-function loadCartData() {
-    const cart = localStorage.getItem('rentit_cart');
-    
-    if (cart) {
-        try {
-            const cartItems = JSON.parse(cart);
-            // In a real app, would dynamically render order items from cart data
-            const itemCountEl = document.getElementById('itemCount');
-            if (itemCountEl && cartItems.length > 0) {
-                itemCountEl.textContent = `${cartItems.length} item${cartItems.length !== 1 ? 's' : ''}`;
-            }
-        } catch (e) {
-            console.error('Error loading cart data:', e);
-        }
-    }
-    
-    // Initialize summary
-    updateOrderSummary();
-}
 
 /**
  * Toast notification helper

@@ -9,7 +9,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $u_id = $_SESSION['user_id'];
 
-$cart_query = "SELECT c.id AS cart_row_id, i.item_name, i.price_per_day, i.category, i.image 
+$cart_query = "SELECT c.id AS cart_row_id, i.item_name, i.price_per_day, i.category, i.image, 
+                      c.start_date, c.end_date 
                FROM cart c 
                JOIN item i ON c.item_id = i.item_id 
                WHERE c.user_id = '$u_id'";

@@ -73,7 +73,7 @@ function loadProductDetails() {
                 'Built-in 500W speakers'
             ],
             images: [
-                '/assets/images/products/karaoke-king-v2.jpg'
+                'karaoke-king-v2.jpg'
             ]
         },
         '2': {

@@ -55,7 +55,8 @@ try {
         LEFT JOIN users u ON r.user_id = u.id
         LEFT JOIN rental_item ri ON r.order_id = ri.order_id
         LEFT JOIN item i ON ri.item_id = i.item_id
-        WHERE 1=1
+        WHERE r.rental_status IS NOT NULL
+        AND r.user_id IS NOT NULL
         $dateCondition
         GROUP BY r.order_id
         ORDER BY r.start_date ASC, r.end_date ASC
@@ -82,22 +83,20 @@ try {
         }
         $scheduledDate = $type === 'pickup' ? ($row['end_date'] ?? $row['start_date']) : $row['start_date'];
 
-        // Status based on rental status only
-        $status = 'scheduled';
-        switch ($row['rental_status']) {
-            case 'Pending':
-                $status = 'pending';
-                break;
-            case 'In Transit':
-                $status = 'in_transit';
-                break;
-            case 'Returned':
-            case 'Completed':
-                $status = 'completed';
-                break;
-            default:
-                $status = 'scheduled';
-        }
+        // Map database status to frontend status key
+        $statusMap = [
+            'Pending' => 'pending',
+            'Booked' => 'confirmed',
+            'Confirmed' => 'confirmed',
+            'In Transit' => 'out_for_delivery',
+            'Active' => 'active',
+            'Pending Return' => 'return_scheduled',
+            'Returned' => 'returned',
+            'Completed' => 'completed',
+            'Cancelled' => 'cancelled',
+            'Late' => 'late'
+        ];
+        $status = $statusMap[$row['rental_status']] ?? 'pending';
 
         // Determine address
         $address = $row['customer_address'] ?? $row['user_address'] ?? $row['venue'] ?? 'No address specified';
@@ -134,6 +133,7 @@ try {
             $dispatch['items'][] = 'Rental Items';
         }
     }
+    unset($dispatch); // Break the reference to prevent data corruption
     
     // Calculate stats
     $stats = [

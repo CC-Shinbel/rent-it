@@ -152,8 +152,8 @@
             if (badge) {
                 if (badge.classList.contains('booked') || badge.textContent.toLowerCase().includes('booked')) {
                     status = 'booked';
-                } else if (badge.classList.contains('repairing') || badge.textContent.toLowerCase().includes('repair')) {
-                    status = 'repairing';
+                } else if (badge.classList.contains('maintenance') || badge.textContent.toLowerCase().includes('maintenance')) {
+                    status = 'maintenance';
                 }
             }
             
@@ -840,21 +840,12 @@ function initProductModal() {
         }, 2000);
     });
 }
-
-
 function openProductModal(card) {
-    
     const modal = document.getElementById('productModal');
     if (!modal || !card) return;
 
-    // ✅ TAMANG KUHA NG PRODUCT ID (GALING SA DATA-ID)
+    // 1. Kunin ang Data mula sa Card
     const productId = card.dataset.id;
-    if (!productId) {
-        console.error("Missing product ID on card!");
-        return;
-    }
-
-    // ✅ PRODUCT DETAILS
     const productName = card.querySelector('.product-name')?.textContent || 'Product';
     const fallbackImages = [
         '../../assets/images/catalog-set-1.svg',
@@ -868,6 +859,7 @@ function openProductModal(card) {
     const productPrice = card.querySelector('.product-price')?.innerHTML || '₱0';
     const productDescription = card.querySelector('.product-description')?.textContent || '';
 
+    // 2. I-update ang UI ng Modal
     const modalImage = document.getElementById('modalProductImage');
     if (modalImage) {
         modalImage.src = productImage;
@@ -884,63 +876,55 @@ function openProductModal(card) {
     document.getElementById('modalProductPrice').innerHTML = productPrice;
     document.getElementById('modalProductDescription').textContent = productDescription;
 
- 
-    // ============================
-    // ✅ ADD TO CART BUTTON (FIXED)
-    // ============================
+    // 3. ADD TO CART LOGIC (Dapat nasa LOOB ng function)
     const cartBtn = document.getElementById('modalCartBtn');
-    const newCartBtn = cartBtn.cloneNode(true);
-    cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
+    if (cartBtn) {
+        const newCartBtn = cartBtn.cloneNode(true); // Remove old listeners
+        cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
 
-    newCartBtn.addEventListener('click', () => {
-        addToCart(productId);
-
-        newCartBtn.innerHTML = 'Added to Cart';
-
-        if (typeof showToast === 'function') {
-            showToast(`${productName} added to cart`, 'success');
-        }
-
-        setTimeout(() => {
-            newCartBtn.innerHTML = 'Add to Cart';
-        }, 2000);
-    });
-
-    // ============================
-    // ✅ FAVORITE BUTTON (REAL FIX)
-    // ============================
-    const favBtn = document.getElementById('modalFavoriteBtn');
-    const newFavBtn = favBtn.cloneNode(true);
-    favBtn.parentNode.replaceChild(newFavBtn, favBtn);
-
-    newFavBtn.classList.remove('active');
-
-    newFavBtn.addEventListener('click', () => {
-        const isActive = newFavBtn.classList.toggle('active');
-
-        fetch('../catalog/add_favorite.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `item_id=${productId}&action=${isActive ? 'add' : 'remove'}`
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
+        newCartBtn.addEventListener('click', () => {
+            if (typeof addToCart === 'function') {
+                addToCart(productId);
+                newCartBtn.innerHTML = 'Added to Cart';
+                
+                // Trigger Toast
                 if (typeof showToast === 'function') {
-                    showToast(
-                        isActive
-                            ? `${productName} added to favorites`
-                            : `${productName} removed from favorites`,
-                        'success'
-                    );
+                    showToast(`${productName} added to cart`, 'success');
                 }
-            } else {
-                newFavBtn.classList.toggle('active');
-                alert(data.message);
+
+                setTimeout(() => { newCartBtn.innerHTML = 'Add to Cart'; }, 2000);
             }
-        })
-        .catch(err => console.error('Favorite error:', err));
-    });
+        });
+    }
+
+    // 4. FAVORITE LOGIC (Dapat nasa LOOB ng function)
+    const favBtn = document.getElementById('modalFavoriteBtn');
+    if (favBtn) {
+        const newFavBtn = favBtn.cloneNode(true);
+        favBtn.parentNode.replaceChild(newFavBtn, favBtn);
+        newFavBtn.classList.remove('active');
+
+        newFavBtn.addEventListener('click', () => {
+            const isActive = newFavBtn.classList.toggle('active');
+            
+            fetch('../catalog/add_favorite.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `item_id=${productId}&action=${isActive ? 'add' : 'remove'}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && typeof showToast === 'function') {
+                    showToast(isActive ? `${productName} added to favorites` : `${productName} removed`, 'success');
+                }
+            })
+            .catch(err => console.error('Favorite error:', err));
+        });
+    }
+
+    // 5. I-SHOW ANG MODAL
+    modal.classList.add('active');
+}
 
     // ============================
     // RENDER REVIEWS & STARS
@@ -962,7 +946,6 @@ function openProductModal(card) {
     // ============================
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-}
 
 
 function renderStars(card) {

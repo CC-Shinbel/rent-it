@@ -79,36 +79,53 @@ function initCartLogic() {
         }
     }
 
-    // --- Date & Subtotal Logic ---
     window.updateItemTotal = function(id) {
         const startInput = document.getElementById(`start-${id}`);
         const endInput = document.getElementById(`end-${id}`);
         const daysDisplay = document.getElementById(`days-${id}`);
         const subtotalDisplay = document.getElementById(`subtotal-${id}`);
         const card = document.getElementById(`card-${id}`);
-
+    
         if (!startInput || !endInput) return;
-
+    
         const start = new Date(startInput.value);
         const end = new Date(endInput.value);
         const pricePerDay = parseFloat(card.dataset.price);
-
+    
         if (end < start) {
             endInput.value = startInput.value;
             alert("End date cannot be earlier than start date.");
             return;
         }
-
+    
         const diffTime = Math.abs(end - start);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-
+    
+        // UI Update
         daysDisplay.textContent = `${diffDays} day${diffDays > 1 ? 's' : ''}`;
         const total = pricePerDay * diffDays;
         subtotalDisplay.textContent = `₱${total.toLocaleString()}`;
-
+    
+        // DATABASE UPDATE (DITO YUNG FIX)
+        const formData = new FormData();
+        formData.append('cart_id', id);
+        formData.append('start_date', startInput.value);
+        formData.append('end_date', endInput.value);
+    
+        fetch('update_cart.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error("Database update failed:", data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    
         calculateTotal();
     };
-
     // --- Delete Logic (PHP Integration) ---
     async function deleteItems(ids) {
         try {
@@ -168,33 +185,66 @@ function initCartLogic() {
             }
         });
     }
+// --- Proceed to Checkout ---
+if (checkoutBtn) {
+    checkoutBtn.onclick = (e) => {
+        e.preventDefault(); // Iwasan ang default browser behavior muna
 
-    // --- Proceed to Checkout ---
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
-            const selectedData = [];
-            document.querySelectorAll('.item-checkbox:checked').forEach(cb => {
-                const id = cb.dataset.id;
-                const card = document.getElementById(`card-${id}`);
+        const selectedIds = [];
+        const selectedData = [];
+        
+        // Siguraduhing kinukuha natin ang pinaka-updated na listahan ng checked items
+        const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
+        
+        console.log("Checked boxes found:", checkedBoxes.length); // Debugger
+
+        if (checkedBoxes.length === 0) {
+            alert("Please select at least one item to checkout.");
+            return;
+        }
+
+        checkedBoxes.forEach(cb => {
+            const id = cb.getAttribute('data-id') || cb.dataset.id;
+            console.log("Processing Item ID:", id); // Debugger
+
+            const card = document.getElementById(`card-${id}`);
+            
+            if (card) {
+                selectedIds.push(id);
+
+                // I-save ang details para sa localStorage (backup UI)
+                const daysText = document.getElementById(`days-${id}`) ? document.getElementById(`days-${id}`).textContent : "1 day";
+                const startDate = document.getElementById(`start-${id}`) ? document.getElementById(`start-${id}`).value : "";
+                const endDate = document.getElementById(`end-${id}`) ? document.getElementById(`end-${id}`).value : "";
+
                 selectedData.push({
                     id: id,
                     name: card.querySelector('.cart-item-name').textContent,
                     price: parseFloat(card.dataset.price),
-                    days: parseInt(document.getElementById(`days-${id}`).textContent),
-                    startDate: document.getElementById(`start-${id}`).value,
-                    endDate: document.getElementById(`end-${id}`).value
+                    days: parseInt(daysText),
+                    startDate: startDate,
+                    endDate: endDate
                 });
-            });
-
-            // I-save sa localStorage para sa checkout.php
-            localStorage.setItem(CONSTANTS.STORAGE_KEY, JSON.stringify(selectedData));
-            window.location.href = '../checkout/checkout.php';
+            }
         });
-    }
 
-    calculateTotal(); // Run once on load
+        if (selectedIds.length > 0) {
+            const idsParam = selectedIds.join(',');
+            const targetURL = `../checkout/checkout.php?items=${idsParam}`;
+            
+            console.log("Final Target URL:", targetURL); // Debugger
+
+            // 1. I-save sa localStorage
+            localStorage.setItem(CONSTANTS.STORAGE_KEY, JSON.stringify(selectedData));
+
+            // 2. Redirect
+            window.location.href = targetURL;
+        }
+    };
 }
 
+calculateTotal(); // Run once on load
+}
 // Toast Helper (Para sa visual feedback)
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');

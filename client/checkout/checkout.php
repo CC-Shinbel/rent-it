@@ -1,7 +1,6 @@
 <?php
 session_start();
 include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
-
 // 1. Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../auth/login.php");
@@ -17,21 +16,47 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $user_data = $stmt->get_result()->fetch_assoc();
 
-// Get Cart Items
-$cart_query = "SELECT c.id as cart_row_id, i.item_name, i.category, i.price_per_day, i.image
+// --- UPDATE: FILTERING LOGIC ---
+// Kunin ang listahan ng IDs mula sa URL (?items=1,2,3)
+$items_to_show = isset($_GET['items']) ? $_GET['items'] : '';
+
+if (empty($items_to_show)) {
+    // Kung walang sineselect, ibalik sa cart page
+    header("Location: ../cart/cart.php");
+    exit();
+}
+
+// Linisin ang input para sa security (numbers at commas lang)
+$ids_array = explode(',', $items_to_show);
+$clean_ids = implode(',', array_map('intval', $ids_array));
+
+// 3. Get SELECTED Cart Items with Dates
+// Gagamit tayo ng "WHERE user_id = ? AND c.id IN ($clean_ids)" para mafilter ang clinger items
+$cart_query = "SELECT c.id as cart_row_id, i.item_name, i.category, i.price_per_day, i.image,
+                      c.start_date, c.end_date
                FROM cart c 
                JOIN item i ON c.item_id = i.item_id 
-               WHERE c.user_id = ?";
+               WHERE c.user_id = ? AND c.id IN ($clean_ids)";
+
 $stmt = $conn->prepare($cart_query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $cart_items = $stmt->get_result();
 
-// Calculate Subtotal muna bago ang Grand Total
+// Calculate Subtotal gamit ang Rental Days multiplier
 $total_subtotal = 0;
-$items_list = []; // I-store muna natin para hindi na tayo mag-data_seek mamaya
+$items_list = []; 
 while($row = $cart_items->fetch_assoc()){
-    $total_subtotal += $row['price_per_day'];
+    // Kunin ang diff ng dates mula sa database
+    $d1 = new DateTime($row['start_date']);
+    $d2 = new DateTime($row['end_date']);
+    $days = $d1->diff($d2)->days;
+    $days = ($days > 0) ? $days : 1; // Minimum 1 day
+
+    $row['rental_days'] = $days;
+    $row['line_total'] = $row['price_per_day'] * $days;
+    
+    $total_subtotal += $row['line_total'];
     $items_list[] = $row;
 }
 
@@ -142,9 +167,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
 
                
                 <div class="checkout-layout">
-    
     <div class="checkout-main">
-        
         <div class="checkout-card receipt-card">
             <div class="receipt-header">
                 <div class="receipt-info">
@@ -161,7 +184,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
             <div class="card-header">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <h2>Customer Information</h2>
-                <a href="../../shared/js/myprofile.php" class="btn-edit-info" style="text-decoration: none;">Edit</a>
+                
             </div>
             <div class="customer-details">
                 <div class="detail-row">
@@ -185,46 +208,38 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <h2>Delivery Options</h2>
             </div>
             <div class="delivery-options">
-    <label class="delivery-option selected">
-        <input type="radio" name="delivery" value="standard" data-price="150" checked>
-        <div class="option-content">
-            <div class="option-info">
-                <span class="option-name">Standard Delivery</span>
-            </div>
-            <span class="option-price">₱150</span>
-        </div>
-    </label>
+                <label class="delivery-option selected">
+                    <input type="radio" name="delivery" value="standard" data-price="150" checked>
+                    <div class="option-content">
+                        <div class="option-info"><span class="option-name">Standard Delivery</span></div>
+                        <span class="option-price">₱150</span>
+                    </div>
+                </label>
 
-    <label class="delivery-option">
-        <input type="radio" name="delivery" value="express" data-price="300">
-        <div class="option-content">
-            <div class="option-info">
-                <span class="option-name">Express Delivery</span>
-            </div>
-            <span class="option-price">₱300</span>
-        </div>
-    </label>
+                <label class="delivery-option">
+                    <input type="radio" name="delivery" value="express" data-price="300">
+                    <div class="option-content">
+                        <div class="option-info"><span class="option-name">Express Delivery</span></div>
+                        <span class="option-price">₱300</span>
+                    </div>
+                </label>
 
-    <label class="delivery-option disabled" title="Ongoing feature">
-        <input type="radio" name="delivery" value="pickup" data-price="0" disabled>
-        <div class="option-content">
-            <div class="option-info">
-                <span class="option-name">Store Pickup</span>
-                <span class="coming-soon-tag">Coming Soon</span>
+                <label class="delivery-option">
+                    <input type="radio" name="delivery" value="pickup" data-price="0">
+                    <div class="option-content">
+                        <div class="option-info"><span class="option-name">Store Pickup</span></div>
+                        <span class="option-price">Free</span>
+                    </div>
+                </label>
             </div>
-            <span class="option-price">Free</span>
-        </div>
-    </label>
-</div>
         </div>
     </div>
 
     <div class="checkout-sidebar">
-        
         <div class="checkout-card">
             <div class="card-header">
                 <h2>Order Items</h2>
-                <span class="item-count"><?php echo $cart_items->num_rows; ?> items</span>
+                <span class="item-count"><?php echo count($items_list); ?> items</span>
             </div>
             <div class="order-items">
                 <?php 
@@ -256,36 +271,38 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
 
         <div class="checkout-card order-summary-card">
         <div class="summary-breakdown">
-    <div class="summary-row">
-        <span>Subtotal</span>
-        <span id="summarySubtotal">₱<?php echo number_format($total_subtotal, 2); ?></span>
-    </div>
+        <div class="summary-row">
+    <span>Subtotal</span>
+    <span id="summarySubtotal">₱<?php echo number_format($total_subtotal, 2); ?></span>
+</div>
     <div class="summary-row">
         <span>Delivery Fee</span>
-        <span id="summaryDelivery">₱150.00</span>
+        <span id="summaryDelivery">₱<?php echo number_format($delivery_fee, 2); ?></span>
     </div>
     <div class="summary-row">
         <span>Service Fee</span>
-        <span id="summaryService">₱50.00</span>
+        <span id="summaryService">₱<?php echo number_format($service_fee, 2); ?></span>
     </div>
     <div class="summary-total">
-        <span>Total</span>
-        <span id="summaryTotal">₱<?php echo number_format($total_subtotal + 200, 2); ?></span>
-    </div>
+    <span>Total</span>
+    <span id="summaryTotal">₱<?php echo number_format($grand_total, 2); ?></span>
+</div>
 </div>
 
             <div class="payment-section">
                 <h3>Payment Method</h3>
                 <div class="payment-options">
                     <label class="payment-option selected"><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label>
-                    <label class="payment-option disabled" title="Ongoing feature"><input type="radio" name="payment" value="gcash" disabled> GCash <span class="coming-soon-tag">Coming Soon</span></label>
-                    <label class="payment-option disabled" title="Ongoing feature"><input type="radio" name="payment" value="bt" disabled> Bank Transfer <span class="coming-soon-tag">Coming Soon</span></label>
+                    <label class="payment-option"><input type="radio" name="payment" value="gcash"> GCash</label>
+                    <label class="payment-option"><input type="radio" name="payment" value="bt"> Bank Transfer</label>
                 </div>
             </div>
 
             <form id="checkoutForm">
     <input type="hidden" name="order_ref" value="<?php echo $order_ref; ?>">
-    <input type="hidden" name="grand_total" id="hiddenGrandTotal" value="<?php echo $total_subtotal + 200; ?>">
+    <input type="hidden" name="grand_total" id="hiddenGrandTotal" value="<?php echo $grand_total; ?>">
+    
+    <input type="hidden" name="rental_days" value="<?php echo $items_list[0]['rental_days']; ?>">
     
     <button type="submit" class="btn-confirm-order">Confirm Order</button>
 </form>
@@ -327,6 +344,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     });
 });
 </script>
+
 <script>
 document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -334,7 +352,9 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     const totalElement = document.getElementById('summaryTotal');
     const grandTotal = totalElement ? parseFloat(totalElement.innerText.replace(/[^\d.]/g, '')) : 0;
 
-    const formData = new FormData(this);
+    // Kunin lahat ng input sa loob ng form (kasama na yung hidden rental_days)
+    const formData = new FormData(this); 
+    
     formData.append('grand_total', grandTotal);
     
     const delivery = document.querySelector('input[name="delivery"]:checked');
@@ -342,7 +362,7 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     
     formData.append('delivery_type', delivery ? delivery.value : 'standard');
     formData.append('payment_method', payment ? payment.value : 'cod');
-    formData.append('venue', "Home Delivery"); 
+    formData.append('venue', "Home Delivery");
 
     Swal.fire({
         title: 'Processing Order...',

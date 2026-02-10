@@ -34,14 +34,6 @@
     stroke: #EF4444;
 }
 
-/* Favorites Grid */
-.favorites-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: clamp(16px, 2vw, 24px);
-    animation: fadeInUp 0.4s ease-out;
-    align-items: stretch;
-}
 
 /* Favorite Card */
 .favorite-card {
@@ -58,10 +50,25 @@
     box-shadow: var(--shadow-lg);
 }
 
+
+
+/* 1. Balik Grid Layout (3 columns para sakto ang laki) */
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+/* 2. Container ng Image - Para magmukhang professional */
 .favorite-image-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Ginagawa nitong rectangle na sakto ang proportion */
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
-    height: 180px;
-    background: var(--bg-tertiary);
     overflow: hidden;
 }
 
@@ -75,7 +82,8 @@
 .favorite-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Para buo pa rin ang machine pero mas malaki tingnan */
+    padding: 15px; /* Konting distansya lang sa border */
     transition: transform 0.3s ease;
     background: var(--bg-secondary);
     cursor: zoom-in;
@@ -139,20 +147,6 @@
     height: 16px;
 }
 
-/* Favorite Content */
-.favorite-content {
-    padding: 18px 18px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.favorite-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--heading-primary);
-    margin-bottom: 8px;
-}
 
 .favorite-rating {
     display: flex;

@@ -15,11 +15,26 @@ try {
     $user_id = $_SESSION['user_id'];
     $total_price = $_POST['grand_total'] ?? 0;
     $venue = $_POST['venue'] ?? 'Not Specified';
+    
+    /**
+     * FIX: Kunin ang number of days mula sa POST request.
+     * Siguraduhin na sa Checkout JS mo, nagpapasa ka ng 'rental_days'.
+     */
+    $days = isset($_POST['rental_days']) ? intval($_POST['rental_days']) : 1;
 
     $conn->begin_transaction();
 
-    $stmt = $conn->prepare("INSERT INTO rental (user_id, rental_status, total_price, venue, start_date, end_date) VALUES (?, 'Active', ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY))");
-    $stmt->bind_param("ids", $user_id, $total_price, $venue);
+    /**
+     * FIX: Pinalitan ang 'INTERVAL 1 DAY' ng 'INTERVAL ? DAY' 
+     * para maging dynamic ang end_date base sa input.
+     */
+    $query = "INSERT INTO rental (user_id, rental_status, total_price, venue, start_date, end_date) 
+              VALUES (?, 'Active', ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? DAY))";
+    
+    $stmt = $conn->prepare($query);
+    
+    // Bind parameters: i (user_id), d (total_price), s (venue), i (days)
+    $stmt->bind_param("idsi", $user_id, $total_price, $venue, $days);
     
     if (!$stmt->execute()) {
         throw new Exception("Database Error (Rental): " . $conn->error);
@@ -46,12 +61,15 @@ try {
         $stmt_ri->execute();
     }
 
-    $conn->query("DELETE FROM cart WHERE user_id = $user_id");
+    // Siguraduhin na safe ang query na ito
+    $stmt_delete = $conn->prepare("DELETE FROM cart WHERE user_id = ?");
+    $stmt_delete->bind_param("i", $user_id);
+    $stmt_delete->execute();
 
     $conn->commit();
     echo json_encode(['status' => 'success', 'order_id' => $order_id]);
 
 } catch (Exception $e) {
-    if (isset($conn)) $conn->rollback();
+    if (isset($conn) && $conn->connect_errno == 0) $conn->rollback();
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }

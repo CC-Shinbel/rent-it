@@ -20,10 +20,15 @@ function getInitial(name) {
  */
 function getStatusText(status) {
     const statusMap = {
-        'scheduled': 'Scheduled',
-        'in_transit': 'In Transit',
+        'pending': 'Pending',
+        'confirmed': 'Confirmed',
+        'out_for_delivery': 'Out for Delivery',
+        'active': 'Active',
+        'return_scheduled': 'Return Scheduled',
+        'returned': 'Returned',
         'completed': 'Completed',
-        'pending': 'Pending'
+        'cancelled': 'Cancelled',
+        'late': 'Late'
     };
     return statusMap[status] || status;
 }
@@ -64,7 +69,7 @@ function renderDispatchCard(dispatch) {
             </div>
             <div class="dispatch-card-body">
                 <div class="dispatch-order-info">
-                    <span class="dispatch-order-id">ORD-${dispatch.orderId}</span>
+                    <span class="dispatch-order-id">ORD-${String(dispatch.orderId).padStart(4, '0')}</span>
                     <span class="dispatch-time">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
@@ -164,11 +169,9 @@ function filterDispatches() {
 
     let filtered = dispatchesData;
 
-    // Filter by type
-    if (filterType === 'completed') {
-        filtered = filtered.filter(d => d.status === 'completed');
-    } else if (filterType !== 'all') {
-        filtered = filtered.filter(d => d.type === filterType);
+    // Filter by status
+    if (filterType !== 'all') {
+        filtered = filtered.filter(d => d.status === filterType);
     }
 
     // Filter by search term

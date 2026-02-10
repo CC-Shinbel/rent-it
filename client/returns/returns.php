@@ -44,6 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     header("Location: returns.php");
     exit();
 }
+// Kunin ang bilang ng mga items na binalik dahil may sira (Status: Returned)
+$res_count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Returned'");
+$returned_count = mysqli_fetch_assoc($res_count)['total'] ?? 0;
 
 $res_pending = mysqli_query($conn, "SELECT COUNT(*) as cnt FROM rental WHERE user_id = $user_id AND rental_status = 'Pending Return'");
 $pending_returns_count = mysqli_fetch_assoc($res_pending)['cnt'] ?? 0;
@@ -191,37 +194,37 @@ $extensions_count = mysqli_num_rows($extensions_result);
                 </div>
 
                 <div class="rentals-tabs">
-                    <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
-                    <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
-                    <a href="returns.php" class="tab-link active">Returns & Extensions</a>
-                </div>
+    <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
+    <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
+    <a href="returns.php" class="tab-link active">Returns & Extensions</a>
+</div>
 
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-value"><?php echo $pending_returns_count; ?></span>
-                            <span class="stat-label">Pending Returns</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-value"><?php echo $active_extensions_count; ?></span>
-                            <span class="stat-label">Active Extensions</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-value"><?php echo $completed_this_month; ?></span>
-                            <span class="stat-label">Completed This Month</span>
-                        </div>
-                    </div>
-                </div>
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-info">
+            <span class="stat-value"><?php echo $returned_count; ?></span>
+            <span class="stat-label">Items Returned (For Repair)</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-info">
+            <span class="stat-value"><?php echo $active_extensions_count; ?></span>
+            <span class="stat-label">Active Extensions</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-info">
+            <span class="stat-value"><?php echo $completed_this_month; ?></span>
+            <span class="stat-label">Completed This Month</span>
+        </div>
+    </div>
+</div>
 
-                <section class="returns-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Active Returns</h2>
-                        <span class="units-badge"><?php echo $returns_count; ?> Items</span>
-                    </div>
+<section class="returns-section">
+    <div class="section-header">
+        <h2 class="section-title">Returned</h2>
+        <span class="units-badge"><?php echo $returns_count; ?> Items</span>
+    </div>
 
                     <div class="returns-grid">
                         <?php if ($returns_count > 0): ?>
@@ -268,11 +271,11 @@ $extensions_count = mysqli_num_rows($extensions_result);
                     </div>
                 </section>
 
-                <section class="extensions-section" style="margin-top: 40px;">
-                    <div class="section-header">
-                        <h2 class="section-title">Extension</h2>
-                        <span class="units-badge units-badge-blue"><?php echo $extensions_count; ?> Items</span>
-                    </div>
+<section class="extensions-section" style="margin-top: 40px;">
+    <div class="section-header">
+        <h2 class="section-title">Extension</h2>
+        <span class="units-badge units-badge-blue"><?php echo $extensions_count; ?> Items</span>
+    </div>
 
                     <div class="extensions-grid">
                         <?php if ($extensions_count > 0): 
@@ -313,6 +316,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
             <div id="footerContainer"></div>
         </main>
     </div>
+</section>
 
     <script src="../../shared/js/components.js"></script>
     <script>
