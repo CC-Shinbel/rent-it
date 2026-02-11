@@ -1,6 +1,6 @@
 .items-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-.items-search { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--admin-surface-200); border: 1px solid var(--admin-border); border-radius: 10px; min-width: 260px; }
-.items-search input { border: none; outline: none; background: transparent; color: var(--admin-text); width: 220px; }
+.items-search { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--admin-surface-200); border: 1px solid var(--admin-border); border-radius: 10px; min-width: 0; flex: 1; }
+.items-search input { border: none; outline: none; background: transparent; color: var(--admin-text); width: 100%; min-width: 0; }
 .items-filters { display: flex; align-items: center; gap: 8px; }
 
 /* Filter Select Dropdown */

@@ -198,12 +198,22 @@
     left: 0;
     width: var(--admin-sidebar-width);
     height: 100vh;
+    height: 100dvh;
     background: var(--admin-bg-sidebar);
     border-right: 1px solid var(--admin-border-color);
     display: flex;
     flex-direction: column;
     z-index: var(--admin-z-fixed);
     transition: width var(--admin-transition-normal), transform var(--admin-transition-normal);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-logo-link {
+    display: flex;
+    align-items: center;
+    gap: var(--admin-spacing-md);
+    text-decoration: none;
 }
 
 .admin-sidebar.collapsed {
@@ -237,9 +247,16 @@
 }
 
 .admin-sidebar.collapsed .sidebar-logo-text {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+    display: none;
+}
+
+.admin-sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+    padding: var(--admin-spacing-lg) var(--admin-spacing-md);
+}
+
+.admin-sidebar.collapsed .sidebar-logo-link {
+    justify-content: center;
 }
 
 /* Sidebar Navigation */
@@ -426,6 +443,7 @@
 .header-search {
     position: relative;
     width: 320px;
+    max-width: 100%;
 }
 
 .header-page-title {
@@ -1196,8 +1214,8 @@ button.dropdown-item {
    NOTIFICATION DROPDOWN (Admin-specific)
    ============================ */
 .notification-dropdown {
-    min-width: 340px;
-    max-width: 400px;
+    min-width: min(340px, calc(100vw - 2rem));
+    max-width: min(400px, calc(100vw - 1rem));
     background: var(--admin-bg-card);
     z-index: 9999;
 }
@@ -1482,7 +1500,7 @@ button.dropdown-item {
     border: 1px solid var(--admin-border-color);
     border-radius: var(--admin-radius-lg);
     box-shadow: var(--admin-shadow-lg);
-    min-width: 300px;
+    min-width: 0;
     max-width: 400px;
     animation: slideInRight 0.3s ease;
 }
@@ -1768,63 +1786,67 @@ button.dropdown-item {
     display: none !important;
 }
 
-/* Only show on mobile/tablet breakpoints */
+/* ============================
+   RESPONSIVE DESIGN - Tablet (1024px)
+   Sidebar becomes overlay, hamburger menu shows
+   ============================ */
 @media (max-width: 1024px) {
+    /* Show hamburger menu */
     .mobile-menu-btn {
         display: flex !important;
     }
-}
 
-/* ============================
-   RESPONSIVE DESIGN - Tablet (768px)
-   ============================ */
-@media (max-width: 768px) {
-    /* Show mobile menu button */
-    .mobile-menu-btn {
-        display: flex;
-    }
-    
-    /* Sidebar transforms to mobile overlay */
+    /* Sidebar transforms to overlay drawer */
     .admin-sidebar {
         transform: translateX(-100%);
         width: 280px;
     }
-    
+
     .admin-sidebar.open {
         transform: translateX(0);
     }
-    
-    /* Hide collapse button on mobile */
+
+    /* Hide sidebar logo text in drawer (always show icon only until opened) */
+    .admin-sidebar.collapsed .sidebar-logo-text {
+        display: none;
+    }
+
+    /* Hide collapse button on tablet/mobile */
     .sidebar-collapse-btn {
         display: none;
     }
-    
+
     /* Main content full width */
     .admin-main {
         margin-left: 0 !important;
     }
-    
+
     .admin-wrapper.sidebar-collapsed .admin-main {
         margin-left: 0 !important;
     }
-    
+
     /* Show mobile-only actions */
     .mobile-only-actions {
         display: flex;
     }
-    
+}
+
+/* ============================
+   RESPONSIVE DESIGN - Tablet Small (768px)
+   ============================ */
+@media (max-width: 768px) {
     /* Header adjustments */
     .header-page-title {
         font-size: 1.1rem;
     }
-    
+
     /* Toast adjustments */
     .toast-container {
         left: var(--admin-spacing-md);
         right: var(--admin-spacing-md);
         bottom: var(--admin-spacing-md);
     }
-    
+
     .toast {
         min-width: auto;
         max-width: none;
@@ -1853,14 +1875,10 @@ button.dropdown-item {
         height: 36px;
     }
     
-    /* Sidebar full width on mobile */
+    /* Sidebar almost full width on mobile */
     .admin-sidebar {
-        width: 100%;
-    }
-    
-    /* Content padding */
-    .admin-content {
-        padding: var(--admin-spacing-md);
+        width: 85%;
+        max-width: 320px;
     }
     
     /* Modal full width */
@@ -1881,6 +1899,12 @@ button.dropdown-item {
     .admin-header {
         padding: 0 var(--admin-spacing-sm);
         height: 56px;
+    }
+
+    /* Sidebar full width on very small screens */
+    .admin-sidebar {
+        width: 100%;
+        max-width: none;
     }
     
     .sidebar-logo {

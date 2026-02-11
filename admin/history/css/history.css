@@ -40,7 +40,7 @@
     border-radius: var(--admin-radius-lg);
     padding: var(--admin-spacing-sm) var(--admin-spacing-lg);
     flex: 1;
-    min-width: 250px;
+    min-width: 0;
     max-width: 400px;
     transition: all var(--admin-transition-fast);
 }

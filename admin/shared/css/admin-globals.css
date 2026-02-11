@@ -373,8 +373,15 @@ textarea:focus-visible {
     }
 }
 
-/* Sidebar margin removal is handled at 768px in admin-components.css
-   where the sidebar is hidden via transform */
+@media (max-width: 1024px) {
+    .admin-main {
+        margin-left: 0;
+    }
+    
+    .admin-wrapper.sidebar-collapsed .admin-main {
+        margin-left: 0;
+    }
+}
 
 @media (max-width: 768px) {
     .admin-content {
@@ -393,10 +400,6 @@ textarea:focus-visible {
 }
 
 @media (max-width: 480px) {
-    html {
-        font-size: 14px;
-    }
-    
     .admin-content {
         padding: var(--admin-spacing-sm);
     }
