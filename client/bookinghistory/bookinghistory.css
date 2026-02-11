@@ -157,7 +157,7 @@
 }
 
 .kpi-value {
-    color: #1a1a1a;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: bold;
     opacity: 1 !important;
@@ -190,7 +190,7 @@
 }
 
 .tab-link.active {
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .tab-link.active::after {
