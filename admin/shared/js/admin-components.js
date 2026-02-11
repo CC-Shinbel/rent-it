@@ -273,7 +273,7 @@ const AdminComponents = {
 
         const navItems = this.navItems.map(item => `
             <a href="${this.baseUrl(item.href)}" 
-               class="sidebar-nav-item ${activePage === item.id ? 'active' : ''}" 
+               class="sidebar-nav-item" 
                title="${item.label}"
                data-page="${item.id}">
                 <span class="sidebar-nav-icon">${item.icon}</span>

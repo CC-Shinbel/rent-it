@@ -75,81 +75,7 @@ const Components = {
      * Show a lightweight page skeleton overlay while loading
      */
     initPageSkeleton() {
-        if (!document.body) {
-            document.addEventListener('DOMContentLoaded', () => this.initPageSkeleton(), { once: true });
-            return;
-        }
-        let overlay = document.querySelector('.page-skeleton-overlay');
-
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'page-skeleton-overlay';
-            overlay.setAttribute('aria-hidden', 'true');
-            overlay.innerHTML = `
-            <div class="page-skeleton-shell">
-                <aside class="page-skeleton-sidebar">
-                    <div class="page-skeleton-logo skeleton-shape"></div>
-                    <div class="page-skeleton-nav">
-                        <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-60"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-80"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-50"></span>
-                        <span class="page-skeleton-pill skeleton-shape w-70"></span>
-                    </div>
-                    <div class="page-skeleton-user">
-                        <span class="page-skeleton-circle skeleton-shape"></span>
-                        <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
-                    </div>
-                </aside>
-                <section class="page-skeleton-main">
-                    <div class="page-skeleton-topbar">
-                        <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
-                        <span class="page-skeleton-circle skeleton-shape"></span>
-                    </div>
-                    <div class="page-skeleton-card">
-                        <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
-                            <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
-                            <span class="page-skeleton-pill skeleton-shape w-20"></span>
-                        </div>
-                        <div class="page-skeleton-table">
-                            <div class="page-skeleton-row">
-                                <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                            </div>
-                            <div class="page-skeleton-row">
-                                <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                            </div>
-                            <div class="page-skeleton-row">
-                                <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
-                                <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="page-skeleton-loader">
-                        <span class="page-skeleton-spinner" aria-hidden="true"></span>
-                        <span>Loading content...</span>
-                    </div>
-                </section>
-            </div>
-        `;
-
-            document.body.appendChild(overlay);
-        }
-
-        const hideOverlay = () => {
-            overlay.classList.add('is-hidden');
-            setTimeout(() => overlay.remove(), 350);
-        };
-
-        window.addEventListener('load', hideOverlay, { once: true });
-        setTimeout(hideOverlay, 3500);
+        return;
     },
 
     /**
@@ -170,11 +96,10 @@ const Components = {
         const tabs = isClient ? this.clientNavTabs : this.navTabs;
 
         const navItems = tabs.map(tab => {
-            const isActive = activeTab === tab.id;
             if (tab.href) {
                 // Client nav uses links with tooltip data attribute
                 return `
-                    <a class="nav-item ${isActive ? 'active' : ''}" href="${tab.href}" data-tooltip="${tab.label}">
+                    <a class="nav-item" href="${tab.href}" data-tooltip="${tab.label}">
                         <span class="nav-icon">${tab.icon}</span>
                         <span class="nav-label">${tab.label}</span>
                     </a>
@@ -182,7 +107,7 @@ const Components = {
             } else {
                 // Admin nav uses buttons for SPA-style navigation
                 return `
-                    <button class="nav-item ${isActive ? 'active' : ''}" data-tab="${tab.id}" data-tooltip="${tab.label}">
+                    <button class="nav-item" data-tab="${tab.id}" data-tooltip="${tab.label}">
                         <span class="nav-icon">${tab.icon}</span>
                         <span class="nav-label">${tab.label}</span>
                     </button>
@@ -1334,14 +1259,5 @@ window.showToast = function(message, type = 'success') {
 };
 
 if (typeof window !== 'undefined') {
-    let skeletonStarted = false;
-    const startSkeleton = () => {
-        if (skeletonStarted) return;
-        skeletonStarted = true;
-        Components.initPageSkeleton();
-    };
-    startSkeleton();
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startSkeleton, { once: true });
-    }
+    // Skeleton overlay is handled per-page to avoid flashes.
 }
