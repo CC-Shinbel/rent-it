@@ -154,7 +154,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                             <span class="checkmark"></span>
                             <span>Remember me</span>
                         </label>
-                        <a href="pages/wip.php" class="forgot-link">Forgot password?</a>
+                        <a href="admin/auth/forgot-password.php" class="forgot-link">Forgot password?</a>
                     </div>
 
                     <!-- Error Message -->
