@@ -118,9 +118,8 @@
     color: var(--accent);
 }
 
-
 .tab-link.active {
-    color: var(--text-primary);
+    color: var(--text);
 }
 
 .tab-link.active::after {
@@ -477,6 +476,41 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .rentals-tabs {
+        gap: 12px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .rentals-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-link {
+        white-space: nowrap;
+        padding: 10px 16px;
+        border-radius: 999px;
+        scroll-snap-align: start;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        text-align: center;
+        min-width: fit-content;
+    }
+
+    .tab-link.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .tab-link.active::after {
+        display: none;
+    }
+
     .stats-row {
         gap: 0.75rem;
     }

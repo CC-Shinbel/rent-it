@@ -89,39 +89,6 @@ $result = $stmt->get_result();
             border-radius: 8px;
             border: 1px solid #e2e8f0;
         }
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 30px;
-    padding-bottom: 5px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    font-weight: 600;
-    padding: 10px 5px;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-
-.tab-link.active {
-    color: #f97316 !important; 
-}
-
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px;
-}
     </style>
 </head>
 <body>
@@ -196,6 +163,9 @@ $result = $stmt->get_result();
                     <?php endif; ?>
                 </section>
             </div>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
         </main>
     </div>
 

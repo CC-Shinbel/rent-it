@@ -92,38 +92,6 @@ $extensions_count = mysqli_num_rows($extensions_result);
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-approved { background: #dcfce7; color: #166534; }
-        
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 10px 5px;
-    font-weight: 500;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.tab-link.active {
-    color: #f97316;
-}
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px 10px 0 0;
-}
-        
     </style>
 </head>
 <body>

@@ -28,38 +28,6 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
-    <style>
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 10px 5px;
-    font-weight: 500;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.tab-link.active {
-    color: #f97316; 
-}
-
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px 10px 0 0;
-}</style>
 
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>

@@ -588,6 +588,17 @@
     border: 1px solid var(--border-color);
 }
 
+@media (max-width: 768px) {
+    .history-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-panel .history-table {
+        min-width: 600px;
+    }
+}
+
 .history-table {
     width: 100%;
     border-collapse: collapse;

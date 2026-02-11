@@ -219,6 +219,17 @@
     box-shadow: var(--shadow-card);
 }
 
+@media (max-width: 768px) {
+    .history-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-panel .history-table {
+        min-width: 600px;
+    }
+}
+
 .history-table {
     width: 100%;
     border-collapse: collapse;
@@ -564,9 +575,38 @@
     }
     
     .rentals-tabs {
-        gap: 16px;
+        gap: 12px;
         overflow-x: auto;
-        padding-bottom: 16px;
+        flex-wrap: nowrap;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .rentals-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-link {
+        white-space: nowrap;
+        padding: 10px 16px;
+        border-radius: 999px;
+        scroll-snap-align: start;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        text-align: center;
+        min-width: fit-content;
+    }
+
+    .tab-link.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .tab-link.active::after {
+        display: none;
     }
     
     .history-table {
@@ -610,6 +650,11 @@
     
     .kpi-value {
         font-size: 20px;
+    }
+
+    .tab-link {
+        font-size: 13px;
+        padding: 8px 14px;
     }
     
     /* Hide more table columns on mobile */
