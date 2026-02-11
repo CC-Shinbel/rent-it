@@ -192,10 +192,10 @@
 }
 
 .btn.primary {
-    background: linear-gradient(120deg, var(--accent), var(--brand-primary-light));
+    background: var(--accent);
     border: none;
-    color: var(--text-on-nav);
-    box-shadow: 0 12px 30px rgba(1, 58, 99, 0.25);
+    color: #FFFFFF;
+    box-shadow: 0 12px 30px rgba(230, 126, 34, 0.25);
 }
 
 .btn.ghost {
@@ -203,7 +203,42 @@
 }
 
 .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn.primary:hover { box-shadow: 0 16px 36px rgba(1, 58, 99, 0.32); }
+.btn.primary:hover { box-shadow: 0 16px 36px rgba(230, 126, 34, 0.32); }
+
+/* Phone number highlight */
+.phone-highlight {
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent) !important;
+    padding: 4px 10px;
+    background: rgba(230, 126, 34, 0.1);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.phone-highlight:hover {
+    background: rgba(230, 126, 34, 0.2);
+    transform: scale(1.02);
+}
+
+[data-theme="dark"] .phone-highlight {
+    background: rgba(251, 112, 18, 0.12);
+}
+
+[data-theme="dark"] .phone-highlight:hover {
+    background: rgba(251, 112, 18, 0.22);
+}
+
+[data-theme="dark"] .btn.primary {
+    background: var(--accent);
+    color: #FFFFFF;
+    box-shadow: 0 12px 30px rgba(251, 112, 18, 0.25);
+}
+
+[data-theme="dark"] .btn.primary:hover {
+    box-shadow: 0 16px 36px rgba(251, 112, 18, 0.32);
+}
 
 .small { font-size: 12px; }
 

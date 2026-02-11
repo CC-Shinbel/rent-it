@@ -163,16 +163,8 @@ $membership = $user_data['membership_level'] ?? 'Customer';
                                 <div class="info-icon">📞</div>
                                 <div>
                                     <p class="info-title">Call hotline</p>
-                                    <a href="tel:+639123456789">+63 912 345 6789</a>
+                                    <a href="tel:+639554216789" class="phone-highlight">+63 955 421 6789</a>
                                     <p class="muted">Mon-Fri, 8:00 AM - 5:00 PM</p>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">💬</div>
-                                <div>
-                                    <p class="info-title">Chat (beta)</p>
-                                    <a href="../../pages/wip.html">Open chat</a>
-                                    <p class="muted">For quick fixes and status checks.</p>
                                 </div>
                             </div>
                         </div>
