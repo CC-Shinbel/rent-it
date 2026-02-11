@@ -87,6 +87,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
     <link rel="stylesheet" href="../dashboard/dashboard.css">
     <link rel="stylesheet" href="../myrentals/myrentals.css">
     <link rel="stylesheet" href="returns.css">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <style>
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }

@@ -119,7 +119,7 @@
 }
 
 .tab-link.active {
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .tab-link.active::after {
