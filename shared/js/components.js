@@ -75,7 +75,21 @@ const Components = {
      * Show a lightweight page skeleton overlay while loading
      */
     initPageSkeleton() {
-        return;
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', () => this.initPageSkeleton(), { once: true });
+            return;
+        }
+
+        const overlay = document.querySelector('.page-skeleton-overlay');
+        if (!overlay) return;
+
+        const hideOverlay = () => {
+            overlay.classList.add('is-hidden');
+            setTimeout(() => overlay.remove(), 350);
+        };
+
+        window.addEventListener('load', hideOverlay, { once: true });
+        setTimeout(hideOverlay, 3500);
     },
 
     /**
@@ -193,11 +207,11 @@ const Components = {
      * Attach event listeners to sidebar elements
      */
     attachSidebarEvents() {
-        // Nav item clicks
-        document.querySelectorAll('.nav-item').forEach(item => {
+        // Nav item clicks (admin SPA buttons only, not client <a> links)
+        document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
             item.addEventListener('click', (e) => {
                 const tabId = e.currentTarget.dataset.tab;
-                this.handleTabChange(tabId);
+                if (tabId) this.handleTabChange(tabId);
             });
         });
 
@@ -244,8 +258,10 @@ const Components = {
      * @param {string} tabId - ID of the tab to switch to
      */
     handleTabChange(tabId) {
+        if (!tabId) return;
+
         // Update active state
-        document.querySelectorAll('.nav-item').forEach(item => {
+        document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
             item.classList.toggle('active', item.dataset.tab === tabId);
         });
 
@@ -1259,5 +1275,11 @@ window.showToast = function(message, type = 'success') {
 };
 
 if (typeof window !== 'undefined') {
-    // Skeleton overlay is handled per-page to avoid flashes.
+    // Auto-hide any existing per-page skeleton overlay
+    const _hideSkeleton = () => Components.initPageSkeleton();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _hideSkeleton, { once: true });
+    } else {
+        _hideSkeleton();
+    }
 }
