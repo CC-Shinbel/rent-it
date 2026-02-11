@@ -75,6 +75,10 @@ const Components = {
      * Show a lightweight page skeleton overlay while loading
      */
     initPageSkeleton() {
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', () => this.initPageSkeleton(), { once: true });
+            return;
+        }
         let overlay = document.querySelector('.page-skeleton-overlay');
 
         if (!overlay) {
@@ -1330,10 +1334,14 @@ window.showToast = function(message, type = 'success') {
 };
 
 if (typeof window !== 'undefined') {
-    const startSkeleton = () => Components.initPageSkeleton();
+    let skeletonStarted = false;
+    const startSkeleton = () => {
+        if (skeletonStarted) return;
+        skeletonStarted = true;
+        Components.initPageSkeleton();
+    };
+    startSkeleton();
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', startSkeleton, { once: true });
-    } else {
-        startSkeleton();
     }
 }

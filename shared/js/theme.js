@@ -47,6 +47,10 @@
     }
 
     function initPageSkeleton() {
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', initPageSkeleton, { once: true });
+            return;
+        }
         let overlay = document.querySelector('.page-skeleton-overlay');
 
         if (!overlay) {
@@ -121,13 +125,21 @@
     }
 
     // Initialize when DOM is ready
+    let skeletonStarted = false;
+    const startSkeleton = () => {
+        if (skeletonStarted) return;
+        skeletonStarted = true;
+        initPageSkeleton();
+    };
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             initThemeToggle();
-            initPageSkeleton();
-        });
+            startSkeleton();
+        }, { once: true });
+        startSkeleton();
     } else {
         initThemeToggle();
-        initPageSkeleton();
+        startSkeleton();
     }
 })();
