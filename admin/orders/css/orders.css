@@ -42,6 +42,16 @@
     .orders-search {
         min-width: unset;
         max-width: none;
+        padding: var(--admin-spacing-xs) var(--admin-spacing-md);
+    }
+
+    .orders-search input {
+        font-size: var(--admin-font-xs);
+    }
+
+    .orders-search svg {
+        width: 16px;
+        height: 16px;
     }
 
     .orders-filters {
@@ -52,6 +62,8 @@
     .filter-select {
         width: 100%;
         min-width: unset;
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-xs) var(--admin-spacing-md);
     }
 
     .pagination-pages {
@@ -63,6 +75,30 @@
         width: 32px;
         height: 32px;
         font-size: var(--admin-font-xs);
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+        text-align: center;
+        width: 100%;
+    }
+
+    .orders-pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .orders-empty-title {
+        font-size: var(--admin-font-md);
+    }
+
+    .orders-empty-text {
+        font-size: var(--admin-font-xs);
+    }
+
+    .orders-empty svg {
+        width: 48px;
+        height: 48px;
     }
 }
 
@@ -159,6 +195,23 @@
     .filter-select {
         flex: 1;
         min-width: 120px;
+        font-size: var(--admin-font-xs);
+    }
+
+    .orders-search input {
+        font-size: var(--admin-font-xs);
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+    }
+
+    .customer-name {
+        font-size: var(--admin-font-xs);
+    }
+
+    .customer-email {
+        font-size: 10px;
     }
 }
 
@@ -539,6 +592,43 @@
 .orders-empty-text {
     font-size: var(--admin-font-sm);
     color: var(--admin-text-muted);
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .orders-kpi-grid {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .orders-toolbar {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .orders-search {
+        padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
+    }
+
+    .orders-pagination {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .orders-pagination .page-btn,
+    .orders-pagination .pagination-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .orders-empty-title {
+        font-size: var(--admin-font-sm);
+    }
+
+    .orders-empty svg {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 /* ============================

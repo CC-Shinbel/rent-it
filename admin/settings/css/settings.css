@@ -257,9 +257,21 @@
         align-items: flex-start;
         gap: var(--spacing-sm, 0.5rem);
     }
+
+    .setting-label {
+        font-size: var(--admin-font-sm);
+    }
+
+    .setting-description {
+        font-size: var(--admin-font-xs);
+    }
     
     .toggle-switch-wrapper {
         align-self: flex-end;
+    }
+
+    .settings-card .admin-card-title {
+        font-size: var(--admin-font-md);
     }
 }
 
@@ -269,10 +281,44 @@
     }
 
     .setting-label {
-        font-size: var(--admin-font-sm);
+        font-size: var(--admin-font-xs);
     }
 
     .setting-description {
+        font-size: 10px;
+    }
+
+    .settings-card .admin-card-title {
+        font-size: var(--admin-font-sm);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .setting-item {
+        gap: var(--admin-spacing-xs);
+        padding: var(--admin-spacing-sm) 0;
+    }
+
+    .settings-grid {
+        gap: var(--admin-spacing-md);
+    }
+
+    .setting-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .setting-description {
+        font-size: 10px;
+    }
+
+    .toggle-switch-wrapper {
+        align-self: flex-start;
+    }
+
+    .settings-card .admin-card-title {
         font-size: var(--admin-font-xs);
     }
 }

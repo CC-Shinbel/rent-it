@@ -1675,6 +1675,10 @@ button.dropdown-item {
         padding: var(--admin-spacing-md) var(--admin-spacing-lg);
     }
 
+    .admin-card-title {
+        font-size: var(--admin-font-md);
+    }
+
     .kpi-card {
         padding: var(--admin-spacing-lg);
         gap: var(--admin-spacing-md);
@@ -1694,14 +1698,28 @@ button.dropdown-item {
         font-size: var(--admin-font-xl);
     }
 
+    .kpi-label {
+        font-size: var(--admin-font-xs);
+    }
+
     /* Pagination stacks on tablet */
     .pagination {
         flex-wrap: wrap;
     }
 
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+    }
+
     /* Form row stacking */
     .form-row {
         grid-template-columns: 1fr !important;
+    }
+
+    /* Status badges slightly smaller */
+    .status-badge {
+        font-size: var(--admin-font-xs);
+        padding: 2px 10px;
     }
 }
 
@@ -1711,6 +1729,8 @@ button.dropdown-item {
 @media (max-width: 480px) {
     .admin-card-header {
         padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .admin-card-body {
@@ -1722,11 +1742,25 @@ button.dropdown-item {
     }
 
     .admin-card-title {
-        font-size: var(--admin-font-md);
+        font-size: var(--admin-font-sm);
     }
 
+    /* KPI cards: compact vertical layout */
     .kpi-card {
         padding: var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--admin-spacing-sm);
+    }
+
+    .kpi-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .kpi-icon svg {
+        width: 18px;
+        height: 18px;
     }
 
     .kpi-value {
@@ -1735,6 +1769,11 @@ button.dropdown-item {
 
     .kpi-label {
         font-size: var(--admin-font-xs);
+    }
+
+    .kpi-change {
+        font-size: 10px;
+        padding: 1px 6px;
     }
 
     /* Table compact */
@@ -1776,6 +1815,17 @@ button.dropdown-item {
     /* Dropdown compact */
     .dropdown-menu {
         min-width: 160px;
+    }
+
+    /* Pagination compact */
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+        text-align: center;
+    }
+
+    .pagination-controls {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
 
@@ -1863,7 +1913,7 @@ button.dropdown-item {
     }
     
     .header-page-title {
-        font-size: 1rem;
+        font-size: var(--admin-font-sm);
     }
     
     .header-right {
@@ -1873,6 +1923,11 @@ button.dropdown-item {
     .header-btn {
         width: 36px;
         height: 36px;
+    }
+
+    .header-btn svg {
+        width: 18px;
+        height: 18px;
     }
     
     /* Sidebar almost full width on mobile */
@@ -1889,6 +1944,15 @@ button.dropdown-item {
     /* Dropdown menu adjustments */
     .dropdown-menu {
         min-width: 160px;
+    }
+
+    /* Notification dropdown compact */
+    .notification-dropdown {
+        min-width: min(300px, calc(100vw - 2rem));
+    }
+
+    .notification-item {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
     }
 }
 
@@ -1932,11 +1996,45 @@ button.dropdown-item {
         padding: var(--admin-spacing-md);
     }
 
+    /* KPI cards: even more compact */
+    .kpi-card {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .kpi-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .kpi-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .kpi-value {
+        font-size: var(--admin-font-md);
+    }
+
+    .kpi-label {
+        font-size: 10px;
+    }
+
+    /* Header ultra compact */
+    .header-page-title {
+        font-size: var(--admin-font-xs);
+    }
+
     /* Table compact for ultra-mobile */
     .admin-table th,
     .admin-table td {
         padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
         font-size: var(--admin-font-xs);
+    }
+
+    /* Buttons stacked full width */
+    .btn {
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
     }
 }
 

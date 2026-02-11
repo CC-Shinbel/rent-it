@@ -294,10 +294,28 @@
     
     .quick-action-btn span {
         display: block;
+        font-size: var(--admin-font-xs);
+    }
+
+    .quick-action-btn svg {
+        width: 20px;
+        height: 20px;
     }
 
     .kpi-grid {
         gap: var(--admin-spacing-md);
+    }
+
+    .inventory-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .booking-customer {
+        font-size: var(--admin-font-xs);
+    }
+
+    .booking-dates {
+        font-size: var(--admin-font-xs);
     }
 }
 

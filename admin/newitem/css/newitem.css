@@ -286,6 +286,33 @@
     }
 }
 
+/* ============================
+   TABLET ADJUSTMENTS (768px)
+   ============================ */
+@media (max-width: 768px) {
+    .newitem-form {
+        gap: var(--admin-spacing-lg);
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-md);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-md);
+    }
+
+    .form-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        font-size: var(--admin-font-xs);
+    }
+}
+
 @media (max-width: 480px) {
     .image-upload-area {
         min-height: 120px;
@@ -294,6 +321,40 @@
 
     .upload-text {
         font-size: var(--admin-font-xs);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-sm);
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .image-upload-area {
+        min-height: 100px;
+        padding: 16px 10px;
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-sm);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-xs);
+    }
+
+    .newitem-form {
+        gap: var(--admin-spacing-md);
+    }
+
+    .upload-text {
+        font-size: 10px;
     }
 }
 

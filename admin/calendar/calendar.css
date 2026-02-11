@@ -420,10 +420,15 @@
     
     .filter-group .form-select {
         flex: 1;
+        font-size: var(--admin-font-xs);
     }
     
     .booking-detail-grid {
         grid-template-columns: 1fr;
+    }
+
+    .calendar-legend span {
+        font-size: var(--admin-font-xs);
     }
 }
 
@@ -490,14 +495,69 @@
 @media (max-width: 480px) {
     .calendar-controls {
         gap: var(--admin-spacing-sm);
+        flex-wrap: wrap;
     }
 
     .calendar-legend {
         flex-wrap: wrap;
+        gap: var(--admin-spacing-xs);
+    }
+
+    .calendar-legend span {
+        font-size: 10px;
     }
 
     .calendar-search input {
         width: 120px;
+        font-size: var(--admin-font-xs);
+    }
+
+    .calendar-summary {
+        gap: var(--admin-spacing-md);
+    }
+
+    .calendar-empty-state h3 {
+        font-size: var(--admin-font-md);
+    }
+
+    .calendar-empty-state p {
+        font-size: var(--admin-font-xs);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .calendar-controls {
+        gap: var(--admin-spacing-xs);
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .calendar-search {
+        width: 100%;
+    }
+
+    .calendar-search input {
+        width: 100%;
+        font-size: var(--admin-font-xs);
+    }
+
+    .calendar-summary {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .calendar-legend {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .calendar-empty-state h3 {
+        font-size: var(--admin-font-sm);
+    }
+
+    .calendar-empty-state p {
+        font-size: var(--admin-font-xs);
     }
 }
 

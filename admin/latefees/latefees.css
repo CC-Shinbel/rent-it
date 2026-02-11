@@ -764,13 +764,29 @@ textarea.form-input {
     }
     
     .stat-card {
-        padding: 1.25rem;
+        padding: var(--admin-spacing-lg);
+    }
+
+    .stat-value {
+        font-size: var(--admin-font-xl);
+    }
+
+    .stat-label {
+        font-size: var(--admin-font-xs);
     }
     
     .page-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: var(--admin-spacing-md);
+    }
+
+    .page-title {
+        font-size: var(--admin-font-xl);
+    }
+
+    .page-subtitle {
+        font-size: var(--admin-font-xs);
     }
     
     .page-header-right {
@@ -781,10 +797,27 @@ textarea.form-input {
     .page-header-right .btn {
         width: 100%;
         justify-content: center;
+        font-size: var(--admin-font-xs);
     }
     
     .overdue-item {
-        padding: 1rem;
+        padding: var(--admin-spacing-md);
+    }
+
+    .overdue-customer {
+        font-size: var(--admin-font-xs);
+    }
+
+    .overdue-details {
+        font-size: var(--admin-font-xs);
+    }
+
+    .card-title {
+        font-size: var(--admin-font-sm);
+    }
+
+    .form-select {
+        font-size: var(--admin-font-xs);
     }
     
     .overdue-main {
@@ -813,11 +846,129 @@ textarea.form-input {
     .card-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.75rem;
+        gap: var(--admin-spacing-sm);
+    }
+
+    .card-title {
+        font-size: var(--admin-font-xs);
     }
     
     .template-preview {
         max-width: 150px;
+    }
+
+    .stat-card {
+        padding: var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--admin-spacing-sm);
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .stat-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .stat-value {
+        font-size: var(--admin-font-lg);
+    }
+
+    .stat-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .overdue-item {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .overdue-customer {
+        font-size: var(--admin-font-xs);
+    }
+
+    .fee-amount {
+        font-size: var(--admin-font-sm);
+    }
+
+    .page-title {
+        font-size: var(--admin-font-lg);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .latefees-stats {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .latefees-layout {
+        gap: var(--admin-spacing-md);
+    }
+
+    .stat-card {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .stat-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .stat-value {
+        font-size: var(--admin-font-md);
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .page-title {
+        font-size: var(--admin-font-md);
+    }
+
+    .modal-content {
+        padding: var(--admin-spacing-md);
+    }
+
+    .modal-footer {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .template-preview {
+        max-width: 120px;
+    }
+
+    .pagination {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .pagination .page-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .card-title {
+        font-size: var(--admin-font-xs);
+    }
+
+    .overdue-customer {
+        font-size: 10px;
+    }
+
+    .fee-amount {
+        font-size: var(--admin-font-xs);
     }
 }
 
