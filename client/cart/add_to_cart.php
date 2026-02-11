@@ -3,7 +3,8 @@ session_start();
 include '../../shared/php/db_connection.php'; 
 
 if (!isset($_SESSION['user_id'])) {
-    echo "Login required";
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Login required']);
     exit();
 }
 
@@ -15,7 +16,8 @@ $start_date = $_POST['start_date'] ?? null; // Dapat galing sa input date ng mod
 $end_date = $_POST['end_date'] ?? null;     // Dapat galing sa input date ng modal
 
 if (!$item_id) {
-    echo "Invalid Request";
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Invalid Request']);
     exit();
 }
 
@@ -52,4 +54,6 @@ if (isset($_GET['id'])) {
     header("Location: cart.php");
     exit();
 }
-echo "Success|start=$start_date|end=$end_date";
+
+header('Content-Type: application/json');
+echo json_encode(['success' => true, 'start_date' => $start_date, 'end_date' => $end_date]);
