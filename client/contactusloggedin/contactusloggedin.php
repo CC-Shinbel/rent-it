@@ -23,7 +23,7 @@ $membership = $user_data['membership_level'] ?? 'Customer';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <link rel="stylesheet" href="../../shared/css/theme.css">
     <link rel="stylesheet" href="../../shared/css/globals.css">
     <link rel="stylesheet" href="../dashboard/dashboard.css">
