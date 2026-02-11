@@ -372,23 +372,8 @@ $result = mysqli_query($conn, $query);
 
 
 
-                        <!-- Pagination -->
-                        <nav class="pagination" aria-label="Catalog pagination">
-                            <button class="page-btn" data-page="prev" aria-label="Previous page">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="15 18 9 12 15 6"/>
-                                </svg>
-                            </button>
-                            <button class="page-btn active" data-page="1">1</button>
-                            <button class="page-btn" data-page="2">2</button>
-                            <button class="page-btn" data-page="3">3</button>
-                            <span class="page-ellipsis">...</span>
-                            <button class="page-btn" data-page="8">8</button>
-                            <button class="page-btn" data-page="next" aria-label="Next page">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="9 18 15 12 9 6"/>
-                                </svg>
-                            </button>
+                        <!-- Pagination (generated dynamically by JS) -->
+                        <nav class="pagination" id="catalogPagination" aria-label="Catalog pagination">
                         </nav>
                     </section>
                 </div>

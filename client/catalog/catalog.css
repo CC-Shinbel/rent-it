@@ -164,7 +164,11 @@
     flex-direction: column;
     gap: 16px;
     max-height: calc(100vh - 180px);
+    overflow-y: auto;
     padding-right: 4px;
+    position: sticky;
+    top: 24px;
+    z-index: 2;
 }
 
 /* Scrollbar styling for filter sidebar */
@@ -1868,6 +1872,11 @@
     background: var(--bg-card);
     border-radius: var(--radius);
     border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.review-item strong {
+    color: var(--text-primary);
 }
 
 .review-avatar {
