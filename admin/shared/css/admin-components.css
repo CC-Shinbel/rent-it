@@ -432,6 +432,11 @@
     justify-content: space-between;
     padding: 0 var(--admin-spacing-xl);
     z-index: var(--admin-z-sticky);
+    transition: transform 0.3s ease;
+}
+
+.admin-header.header-hidden {
+    transform: translateY(-100%);
 }
 
 .header-left {

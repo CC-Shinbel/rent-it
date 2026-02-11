@@ -440,6 +440,9 @@ const AdminComponents = {
             themeToggle.addEventListener('click', () => this.toggleTheme());
         }
 
+        // Smart header: hide on scroll down, show on scroll up
+        this.initSmartHeader();
+
         // Dropdown toggles
         document.querySelectorAll('.dropdown').forEach(dropdown => {
             const btn = dropdown.querySelector('.header-btn, .profile-btn');
@@ -473,6 +476,43 @@ const AdminComponents = {
                 this.toggleTheme();
             }
         });
+    },
+
+    /**
+     * Smart header: hide on scroll down, show on scroll up
+     */
+    initSmartHeader() {
+        const header = document.querySelector('.admin-header');
+        if (!header) return;
+
+        let lastScrollTop = 0;
+        const scrollThreshold = 10;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Don't hide header when near the top
+            if (currentScroll <= 0) {
+                header.classList.remove('header-hidden');
+                lastScrollTop = currentScroll;
+                return;
+            }
+
+            const scrollDiff = Math.abs(currentScroll - lastScrollTop);
+            if (scrollDiff < scrollThreshold) return;
+
+            if (currentScroll > lastScrollTop) {
+                // Scrolling down — hide header
+                header.classList.add('header-hidden');
+                // Close any open dropdowns
+                document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+            } else {
+                // Scrolling up — show header
+                header.classList.remove('header-hidden');
+            }
+
+            lastScrollTop = currentScroll;
+        }, { passive: true });
     },
 
     /**
