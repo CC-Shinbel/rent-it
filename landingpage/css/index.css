@@ -819,19 +819,56 @@ body:has(.mobile-nav.open)::before {
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     transition: var(--transition);
+    animation: truckFloat 3s ease-in-out infinite;
+}
+
+@keyframes truckFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
 }
 
 .delivery-illustration:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--accent);
     transform: scale(1.05);
+    animation-play-state: paused;
 }
 
 .delivery-truck-icon {
-    width: 140px;
+    width: 180px;
     height: 140px;
     color: var(--accent);
     transition: var(--transition);
+}
+
+.delivery-truck-icon .note-1 {
+    animation: noteFloat 2.5s ease-in-out infinite;
+}
+.delivery-truck-icon .note-2 {
+    animation: noteFloat 3s ease-in-out 0.5s infinite;
+}
+.delivery-truck-icon .note-3 {
+    animation: noteFloat 2.8s ease-in-out 1s infinite;
+}
+
+@keyframes noteFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.3; }
+    50% { transform: translateY(-8px); opacity: 0.8; }
+}
+
+.delivery-truck-icon .speed-1 {
+    animation: speedDash 1.5s ease-in-out infinite;
+}
+.delivery-truck-icon .speed-2 {
+    animation: speedDash 1.5s ease-in-out 0.3s infinite;
+}
+.delivery-truck-icon .speed-3 {
+    animation: speedDash 1.5s ease-in-out 0.6s infinite;
+}
+
+@keyframes speedDash {
+    0%, 100% { opacity: 0.1; transform: translateX(0); }
+    50% { opacity: 0.4; transform: translateX(-8px); }
 }
 
 .delivery-illustration:hover .delivery-truck-icon {
@@ -840,7 +877,31 @@ body:has(.mobile-nav.open)::before {
 
 @media (max-width: 1024px) {
     .delivery-right {
-        display: none;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+    .delivery-illustration {
+        width: 200px;
+        height: 200px;
+    }
+    .delivery-truck-icon {
+        width: 130px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 600px) {
+    .delivery-right {
+        padding: 10px;
+    }
+    .delivery-illustration {
+        width: 160px;
+        height: 160px;
+    }
+    .delivery-truck-icon {
+        width: 100px;
+        height: 80px;
     }
 }
 
