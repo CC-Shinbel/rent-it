@@ -398,13 +398,7 @@ const AdminComponents = {
                                 </svg>
                                 Dashboard
                             </a>
-                            <a href="${this.baseUrl('admin/profile/profile.php')}" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                My Profile
-                            </a>
+
                             <a href="${this.baseUrl('admin/settings/settings.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
@@ -725,8 +719,7 @@ const AdminComponents = {
             customers: 'Customers',
             dispatch: 'Dispatch',
             settings: 'Settings',
-            newitem: 'New Item',
-            profile: 'Profile'
+            newitem: 'New Item'
         };
         const pageTitle = pageTitles[activePage] || '';
 

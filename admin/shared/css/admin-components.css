@@ -1123,6 +1123,15 @@
     background: var(--admin-danger-bg);
 }
 
+/* Button variant of dropdown-item (e.g. Sign Out) */
+button.dropdown-item {
+    border: none;
+    background: none;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+}
+
 .dropdown-divider {
     height: 1px;
     background: var(--admin-border-color);
