@@ -722,7 +722,7 @@
 }
 
 .empty-state-link {
-    color: var(--brand-primary-light);
+    color: var(--accent);
     font-weight: 700;
     text-decoration: none;
     font-size: 13px;
@@ -1551,7 +1551,7 @@
 .data-table-title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
-    color: var(--gray-900);
+    color: var(--text-primary);
 }
 
 .data-table-actions {
@@ -1643,7 +1643,7 @@
 .empty-state-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--gray-900);
+    color: var(--text-primary);
     margin-bottom: var(--spacing-sm);
 }
 
