@@ -4,141 +4,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CertiCode - Reset Access</title>
-    
+    <meta name="description" content="RentIT - Reset your password. Receive a recovery code to regain access.">
+    <title>RentIT - Forgot Password</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            background: #ffffff; /* Pure White */
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            color: #111827;
-        }
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        .forgot-card {
-            background: #ffffff;
-            padding: 40px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-        }
+    <link rel="stylesheet" href="shared/css/theme.css">
+    <link rel="stylesheet" href="shared/css/globals.css">
+    <link rel="stylesheet" href="client/auth/css/auth.css">
 
-        .brand-icon {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #000000;
-        }
-
-        .forgot-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            margin-bottom: 8px;
-        }
-
-        .forgot-subtitle {
-            font-size: 0.9rem;
-            color: #6b7280;
-            line-height: 1.5;
-            margin-bottom: 32px;
-        }
-
-        .input-wrapper {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .input-wrapper label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #374151;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .custom-input {
-            width: 100%;
-            padding: 12px 0; /* Underline style */
-            border: none;
-            border-bottom: 2px solid #e5e7eb;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-            background: transparent;
-            border-radius: 0;
-            box-sizing: border-box;
-        }
-
-        .custom-input:focus {
-            border-bottom-color: #000000;
-            outline: none;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: #000000; /* Black button */
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            background: #374151;
-        }
-
-        .back-to-login {
-            display: block;
-            margin-top: 24px;
-            color: #9ca3af;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.2s;
-        }
-
-        .back-to-login:hover {
-            color: #000000;
-            text-decoration: underline;
-        }
-    </style>
+    <script src="shared/js/theme.js"></script>
+    <link rel="icon" type="image/png" href="assets/images/rIT_logo_tp.png">
 </head>
 <body>
+    <div class="auth-section">
+        <a href="/rent-it/index.php" class="back-to-home" title="Back to home">← Home</a>
 
-    <div class="forgot-card">
-       
-        <h1 class="forgot-title">Forgot Password</h1>
-        <p class="forgot-subtitle">
-            Enter your email address and we'll send you a recovery code.
-        </p>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
 
-        <form action="process-forgot.php" method="POST">
-            <div class="input-wrapper">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="custom-input" placeholder="name@domain.com" required>
+        <div class="auth-left">
+            <div class="auth-left-content">
+                <div class="auth-logo">
+                    <img src="assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="auth-logo-icon">
+                    <div class="auth-logo-text">RentIT</div>
+                </div>
+                <h1>Reset your<br>access.</h1>
+                <p>Enter your email address and we will send a recovery code to get you back in.</p>
+                <div class="auth-features">
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon">◉</div>
+                        <span>Secure verification</span>
+                    </div>
+                    <div class="auth-feature">
+                        <div class="auth-feature-icon">◉</div>
+                        <span>10-minute expiry code</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <div class="mobile-logo stagger-child">
+                <img src="assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="mobile-logo-icon">
+                <div class="mobile-logo-text">RentIT</div>
             </div>
 
-            <button type="submit" class="submit-btn">
-                SEND CODE
-            </button>
-        </form>
+            <div class="auth-card">
+                <div class="auth-header stagger-child">
+                    <h2>Forgot Password</h2>
+                    <p>Enter your email address and we will send you a recovery code.</p>
+                </div>
 
-        <a href="login.php" class="back-to-login">
-            Return to Login
-        </a>
+                <form action="process-forgot.php" method="POST" class="fade-in">
+                    <div class="auth-form-group stagger-child">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="name@domain.com" required>
+                    </div>
+
+                    <button type="submit" class="auth-btn stagger-child">Send Code →</button>
+                </form>
+
+                <div class="auth-footer stagger-child">
+                    <div class="auth-footer-icon">🔐</div>
+                    <div class="auth-footer-text">
+                        <span class="auth-footer-label">Remember your password?</span>
+                        <span class="auth-footer-links">
+                            <a href="/rent-it/client/auth/login.php">Back to login</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </body>
 </html>
