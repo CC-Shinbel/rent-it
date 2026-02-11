@@ -162,6 +162,11 @@
     /* Heading colors - light in dark mode */
     --heading-primary: #F1F5F9;         /* Primary headings - light in dark mode */
     --heading-secondary: #CBD5E1;       /* Secondary headings */
+
+    /* Brand overrides for dark readability */
+    --brand-primary: #5B9BD5;           /* Lighter blue for dark mode */
+    --brand-primary-light: #7CB3E0;     /* Visible on dark backgrounds */
+    --brand-primary-dark: #4A8BC2;      /* Depth variant dark mode */
     
     /* Borders */
     --border-light: rgba(255, 255, 255, 0.08);
