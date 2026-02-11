@@ -6,19 +6,31 @@
  * =====================================================
  */
 
-// ========== THEME PERSISTENCE (Runs Immediately) ==========
+// ========== THEME PERSISTENCE (Fallback) ==========
+// Primary theme + skeleton logic is in admin-theme.js (loaded in <head>)
+// This is a fallback in case admin-theme.js wasn't included
 (function() {
     const savedTheme = localStorage.getItem('admin-theme');
     if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-        // Default to dark for admin
+    } else if (!document.documentElement.getAttribute('data-theme')) {
         document.documentElement.setAttribute('data-theme', 'dark');
     }
 })();
 
 function initAdminPageSkeleton() {
-    return;
+    // Skeleton is now managed by admin-theme.js in <head> for instant loading
+    // This serves as fallback if admin-theme.js wasn't loaded
+    const overlay = document.querySelector('.admin-skeleton-overlay');
+    if (!overlay) return;
+
+    // If overlay still exists, admin-theme.js didn't run — hide it now
+    if (!overlay.classList.contains('is-hidden')) {
+        overlay.classList.add('is-hidden');
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.remove();
+        }, 350);
+    }
 }
 
 const AdminComponents = {

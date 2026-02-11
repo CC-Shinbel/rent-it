@@ -126,9 +126,10 @@ function formatCurrency($amount) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <base href="/rent-it/">
+    <script src="admin/shared/js/admin-theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="RentIt Admin Dashboard - Manage your videoke rental business">
