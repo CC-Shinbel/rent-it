@@ -205,8 +205,7 @@
     flex-direction: column;
     z-index: var(--admin-z-fixed);
     transition: width var(--admin-transition-normal), transform var(--admin-transition-normal);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
 }
 
 .sidebar-logo-link {
@@ -264,6 +263,7 @@
     flex: 1;
     padding: var(--admin-spacing-lg) var(--admin-spacing-md);
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: var(--admin-spacing-xs);
@@ -340,7 +340,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 100;
+    z-index: calc(var(--admin-z-sticky) + 10);
     transition: all var(--admin-transition-fast);
     opacity: 1;
     color: var(--admin-text-secondary);

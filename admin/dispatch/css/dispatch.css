@@ -21,6 +21,13 @@
     background: var(--admin-bg-card);
     border: 1px solid var(--admin-border-color);
     border-radius: var(--admin-radius-xl);
+    transition: all var(--admin-transition-fast);
+}
+
+.stat-card:hover {
+    border-color: var(--admin-border-medium);
+    transform: translateY(-2px);
+    box-shadow: var(--admin-shadow-lg);
 }
 
 .stat-icon {

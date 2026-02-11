@@ -31,7 +31,7 @@
 .stat-card:nth-child(4) { animation-delay: 0.2s; }
 
 .stat-card:hover {
-    border-color: var(--admin-orange-500);
+    border-color: var(--admin-border-medium);
     transform: translateY(-2px);
     box-shadow: var(--admin-shadow-lg);
 }

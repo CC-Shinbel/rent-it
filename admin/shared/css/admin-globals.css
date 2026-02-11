@@ -131,11 +131,12 @@ textarea:focus-visible {
     margin-left: var(--admin-sidebar-width);
     transition: margin-left var(--admin-transition-normal);
     overflow-x: clip;
-    max-width: 100vw;
+    max-width: calc(100vw - var(--admin-sidebar-width));
 }
 
 .admin-wrapper.sidebar-collapsed .admin-main {
     margin-left: var(--admin-sidebar-collapsed);
+    max-width: calc(100vw - var(--admin-sidebar-collapsed));
 }
 
 .admin-content {
@@ -144,6 +145,7 @@ textarea:focus-visible {
     max-width: var(--admin-container-max);
     width: 100%;
     margin: 0 auto;
+    overflow-x: hidden;
 }
 
 /* ============================
@@ -377,10 +379,12 @@ textarea:focus-visible {
 @media (max-width: 1024px) {
     .admin-main {
         margin-left: 0;
+        max-width: 100vw;
     }
     
     .admin-wrapper.sidebar-collapsed .admin-main {
         margin-left: 0;
+        max-width: 100vw;
     }
 }
 
