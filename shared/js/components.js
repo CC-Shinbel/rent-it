@@ -29,7 +29,6 @@ const Components = {
         { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
         { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
         { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
-        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/client/contactusloggedin/contactusloggedin.php' },
     ],
     /**
      * Get current user from localStorage
@@ -849,7 +848,7 @@ container.innerHTML = `
                         <div class="footer-col">
                             <h4 class="footer-heading">Support</h4>
                             <nav class="footer-nav">
-                                <a href="/rent-it/pages/contactus.html">Contact Us</a>
+                                <a href="/rent-it/client/contactusloggedin/contactusloggedin.php">Contact Us</a>
                                 <a href="/rent-it/pages/aboutus.html">About</a>
                                 <a href="/rent-it/pages/contactus.html#faq-section">FAQs</a>
                             </nav>
