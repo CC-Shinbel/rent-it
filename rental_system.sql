@@ -524,6 +524,52 @@ ALTER TABLE `review`
 --
 ALTER TABLE `user_settings`
   ADD CONSTRAINT `user_settings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_accounts`
+--
+
+CREATE TABLE IF NOT EXISTS `admin_accounts` (
+  `admin_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) DEFAULT 'Admin',
+  `email` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`admin_id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_accounts`
+-- Default: username=admin1, password=admin1 (bcrypt hashed)
+--
+
+INSERT INTO `admin_accounts` (`username`, `password`, `full_name`, `email`) VALUES
+('admin1', '$2y$10$YKBKxMGP0rMNJx0E5PJzAOzLSmBLeKaSk1oVZpHDBv7fBRkfdWpLi', 'Admin User', 'admin@certicode.com')
+ON DUPLICATE KEY UPDATE `admin_id` = `admin_id`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dispatch`
+--
+
+CREATE TABLE IF NOT EXISTS `dispatch` (
+  `dispatch_id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) NOT NULL,
+  `driver_name` varchar(100) DEFAULT NULL,
+  `dispatch_date` date DEFAULT NULL,
+  `dispatch_status` varchar(50) DEFAULT 'Pending',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`dispatch_id`),
+  KEY `order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
