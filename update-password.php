@@ -35,11 +35,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentIT - Password Updated</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="shared/css/theme.css">
+    <script src="shared/js/theme.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Inter', sans-serif; }</style>
+    <link rel="icon" type="image/png" href="assets/images/rIT_logo_tp.png">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            margin: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            transition: background 0.3s;
+        }
+    </style>
 </head>
 <body>
     <script>
@@ -47,10 +67,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             icon: '<?php echo $status; ?>',
             title: '<?php echo ($status == "success" ? "Great!" : "Oops!"); ?>',
             text: '<?php echo $message; ?>',
-            confirmButtonColor: '#6366f1',
-            confirmButtonText: 'Go to Login'
+            confirmButtonColor: '#E67E22',
+            confirmButtonText: 'Go to Login',
+            background: getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim(),
+            color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()
         }).then((result) => {
-            // I-redirect ang user pabalik sa login page
             window.location.href = 'client/auth/login.php'; 
         });
     </script>
