@@ -120,7 +120,7 @@ $result = mysqli_query($conn, $cart_query);
         <?php while ($row = mysqli_fetch_assoc($result)): 
             // 1. Calculate inclusive days (+1) logic
             $startDateVal = $row['start_date'] ?: date('Y-m-d');
-            $endDateVal = $row['end_date'] ?: date('Y-m-d', strtotime('+1 day'));
+            $endDateVal = $row['end_date'] ?: date('Y-m-d');
 
             $startDateObj = new DateTime($startDateVal);
             $endDateObj = new DateTime($endDateVal);

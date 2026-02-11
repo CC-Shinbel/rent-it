@@ -52,4 +52,4 @@ if (isset($_GET['id'])) {
     header("Location: cart.php");
     exit();
 }
-echo "Success";
+echo "Success|start=$start_date|end=$end_date";

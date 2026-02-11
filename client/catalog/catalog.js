@@ -240,15 +240,23 @@
         return `${shortMonthNames[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')}, ${date.getFullYear()}`;
     }
     
-    // Update text inputs
+    // Update text inputs with active state indicators
     function updateInputs() {
         if (startDateInput) {
             startDateInput.value = formatDate(startDate);
-            startDateInput.classList.toggle('active', selectingStart && !startDate);
+            // Highlight when it's the next field to fill
+            const isStartActive = selectingStart || !startDate;
+            startDateInput.classList.toggle('active', isStartActive);
+            // Show filled state
+            startDateInput.classList.toggle('filled', !!startDate);
         }
         if (endDateInput) {
             endDateInput.value = formatDate(endDate);
-            endDateInput.classList.toggle('active', !selectingStart && startDate && !endDate);
+            // Highlight when start is set and we're picking end
+            const isEndActive = !selectingStart && !!startDate;
+            endDateInput.classList.toggle('active', isEndActive);
+            // Show filled state
+            endDateInput.classList.toggle('filled', !!endDate);
         }
     }
     
@@ -936,13 +944,7 @@ function openProductModal(card) {
         });
     }
 
-    // 5. I-SHOW ANG MODAL
-    modal.classList.add('active');
-}
-
-    // ============================
-    // RENDER REVIEWS & STARS
-    // ============================
+    // 5. RENDER REVIEWS & STARS
     if (typeof renderStars === 'function') renderStars(card);
     if (typeof renderReviewsAndBookings === 'function') renderReviewsAndBookings(productId);
 
@@ -955,11 +957,10 @@ function openProductModal(card) {
         toggleReviewsBtn.setAttribute('aria-expanded', 'true');
     }
 
-    // ============================
-    // OPEN MODAL
-    // ============================
+    // 6. I-SHOW ANG MODAL
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+}
 
 
 function renderStars(card) {
@@ -1100,9 +1101,13 @@ function addToCart(itemId) {
     formData.append('item_id', itemId);
 
     // Send selected calendar dates if available
-    if (window.catalogSelectedDates && window.catalogSelectedDates.start) {
-        formData.append('start_date', window.catalogSelectedDates.start);
-        formData.append('end_date', window.catalogSelectedDates.end);
+    const dates = window.catalogSelectedDates;
+    if (dates && dates.start && dates.end) {
+        formData.append('start_date', dates.start);
+        formData.append('end_date', dates.end);
+        console.log(`Adding to cart with dates: ${dates.start} → ${dates.end}`);
+    } else {
+        console.log('Adding to cart without dates (will use server default)');
     }
     
     fetch('../cart/add_to_cart.php', {
@@ -1111,8 +1116,8 @@ function addToCart(itemId) {
     })
     .then(response => response.text())
     .then(data => {
-        if (data.trim() === "Success") {
-            // Huwag na tayong mag-alert, toast lang sapat na
+        console.log('add_to_cart response:', data);
+        if (data.trim().startsWith("Success")) {
             console.log("Success adding to cart");
         } else {
             alert("Server Error: " + data);

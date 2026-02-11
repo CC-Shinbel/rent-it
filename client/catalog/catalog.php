@@ -275,6 +275,12 @@ $result = mysqli_query($conn, $query);
                                 </svg>
                                 Clear Dates
                             </button>
+                            <p class="same-day-hint" style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; text-align: center; line-height: 1.4;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 3px;">
+                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                                Same-day rental is allowed — selecting the same start &amp; end date counts as 1 day.
+                            </p>
                         </div>
                     </aside>
 

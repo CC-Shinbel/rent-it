@@ -484,6 +484,18 @@
 .date-input.active {
     border-color: var(--accent);
     background: var(--accent-muted);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.date-input.filled {
+    color: var(--accent);
+    font-weight: 600;
+    border-color: var(--accent);
+}
+
+.date-input.filled:not(.active) {
+    background: var(--bg-card);
+    box-shadow: none;
 }
 
 .date-input-separator {
@@ -1986,6 +1998,8 @@
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
+        max-height: none;
+        overflow-y: visible;
     }
     
     .filter-card {
@@ -2006,6 +2020,8 @@
     .filter-sidebar {
         flex-direction: column;
         overflow-x: hidden;
+        max-height: none;
+        overflow-y: visible;
     }
     
     .filter-card {
