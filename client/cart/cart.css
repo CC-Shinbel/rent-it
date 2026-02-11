@@ -77,11 +77,11 @@
 
 /* Ginagawa nating Card ang Order Summary */
 .cart-summary-bottom {
-    background: #ffffff;
+    background: var(--bg-card);
     padding: 24px;
-    border-radius: 16px; /* Rounded corners para mukhang card */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Soft shadow */
-    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
     width: 100%;
 }
 
@@ -89,21 +89,25 @@
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 20px;
-    color: #1a202c;
+    color: var(--text-primary);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
-    color: #4a5568;
+    color: var(--text-secondary);
 }
 
 .summary-total {
     font-size: 1.5rem;
-    color: #2d3748;
+    color: var(--text-primary);
     margin-top: 15px;
     padding-top: 15px;
+}
+
+.select-all-label {
+    color: var(--text-primary);
 }
 
 /* Pagbabalik ng design ng Checkout Button */

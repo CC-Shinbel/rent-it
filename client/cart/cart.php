@@ -32,7 +32,7 @@ $result = mysqli_query($conn, $cart_query);
     <link rel="stylesheet" href="../../shared/css/globals.css">
     <link rel="stylesheet" href="../../client/dashboard/dashboard.css">
     <link rel="stylesheet" href="cart.css">
-    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
 </head>
 <body>
     <div class="page-skeleton-overlay" aria-hidden="true">
