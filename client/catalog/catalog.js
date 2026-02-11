@@ -879,17 +879,7 @@ function initProductModal() {
     
     // Add click handlers to product cards (make whole card clickable)
     document.querySelectorAll('.product-card').forEach(card => {
-        // Make the card clickable for viewing details
         card.style.cursor = 'pointer';
-        const cardImg = card.querySelector('.product-image img');
-        if (cardImg) {
-            cardImg.style.cursor = 'zoom-in';
-            cardImg.title = 'Open image in new tab';
-            cardImg.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (cardImg.src) window.open(cardImg.src, '_blank');
-            });
-        }
         card.addEventListener('click', (e) => {
             // Don't open modal if clicking on action buttons
             if (e.target.closest('.product-actions') || e.target.closest('button')) {

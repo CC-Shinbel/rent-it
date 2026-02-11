@@ -319,15 +319,10 @@ $result = mysqli_query($conn, $query);
                 : $sampleImages[$row['item_id'] % count($sampleImages)];
         ?>
         <div class="product-image-wrap">
-              <a class="product-image-link" href="<?php echo $imageFile; ?>" target="_blank" rel="noopener" title="Open image in new tab">
-                  <img src="<?php echo $imageFile; ?>"
+              <img src="<?php echo $imageFile; ?>"
                       alt="<?php echo htmlspecialchars($row['item_name']); ?>"
                       class="product-image"
-                      title="Open image in new tab"
                       onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
-              </a>
-            
-         
         </div>
 
         <div class="product-content">
