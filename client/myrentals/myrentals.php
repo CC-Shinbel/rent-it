@@ -22,7 +22,7 @@ if (!isset($_SESSION['user_id'])) {
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
