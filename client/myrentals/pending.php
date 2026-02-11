@@ -46,14 +46,15 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 
     <style>
         .pending-card {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             margin-bottom: 15px;
             display: flex;
             gap: 20px;
@@ -78,16 +79,19 @@ $result = $stmt->get_result();
         .no-data-container {
             text-align: center;
             padding: 60px 20px;
-            background: #f8fafc;
+            background: var(--bg-secondary);
             border-radius: 12px;
-            border: 2px dashed #e2e8f0;
+            border: 2px dashed var(--border-color);
+        }
+        .no-data-container p {
+            color: var(--text-secondary);
         }
         .item-img {
             width: 100px;
             height: 100px;
             object-fit: cover;
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
         }
     </style>
 </head>
@@ -115,7 +119,7 @@ $result = $stmt->get_result();
                 </div>
 
                 <section class="pending-list-section">
-                    <h2 class="section-title" style="margin-bottom: 20px; color: #1e293b;">Pending Rentals</h2>
+                    <h2 class="section-title" style="margin-bottom: 20px; color: var(--text-primary);">Pending Rentals</h2>
                     
                     <?php if ($result && $result->num_rows > 0): ?>
                         <?php while($order = $result->fetch_assoc()): ?>
@@ -128,16 +132,16 @@ $result = $stmt->get_result();
                                 </div>
 
                                 <div class="pending-info" style="flex-grow: 1;">
-                                    <h4 style="margin-bottom: 8px; color: #1e293b;"><?php echo htmlspecialchars($order['item_name']); ?></h4>
+                                    <h4 style="margin-bottom: 8px; color: var(--text-primary);"><?php echo htmlspecialchars($order['item_name']); ?></h4>
                                     
                                     <div class="pending-meta" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
                                         <div>
-                                            <p style="color: #64748b; margin: 2px 0;">Start Date: <span style="color: #1e293b; font-weight: 600;"><?php echo date('M d, Y', strtotime($order['start_date'])); ?></span></p>
-                                            <p style="color: #64748b; margin: 2px 0;">End Date: <span style="color: #1e293b; font-weight: 600;"><?php echo date('M d, Y', strtotime($order['end_date'])); ?></span></p>
+                                            <p style="color: var(--text-secondary); margin: 2px 0;">Start Date: <span style="color: var(--text-primary); font-weight: 600;"><?php echo date('M d, Y', strtotime($order['start_date'])); ?></span></p>
+                                            <p style="color: var(--text-secondary); margin: 2px 0;">End Date: <span style="color: var(--text-primary); font-weight: 600;"><?php echo date('M d, Y', strtotime($order['end_date'])); ?></span></p>
                                         </div>
                                         <div>
-                                            <p style="color: #64748b; margin: 2px 0;">Duration: <span style="color: #1e293b; font-weight: 600;"><?php echo $order['rental_days']; ?> Day(s)</span></p>
-                                            <p style="color: #64748b; margin: 2px 0;">Items: <span style="color: #1e293b; font-weight: 600;"><?php echo $order['item_count']; ?> item(s) found</span></p>
+                                            <p style="color: var(--text-secondary); margin: 2px 0;">Duration: <span style="color: var(--text-primary); font-weight: 600;"><?php echo $order['rental_days']; ?> Day(s)</span></p>
+                                            <p style="color: var(--text-secondary); margin: 2px 0;">Items: <span style="color: var(--text-primary); font-weight: 600;"><?php echo $order['item_count']; ?> item(s) found</span></p>
                                         </div>
                                     </div>
                                     
