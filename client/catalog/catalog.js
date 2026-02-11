@@ -224,6 +224,9 @@
         let startDate = null;
         let endDate = null;
         let selectingStart = true; // Toggle between selecting start and end
+
+        // Expose selected dates globally so addToCart can read them
+        window.catalogSelectedDates = { start: null, end: null };
         
         // Month names for formatting
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -347,12 +350,19 @@
         updateInputs();
     }
     
+    function toISODate(d) {
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
     function handleDateClick(date) {
         if (selectingStart || !startDate) {
-            // Selecting start date
+            // Selecting start date (same-day booking allowed: start == end)
             startDate = date;
-            endDate = null;
+            endDate = date; // Default end = same day (1-day rental)
             selectingStart = false;
+
+            // Update global dates so addToCart can use them
+            window.catalogSelectedDates = { start: toISODate(startDate), end: toISODate(endDate) };
         } else {
             // Selecting end date
             if (date < startDate) {
@@ -363,6 +373,9 @@
                 endDate = date;
             }
             selectingStart = true;
+
+            // Update global dates
+            window.catalogSelectedDates = { start: toISODate(startDate), end: toISODate(endDate) };
             
             // Check for conflicts in range
             checkRangeConflicts();
@@ -422,6 +435,7 @@
         startDate = null;
         endDate = null;
         selectingStart = true;
+        window.catalogSelectedDates = { start: null, end: null };
         document.querySelectorAll('.product-card').forEach(card => {
             card.classList.remove('date-conflict');
         });
@@ -1085,9 +1099,13 @@ function addToCart(itemId) {
     const formData = new FormData();
     formData.append('item_id', itemId);
 
-
+    // Send selected calendar dates if available
+    if (window.catalogSelectedDates && window.catalogSelectedDates.start) {
+        formData.append('start_date', window.catalogSelectedDates.start);
+        formData.append('end_date', window.catalogSelectedDates.end);
+    }
     
-    fetch('../cart/add_to_cart.php', { // I-verify ang folder nito!
+    fetch('../cart/add_to_cart.php', {
         method: 'POST',
         body: formData
     })

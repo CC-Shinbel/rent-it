@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart_id'])) {
         echo json_encode(['success' => false, 'error' => 'End date cannot be earlier than start date.']);
         exit();
     }
+    // Same day (start == end) is valid = 1 day rental
 
   
     $update_query = "UPDATE cart SET start_date = '$start_date', end_date = '$end_date' 

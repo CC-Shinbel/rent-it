@@ -21,9 +21,9 @@ if (!$item_id) {
 
 // 1. Siguraduhin na may dates (Optional: Pwedeng lagyan ng default kung wala)
 if (!$start_date || !$end_date) {
-    // Halimbawa: Default ay NOW hanggang bukas kung walang pinili
+    // Default: same-day rental (1 day) if no dates selected
     $start_date = date('Y-m-d');
-    $end_date = date('Y-m-d', strtotime('+1 day'));
+    $end_date = date('Y-m-d'); // Same day = 1 day rental (inclusive counting)
 }
 
 // 2. Check duplicate (Gamit ang prepared statement para sa security)
