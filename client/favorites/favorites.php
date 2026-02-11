@@ -11,10 +11,10 @@ if (!$user_id) {
 }
 
 // SQL Query: Gamitin ang 'f.id' base sa structure mo
-$query = "SELECT f.favorite_id, i.item_id, i.item_name, i.price_per_day, i.image 
+$query = "SELECT f.favorite_id, i.item_id, i.item_name, i.price_per_day, i.image, i.status 
           FROM favorites f 
           JOIN item i ON f.item_id = i.item_id 
-          WHERE f.id = ?"; // 'id' column ang gamit dito
+          WHERE f.id = ?";
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -121,30 +121,33 @@ $favoritesCount = $result->num_rows;
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
                                     <div class="favorite-image-wrap">
-                                        <img src="../../assets/images/<?php echo $row['image']; ?>" alt="<?php echo $row['item_name']; ?>" class="favorite-image"> 
+                                        <img src="../../assets/images/<?php echo htmlspecialchars($row['image']); ?>" 
+                                             alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
+                                             class="favorite-image"
+                                             onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
                                         
-                                        <button class="btn-remove-favorite" title="Remove from favorites">
-
-                                            <span class="favorite-badge <?php echo strtolower($row['status']); ?>">
-                                                <?php echo $row['status']; ?>
-                                            </span>
-                                                
-                                            <button class="btn-remove-favorite" onclick="removeFavorite(<?php echo $row['item_id']; ?>)">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                                                </svg>
+                                        <?php if(!empty($row['status'])): ?>
+                                        <span class="favorite-badge <?php echo strtolower($row['status']); ?>">
+                                            <?php echo htmlspecialchars($row['status']); ?>
+                                        </span>
+                                        <?php endif; ?>
+                                        
+                                        <button class="btn-remove-favorite" onclick="removeFavorite(<?php echo $row['item_id']; ?>)" title="Remove from favorites">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                            </svg>
                                         </button>
                                     </div>
                                     
                                     <div class="favorite-content">
-                                        <h3 class="favorite-name"><?php echo $row['item_name']; ?></h3>
+                                        <h3 class="favorite-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
                                         <div class="favorite-price">₱<?php echo number_format($row['price_per_day'], 2); ?> <span>/ day</span></div>
                                         
                                         <div class="favorite-actions">
                                             <button class="btn-move-to-cart" onclick="moveToCart(<?php echo $row['item_id']; ?>, <?php echo $row['favorite_id']; ?>)">
                                                 Move to Cart
                                             </button>
-                                            <a href="details.php?id=<?php echo $row['item_id']; ?>" class="btn-view-details">View Details</a>
+                                            <a href="../catalog/itemdescription.php?id=<?php echo $row['item_id']; ?>" class="btn-view-details">View Details</a>
                                         </div>
                                     </div>
                                 </article>
