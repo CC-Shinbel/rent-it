@@ -292,13 +292,45 @@ $userName = $_SESSION['user_name'] ?? '';
                     </div>
                 </div>
 
-                <!-- Right Column - Delivery Truck Icon -->
+                <!-- Right Column - Delivery Illustration -->
                 <div class="delivery-right animate-on-scroll">
                     <div class="delivery-illustration">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="delivery-truck-icon">
-                            <path d="M1 3h15v13H1zM16 8h4l3 4v5h-7V8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <circle cx="5.5" cy="18.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                            <circle cx="18.5" cy="18.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" class="delivery-truck-icon">
+                            <!-- Road -->
+                            <rect x="0" y="130" width="200" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+                            <rect x="20" y="132" width="18" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+                            <rect x="60" y="132" width="30" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+                            <rect x="120" y="132" width="14" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+                            <rect x="155" y="132" width="24" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+                            <!-- Truck body -->
+                            <rect x="50" y="70" width="80" height="55" rx="6" fill="currentColor" opacity="0.9"/>
+                            <!-- Cab -->
+                            <path d="M130 85 L155 85 L165 105 L165 125 L130 125 Z" fill="currentColor" opacity="0.75" rx="4"/>
+                            <!-- Windshield -->
+                            <path d="M133 88 L152 88 L160 104 L133 104 Z" fill="rgba(255,255,255,0.2)" rx="2"/>
+                            <!-- Cargo area detail -->
+                            <rect x="55" y="78" width="70" height="4" rx="2" fill="rgba(255,255,255,0.15)"/>
+                            <rect x="55" y="86" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.1)"/>
+                            <!-- Music notes floating from cargo -->
+                            <text x="72" y="60" font-size="16" fill="currentColor" opacity="0.7" class="note-1">♪</text>
+                            <text x="95" y="48" font-size="20" fill="currentColor" opacity="0.5" class="note-2">♫</text>
+                            <text x="110" y="55" font-size="14" fill="currentColor" opacity="0.6" class="note-3">♪</text>
+                            <!-- Headlight -->
+                            <circle cx="163" cy="115" r="4" fill="#FFC107" opacity="0.9"/>
+                            <circle cx="163" cy="115" r="6" fill="#FFC107" opacity="0.2"/>
+                            <!-- Wheels -->
+                            <circle cx="75" cy="130" r="12" fill="#1a1a2e" stroke="currentColor" stroke-width="3"/>
+                            <circle cx="75" cy="130" r="5" fill="currentColor" opacity="0.3"/>
+                            <circle cx="150" cy="130" r="12" fill="#1a1a2e" stroke="currentColor" stroke-width="3"/>
+                            <circle cx="150" cy="130" r="5" fill="currentColor" opacity="0.3"/>
+                            <!-- Speed lines -->
+                            <rect x="15" y="100" width="25" height="2" rx="1" fill="currentColor" opacity="0.3" class="speed-1"/>
+                            <rect x="10" y="110" width="30" height="2" rx="1" fill="currentColor" opacity="0.2" class="speed-2"/>
+                            <rect x="20" y="120" width="20" height="2" rx="1" fill="currentColor" opacity="0.25" class="speed-3"/>
+                            <!-- Package icon on truck -->
+                            <rect x="85" y="95" width="24" height="22" rx="3" fill="rgba(255,255,255,0.2)"/>
+                            <line x1="97" y1="95" x2="97" y2="117" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                            <line x1="85" y1="106" x2="109" y2="106" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
                         </svg>
                     </div>
                 </div>
