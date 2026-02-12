@@ -11,6 +11,7 @@ import ClientLoginPage from './client/ClientLoginPage';
 import ClientShellLayout from './client/ClientShellLayout';
 import ClientDashboardPage from './client/ClientDashboardPage';
 import ClientCatalogPage from './client/ClientCatalogPage';
+import ClientFavoritesPage from './client/ClientFavoritesPage';
 
 function ScrollToTopOnRouteChange() {
   const location = useLocation();
@@ -51,6 +52,15 @@ function App() {
           element={(
             <ClientShellLayout>
               <ClientCatalogPage />
+            </ClientShellLayout>
+          )}
+        />
+
+        <Route
+          path="/client/favorites"
+          element={(
+            <ClientShellLayout>
+              <ClientFavoritesPage />
             </ClientShellLayout>
           )}
         />

@@ -6,12 +6,31 @@ include '../../shared/php/db_connection.php';
 $user_id = $_SESSION['user_id'] ?? $_SESSION['id'] ?? null;
 
 if (!$user_id) {
+    // For JSON consumers (React), return a structured error
+    if (isset($_GET['format']) && $_GET['format'] === 'json') {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Please login to view favorites.',
+            'favorites' => [],
+            'count' => 0,
+        ]);
+        exit();
+    }
+
     echo "Please login to view favorites.";
     exit();
 }
 
 // SQL Query: Gamitin ang 'f.id' base sa structure mo
-$query = "SELECT f.favorite_id, i.item_id, i.item_name, i.price_per_day, i.image 
+$query = "SELECT 
+            f.favorite_id, 
+            i.item_id, 
+            i.item_name, 
+            i.price_per_day, 
+            i.image,
+            i.description,
+            i.status
           FROM favorites f 
           JOIN item i ON f.item_id = i.item_id 
           WHERE f.id = ?"; // 'id' column ang gamit dito
@@ -21,6 +40,23 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $favoritesCount = $result->num_rows;
+
+if (isset($_GET['format']) && $_GET['format'] === 'json') {
+    $favorites = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $favorites[] = $row;
+        }
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'favorites' => $favorites,
+        'count' => count($favorites),
+    ]);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>

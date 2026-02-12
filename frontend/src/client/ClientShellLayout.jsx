@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import './css/ClientShellLayout.css';
 
-const BASE_URL = 'http://localhost/rent-it';
+// Backend/API base: dev uses Vite proxy (/api), prod uses direct /rent-it path
+const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
+// Public base for assets and PHP pages (needs full host in dev so images load from PHP app)
+const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
 
 function ClientShellLayout({ children, showFooter = true }) {
   const [user, setUser] = useState({ full_name: '', membership_level: '' });
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
-    fetch('http://localhost/rent-it/client/dashboard/dashboard.php', {
+    fetch(`${API_BASE}/client/dashboard/dashboard.php`, {
       credentials: 'include',
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -37,7 +38,7 @@ function ClientShellLayout({ children, showFooter = true }) {
     authKeys.forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
 
-    fetch('/rent-it/api/auth/logout.php', {
+    fetch(`${API_BASE}/api/auth/logout.php`, {
       method: 'POST',
       credentials: 'include',
     }).finally(() => {
@@ -51,13 +52,13 @@ function ClientShellLayout({ children, showFooter = true }) {
         <div className="sidebar-header">
           <a
             className="sidebar-logo"
-            href={`${BASE_URL}/assets/images/rIT_logo_tp.png`}
+            href={`${PUBLIC_BASE}/assets/images/rIT_logo_tp.png`}
             target="_blank"
             rel="noopener noreferrer"
             title="View RentIT logo"
           >
             <img
-              src={`${BASE_URL}/assets/images/rIT_logo_tp.png`}
+              src={`${PUBLIC_BASE}/assets/images/rIT_logo_tp.png`}
               alt="RentIT Logo"
               className="sidebar-logo-icon"
             />
@@ -77,7 +78,7 @@ function ClientShellLayout({ children, showFooter = true }) {
 
         <nav className="sidebar-nav">
           <a
-            className={`nav-item${location.pathname === '/client/dashboard' ? ' active' : ''}`}
+            className="nav-item active"
             href="/client/dashboard"
             data-tooltip="Dashboard"
           >
@@ -85,7 +86,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             <span className="nav-label">Dashboard</span>
           </a>
           <a
-            className={`nav-item${location.pathname === '/client/catalog' ? ' active' : ''}`}
+            className="nav-item"
             href="/client/catalog"
             data-tooltip="Browse Catalog"
           >
@@ -94,7 +95,7 @@ function ClientShellLayout({ children, showFooter = true }) {
           </a>
           <a
             className="nav-item"
-            href="/rent-it/client/favorites/favorites.php"
+            href="/client/favorites"
             data-tooltip="Favorites"
           >
             <span className="nav-icon">❤️</span>
@@ -223,7 +224,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             <div className="client-footer-main">
               <div className="client-footer-brand">
                 <img
-                  src="http://localhost/rent-it/assets/images/rIT_logo_tp.png"
+                  src={`${PUBLIC_BASE}/assets/images/rIT_logo_tp.png`}
                   alt="RentIT Logo"
                   className="client-footer-logo"
                 />

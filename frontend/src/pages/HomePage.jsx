@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 
 const BASE_URL = '/rent-it';
+const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
 
 const MACHINES = [
   {
@@ -11,7 +12,7 @@ const MACHINES = [
     title: 'Mini Star',
     subtitle: 'Budget friendly & compact',
     price: '₱800',
-    image: 'http://localhost/rent-it/assets/images/ministar.jpg',
+    image: `${PUBLIC_BASE}/assets/images/ministar.jpg`,
     alt: 'Mini Star Videoke Machine',
     specs: [
       '30,000+ Classic Songs',
@@ -27,7 +28,7 @@ const MACHINES = [
     title: 'Platinum Pro',
     subtitle: 'Crystal clear acoustics',
     price: '₱1,500',
-    image: 'http://localhost/rent-it/assets/images/platinumpro.webp',
+    image: `${PUBLIC_BASE}/assets/images/platinumpro.webp`,
     alt: 'Platinum Pro Videoke Machine',
     specs: [
       '50,000+ Songs (Updated Monthly)',
@@ -43,7 +44,7 @@ const MACHINES = [
     title: 'Party Box X',
     subtitle: 'For large gatherings',
     price: '₱2,500',
-    image: 'http://localhost/rent-it/assets/images/partyboxx.webp',
+    image: `${PUBLIC_BASE}/assets/images/partyboxx.webp`,
     alt: 'Party Box X Videoke Machine',
     specs: [
       '70,000+ Songs (Full HD Video)',

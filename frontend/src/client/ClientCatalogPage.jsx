@@ -1,10 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './css/ClientCatalogPage.css';
 
+// Backend base for PHP endpoints: dev uses Vite proxy (/api), prod uses direct /rent-it path
+const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
+// Public base for asset URLs
+const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+
 const ClientCatalogPage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Product details modal state
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Lightweight toast for modal cart success (bottom-right)
+  const [toast, setToast] = useState({ visible: false, message: '' });
+
+  // Client-side pagination (20 items per page, mirroring static PHP pagination layout)
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Filter state (React implementation of legacy catalog.js behavior)
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,11 +37,13 @@ const ClientCatalogPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectingStart, setSelectingStart] = useState(true);
+  // Track which items are booked in the selected date range (from admin calendar API)
+  const [bookedItemIds, setBookedItemIds] = useState(new Set());
 
   useEffect(() => {
     let isMounted = true;
 
-    fetch('http://localhost/rent-it/client/catalog/catalog.php?format=json', {
+    fetch(`${API_BASE}/client/catalog/catalog.php?format=json`, {
       credentials: 'include',
     })
       .then((res) => {
@@ -99,7 +117,91 @@ const ClientCatalogPage = () => {
 
       return true;
     });
-  }, [items, searchQuery, selectedCategories, selectedStatuses, maxPrice]);
+  }, [items, searchQuery, selectedCategories, selectedStatuses, maxPrice, bookedItemIds]);
+
+  // ===== Pagination helpers =====
+
+  const totalPages = useMemo(() => (
+    filteredItems.length > 0 ? Math.ceil(filteredItems.length / ITEMS_PER_PAGE) : 1
+  ), [filteredItems.length]);
+
+  const paginatedItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredItems, currentPage]);
+
+  // ===== Availability integration with existing admin calendar API =====
+
+  useEffect(() => {
+    // Only fetch when both dates are selected
+    if (!startDate || !endDate) {
+      // When the user clears dates, also clear any booked IDs filter
+      // eslint-disable-next-line no-console
+      console.debug('Availability: dates cleared, resetting bookedItemIds');
+      setBookedItemIds(new Set());
+      return;
+    }
+
+    const toISO = (d) => {
+      const copy = new Date(d);
+      copy.setHours(0, 0, 0, 0);
+      return copy.toISOString().slice(0, 10);
+    };
+
+    const start = toISO(startDate);
+    const end = toISO(endDate);
+
+    // eslint-disable-next-line no-console
+    console.debug('Availability: fetching calendar data', { start, end });
+
+    // Use existing admin calendar API to derive which items are booked
+    const controller = new AbortController();
+
+    fetch(`${API_BASE}/admin/api/get_calendar.php?start=${start}&end=${end}`, {
+      credentials: 'include',
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to load availability data');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // Expect shape similar to admin calendar API: { bookings: [...], ... }
+        const rawBookings = Array.isArray(data?.bookings)
+          ? data.bookings
+          : Array.isArray(data)
+            ? data
+            : [];
+
+        const bookedIds = new Set();
+        rawBookings.forEach((booking) => {
+          const itemId = booking.item_id || booking.itemId;
+          if (itemId != null) {
+            bookedIds.add(Number(itemId));
+          }
+        });
+
+        // eslint-disable-next-line no-console
+        console.debug('Availability: calendar response', {
+          bookingsCount: rawBookings.length,
+          bookedItemIds: Array.from(bookedIds),
+        });
+
+        setBookedItemIds(bookedIds);
+      })
+      .catch((err) => {
+        // Fail silently for availability so catalog still works even if admin API is unreachable
+        // eslint-disable-next-line no-console
+        console.error('Availability fetch error:', err);
+        setBookedItemIds(new Set());
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [startDate, endDate]);
 
   // ===== Calendar helpers (React implementation) =====
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -201,6 +303,7 @@ const ClientCatalogPage = () => {
     setStartDate(null);
     setEndDate(null);
     setSelectingStart(true);
+    setBookedItemIds(new Set());
   };
 
   // ===== Filter handlers =====
@@ -222,6 +325,125 @@ const ClientCatalogPage = () => {
     setSelectedStatuses([]);
     setMaxPrice(10000);
     handleClearDates();
+  };
+
+  // ===== Product modal handlers =====
+  const openProductModal = (item) => {
+    setSelectedItem(item || null);
+    setIsModalOpen(true);
+  };
+
+  const closeProductModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  // ===== Modal action handlers (Add to Cart / Favorites) =====
+
+  const handleModalAddToCart = async () => {
+    if (!selectedItem) return;
+
+    const productId = selectedItem.id || selectedItem.item_id;
+    if (!productId) return;
+    const productName = selectedItem.item_name || 'Item';
+
+    // If this item is booked in the currently selected date range, block renting in React
+    if (bookedItemIds.size > 0 && bookedItemIds.has(Number(productId))) {
+      setToast({ visible: true, message: `${productName} is not available for the selected dates` });
+      setTimeout(() => {
+        setToast((current) => (current.visible ? { ...current, visible: false } : current));
+      }, 3000);
+      return;
+    }
+
+    try {
+      // Call backend via Vite dev proxy or direct /rent-it in production
+      await fetch(`${API_BASE}/client/cart/add_to_cart.php`, {
+        method: 'POST',
+        credentials: 'include',
+        body: new URLSearchParams({ item_id: String(productId) }),
+      });
+
+      // Update button label briefly (visual feedback on the button itself)
+      const cartBtn = document.getElementById('modalCartBtn');
+      if (cartBtn) {
+        const original = cartBtn.innerHTML;
+        cartBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Added to Cart
+        `;
+        setTimeout(() => {
+          cartBtn.innerHTML = original;
+        }, 2000);
+      }
+
+      // Always use local React toast (pill style) for cart actions
+      setToast({ visible: true, message: `${productName} added to cart` });
+      setTimeout(() => {
+        setToast((current) => (current.visible ? { ...current, visible: false } : current));
+      }, 3000);
+    } catch (err) {
+      // Silent fail with console log only so UI does not break
+      // eslint-disable-next-line no-console
+      console.error('Modal add to cart error:', err);
+    }
+  };
+
+  const handleModalToggleFavorite = async () => {
+    if (!selectedItem) return;
+
+    const productId = selectedItem.id || selectedItem.item_id;
+    if (!productId) return;
+    const productName = selectedItem.item_name || 'Item';
+
+    const favBtn = document.getElementById('modalFavoriteBtn');
+    if (!favBtn) return;
+
+    const isActive = favBtn.classList.toggle('active');
+
+    // Update label + icon like legacy implementation
+    favBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="${isActive ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+      ${isActive ? 'In Favorites' : 'Add to Favorites'}
+    `;
+
+    try {
+      const response = await fetch(`${API_BASE}/client/catalog/add_favorite.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          item_id: String(productId),
+          action: isActive ? 'add' : 'remove',
+        }),
+      });
+
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (e) {
+        // ignore JSON parse errors if endpoint returns plain text
+      }
+
+      const ok = data && typeof data.success !== 'undefined' ? data.success : response.ok;
+      const message = ok
+        ? isActive
+          ? `${productName} added to favorites`
+          : `${productName} removed from favorites`
+        : 'Favorite action failed';
+
+      // Use same local React toast styling for favorites as for cart
+      setToast({ visible: true, message });
+      setTimeout(() => {
+        setToast((current) => (current.visible ? { ...current, visible: false } : current));
+      }, 3000);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Modal favorite error:', err);
+    }
   };
 
   return (
@@ -561,8 +783,8 @@ const ClientCatalogPage = () => {
 
           {!loading && (
             <div className="products-grid">
-              {Array.isArray(filteredItems) && filteredItems.length > 0 ? (
-                filteredItems.map((item) => {
+              {Array.isArray(paginatedItems) && paginatedItems.length > 0 ? (
+                paginatedItems.map((item) => {
                   const id = item.item_id;
                   const name = item.item_name;
                   const price = Number(item.price_per_day || 0);
@@ -571,18 +793,31 @@ const ClientCatalogPage = () => {
                   const category = item.category || 'portable';
 
                   const imageUrl = item.image
-                    ? `http://localhost/rent-it/assets/images/${item.image}`
-                    : 'http://localhost/rent-it/assets/images/catalog-fallback.svg';
+                    ? `${PUBLIC_BASE}/assets/images/${item.image}`
+                    : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
+
+                  const rawId = item.item_id || item.id;
+                  const isUnavailableForDates =
+                    bookedItemIds.size > 0 && rawId && bookedItemIds.has(Number(rawId));
 
                   return (
                     <article
                       key={id}
-                      className="product-card"
+                      className={`product-card${
+                        isUnavailableForDates ? ' product-card-unavailable' : ''
+                      }`}
                       data-id={id}
                       data-category={category}
                       data-price={price}
+                      onClick={() => openProductModal(item)}
                     >
                       <div className="product-image-wrap">
+                        {isUnavailableForDates && (
+                          <div className="product-unavailable-badge">
+                            Unavailable for selected dates
+                          </div>
+                        )}
+
                         <img
                           src={imageUrl}
                           alt={name}
@@ -591,7 +826,7 @@ const ClientCatalogPage = () => {
                           onError={(e) => {
                             e.currentTarget.onerror = null;
                             e.currentTarget.src =
-                              'http://localhost/rent-it/assets/images/catalog-fallback.svg';
+                              `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
                           }}
                         />
                       </div>
@@ -617,9 +852,12 @@ const ClientCatalogPage = () => {
 
                         <div className="product-actions">
                           <button
-                            className="product-cta-main"
+                            className={`product-cta-main${
+                              isUnavailableForDates ? ' btn-rent-disabled' : ''
+                            }`}
                             type="button"
                             title="Add this item to your cart"
+                            disabled={Boolean(isUnavailableForDates)}
                           >
                             Rent Now
                           </button>
@@ -637,27 +875,68 @@ const ClientCatalogPage = () => {
             </div>
           )}
 
-          {/* Static pagination to match PHP layout */}
+          {/* Pagination (client-side, 30 items per page) */}
           <nav className="pagination" aria-label="Catalog pagination">
-            <button className="page-btn" data-page="prev" aria-label="Previous page">
+            <button
+              className="page-btn"
+              data-page="prev"
+              aria-label="Previous page"
+              type="button"
+              onClick={() => setCurrentPage((p) => (p > 1 ? p - 1 : p))}
+              disabled={currentPage === 1}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
-            <button className="page-btn active" data-page="1">
+            {/* For now, only show first few pages + last, similar to static PHP layout */}
+            <button
+              type="button"
+              className={`page-btn${currentPage === 1 ? ' active' : ''}`}
+              data-page="1"
+              onClick={() => setCurrentPage(1)}
+            >
               1
             </button>
-            <button className="page-btn" data-page="2">
-              2
-            </button>
-            <button className="page-btn" data-page="3">
-              3
-            </button>
-            <span className="page-ellipsis">...</span>
-            <button className="page-btn" data-page="8">
-              8
-            </button>
-            <button className="page-btn" data-page="next" aria-label="Next page">
+            {totalPages >= 2 && (
+              <button
+                type="button"
+                className={`page-btn${currentPage === 2 ? ' active' : ''}`}
+                data-page="2"
+                onClick={() => setCurrentPage(2)}
+              >
+                2
+              </button>
+            )}
+            {totalPages >= 3 && (
+              <button
+                type="button"
+                className={`page-btn${currentPage === 3 ? ' active' : ''}`}
+                data-page="3"
+                onClick={() => setCurrentPage(3)}
+              >
+                3
+              </button>
+            )}
+            {totalPages > 3 && <span className="page-ellipsis">...</span>}
+            {totalPages > 3 && (
+              <button
+                type="button"
+                className={`page-btn${currentPage === totalPages ? ' active' : ''}`}
+                data-page={totalPages}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                {totalPages}
+              </button>
+            )}
+            <button
+              className="page-btn"
+              data-page="next"
+              aria-label="Next page"
+              type="button"
+              onClick={() => setCurrentPage((p) => (p < totalPages ? p + 1 : p))}
+              disabled={currentPage === totalPages}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
@@ -666,10 +945,23 @@ const ClientCatalogPage = () => {
         </section>
       </div>
 
-      {/* Product Details Modal shell (no behavior yet) to mirror PHP structure */}
-      <div className="modal-overlay" id="productModal">
-        <div className="modal-container product-modal">
-          <button className="modal-close" id="closeProductModal" aria-label="Close modal">
+      {/* Product Details Modal */}
+      <div
+        className={`modal-overlay${isModalOpen ? ' active' : ''}`}
+        id="productModal"
+        onClick={closeProductModal}
+      >
+        <div
+          className="modal-container product-modal"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="modal-close"
+            id="closeProductModal"
+            aria-label="Close modal"
+            type="button"
+            onClick={closeProductModal}
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -679,23 +971,43 @@ const ClientCatalogPage = () => {
           <div className="modal-body product-modal-body">
             <div className="modal-product-image-section">
               <img
-                src="http://localhost/rent-it/assets/images/catalog-fallback.svg"
-                alt=""
+                src={selectedItem?.image
+                  ? `${PUBLIC_BASE}/assets/images/${selectedItem.image}`
+                  : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`}
+                alt={selectedItem?.item_name || 'Catalog item image'}
                 className="modal-product-image"
                 id="modalProductImage"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
+                }}
               />
-              <span className="modal-product-badge" id="modalProductBadge">
-                Available
+              <span
+                className={`modal-product-badge ${
+                  (selectedItem?.status || 'available').toLowerCase()
+                }`}
+                id="modalProductBadge"
+              >
+                {(selectedItem?.status || 'Available')
+                  .toString()
+                  .charAt(0)
+                  .toUpperCase() + (selectedItem?.status || 'available').toString().slice(1)}
               </span>
             </div>
 
             <div className="modal-product-info">
               <div className="modal-product-header">
                 <h2 className="modal-product-name" id="modalProductName">
-                  Product Name
+                  {selectedItem?.item_name || 'Product Name'}
                 </h2>
                 <div className="modal-product-price" id="modalProductPrice">
-                  ₱0 <span>/ day</span>
+                  ₱
+                  {Number(selectedItem?.price_per_day || 0).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                  {' '}
+                  <span>/ day</span>
                 </div>
               </div>
 
@@ -710,7 +1022,7 @@ const ClientCatalogPage = () => {
               </div>
 
               <p className="modal-product-description" id="modalProductDescription">
-                Product description goes here.
+                {selectedItem?.description || 'Product description goes here.'}
               </p>
 
               <div className="modal-product-tags" id="modalProductTags" />
@@ -762,13 +1074,23 @@ const ClientCatalogPage = () => {
               </div>
 
               <div className="modal-actions">
-                <button className="btn-modal-favorite" id="modalFavoriteBtn" type="button">
+                <button
+                  className="btn-modal-favorite"
+                  id="modalFavoriteBtn"
+                  type="button"
+                  onClick={handleModalToggleFavorite}
+                >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   Add to Favorites
                 </button>
-                <button className="btn-modal-cart" id="modalCartBtn" type="button">
+                <button
+                  className="btn-modal-cart"
+                  id="modalCartBtn"
+                  type="button"
+                  onClick={handleModalAddToCart}
+                >
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -787,6 +1109,15 @@ const ClientCatalogPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Local React pill-style toast for cart and favorites */}
+
+      {toast.visible && (
+        <div className="toast-notification toast-success">
+          <div className="toast-icon">✓</div>
+          <div className="toast-message">{toast.message}</div>
+        </div>
+      )}
     </div>
   );
 };
