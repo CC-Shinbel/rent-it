@@ -16,23 +16,30 @@ function initThemeToggle() {
     const themeToggle = document.getElementById('themeToggleSwitch');
     if (!themeToggle) return;
 
-    // Get current theme from localStorage or default to dark
-    const currentTheme = localStorage.getItem('admin-theme') || 'dark';
-    const isDark = currentTheme === 'dark';
-    
-    // Set initial state
-    themeToggle.checked = isDark;
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    
-    // Handle toggle change
+    // Sync initial state with current theme (same source as header toggle)
+    function syncToggleState() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('admin-theme') || 'dark';
+        themeToggle.checked = currentTheme === 'dark';
+    }
+    syncToggleState();
+
+    // Handle toggle change - use AdminComponents.toggleTheme() so it stays in sync with header
     themeToggle.addEventListener('change', function() {
         const newTheme = this.checked ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('admin-theme', newTheme);
-        
-        // Optional: Show notification
-        showNotification(`Switched to ${newTheme} mode`, 'success');
+
+        // Show notification via AdminComponents if available, else fallback
+        if (typeof AdminComponents !== 'undefined' && AdminComponents.showToast) {
+            AdminComponents.showToast(`Switched to ${newTheme} mode`, 'info');
+        } else {
+            showNotification(`Switched to ${newTheme} mode`, 'success');
+        }
     });
+
+    // Listen for theme changes from the header toggle (keeps this toggle in sync)
+    const observer = new MutationObserver(() => syncToggleState());
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 }
 
 /**

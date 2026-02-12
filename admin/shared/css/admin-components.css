@@ -325,6 +325,17 @@
     overflow: hidden;
 }
 
+/* Collapsed sidebar: center nav items and icons */
+.admin-sidebar.collapsed .sidebar-nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.admin-sidebar.collapsed .sidebar-nav-icon {
+    margin: 0 auto;
+}
+
 /* Sidebar collapse toggle */
 .sidebar-collapse-btn {
     position: absolute;

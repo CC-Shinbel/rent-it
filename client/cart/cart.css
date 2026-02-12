@@ -248,6 +248,34 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Dark mode: date input calendar icon, text, border visibility */
+[data-theme="dark"] .cart-date-input {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #F1F5F9;
+    color-scheme: dark;
+}
+
+[data-theme="dark"] .cart-date-input:focus {
+    border-color: var(--accent, #FB7012);
+    box-shadow: 0 0 0 3px rgba(251, 112, 18, 0.2);
+}
+
+[data-theme="dark"] .date-picker-group label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .date-arrow {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .rental-summary {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .cart-item-subtotal {
+    color: var(--accent, #FB7012);
+}
+
 .cart-date-input:focus {
     outline: none;
     border-color: var(--primary-color);
