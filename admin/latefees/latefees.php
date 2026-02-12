@@ -448,6 +448,47 @@ Sound Rental Team</textarea>
         </div>
     </div>
     
+    <!-- Edit / Add Template Modal -->
+    <div class="modal" id="templateModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container template-modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="templateModalTitle">Edit Template</h2>
+                <button class="modal-close" id="closeTemplateModal" title="Close modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Template Name</label>
+                    <input type="text" class="form-input" id="templateNameInput" placeholder="e.g. Friendly Follow-up">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject Line</label>
+                    <input type="text" class="form-input" id="templateSubjectInput" placeholder="Email subject...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message Body</label>
+                    <textarea class="form-input email-body" id="templateBodyInput" rows="10" placeholder="Write your template message here...&#10;&#10;Available placeholders: [Customer Name], [Equipment Name], [Due Date], [Late Fee Amount], [X] days"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTemplateBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveTemplateBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save Template
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Container (injected via JS) -->
     <div id="footerContainer"></div>
     </main>
