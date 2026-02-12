@@ -1,0 +1,776 @@
+/* =====================================================
+   ClientShellLayout Styles (copied from PHP dashboard)
+   Isolated here to avoid merge conflicts
+   ===================================================== */
+
+/* Layout root */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    transition: margin-left 0.3s ease;
+}
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--secondary-color);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    transition: transform 0.3s ease, width 0.3s ease;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    min-height: var(--topbar-height);
+    padding: 0 var(--spacing-xl);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: visible;
+    position: relative;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-height: 56px;
+    padding: var(--spacing-xs) 0;
+    margin-right: 24px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.sidebar-logo-icon {
+    width: auto;
+    height: 64px;
+    max-width: 100%;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    transform-origin: center;
+}
+
+.sidebar-logo:hover .sidebar-logo-icon {
+    transform: scale(1.08);
+}
+
+.sidebar-logo-text {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+/* Scrollbar styling for sidebar nav */
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+@media (max-width: 1024px) {
+    .sidebar-logo-icon {
+        height: 56px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar-logo-icon {
+        height: 48px;
+    }
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    text-decoration: none;
+}
+
+.nav-item.active {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.nav-icon {
+    font-size: var(--font-size-lg);
+}
+
+.nav-label {
+    transition: opacity 0.3s ease, width 0.3s ease;
+    white-space: nowrap;
+}
+
+.sidebar-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.sidebar-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+}
+
+.sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-user-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.sidebar-user-role {
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+}
+
+/* Sidebar Overlay (Mobile) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 998;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+/* =====================================================
+   COLLAPSIBLE SIDEBAR
+   ===================================================== */
+:root {
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 72px;
+}
+
+.sidebar-collapse-btn {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: var(--primary-color);
+    border: 3px solid var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-collapse-btn:hover {
+    background: var(--accent);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.sidebar-collapse-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: white;
+    stroke-width: 2.5;
+    transition: transform 0.3s ease;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+.sidebar.collapsed .sidebar-logo-text,
+.sidebar.collapsed .sidebar-user-info,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .logout-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .logout-btn {
+    padding: var(--spacing-sm);
+    width: auto;
+}
+
+.sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.sidebar.collapsed .sidebar-logo-icon {
+    width: auto;
+    height: 40px;
+    max-width: 48px;
+}
+
+.sidebar.collapsed .sidebar-nav {
+    padding: var(--spacing-lg) var(--spacing-sm);
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: var(--spacing-md);
+}
+
+.sidebar.collapsed .nav-icon {
+    margin: 0;
+    font-size: 20px;
+}
+
+.sidebar.collapsed .sidebar-user {
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: var(--spacing-md) var(--spacing-sm);
+}
+
+.sidebar.collapsed .sidebar-collapse-btn svg {
+    transform: rotate(180deg);
+}
+
+/* Tooltip for collapsed sidebar items */
+.sidebar.collapsed .nav-item {
+    position: relative;
+}
+
+.sidebar.collapsed .nav-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--secondary-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1002;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar.collapsed .nav-item::before {
+    content: '';
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: var(--secondary-color);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.sidebar.collapsed .nav-item:hover::after,
+.sidebar.collapsed .nav-item:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Main content adjustment for collapsed sidebar */
+.app-container.sidebar-collapsed .main-content {
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Topbar adjustment for collapsed sidebar */
+.app-container.sidebar-collapsed .topbar {
+    left: var(--sidebar-collapsed-width);
+}
+
+/* =====================================================
+   TOPBAR
+   ===================================================== */
+.topbar {
+    height: var(--topbar-height);
+    background: linear-gradient(135deg, var(--page-header-start, #013A63) 0%, var(--page-header-end, #014F86) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-xl);
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    right: 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.topbar-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: #ffffff;
+}
+
+.topbar .btn-icon {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.topbar .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.menu-btn {
+    display: none;
+    padding: var(--spacing-sm);
+    background: transparent;
+    border: none;
+    font-size: var(--font-size-xl);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.menu-btn svg {
+    stroke: currentColor;
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.client-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    box-shadow: none;
+    border: none;
+}
+
+.sidebar-logout-btn {
+    width: 100%;
+    margin-top: var(--spacing-md);
+    padding: 8px 20px; /* a bit slimmer height, wider horizontally */
+    border-radius: 999px;
+    border: 1px solid rgba(255, 99, 132, 0.7);
+    background: rgba(220, 38, 38, 0.12); /* subtle red fill with opacity */
+    color: #ff6b81;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.sidebar-logout-btn:hover {
+    background: rgba(220, 38, 38, 0.25); /* stronger red overlay on hover */
+    border-color: rgba(255, 99, 132, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.logout-icon {
+    font-size: 16px;
+}
+
+.logout-text {
+    letter-spacing: 0.01em;
+}
+
+.client-topbar-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    line-height: 1;
+    border: none;
+}
+
+.client-profile-wrapper {
+    position: relative;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.client-profile-btn {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+}
+
+.client-theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-fast);
+}
+
+.client-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .client-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.client-theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    color: rgba(255, 255, 255, 0.85);
+    transition: color var(--transition-fast);
+}
+
+.client-theme-toggle:hover svg {
+    color: rgba(255, 255, 255, 1);
+}
+
+.client-theme-toggle .theme-icon-dark {
+    display: none;
+}
+
+.client-theme-toggle .theme-icon-light {
+    display: block;
+}
+
+[data-theme="dark"] .client-theme-toggle .theme-icon-dark {
+    display: block;
+}
+
+[data-theme="dark"] .client-theme-toggle .theme-icon-light {
+    display: none;
+}
+
+
+.client-app-footer {
+    margin-top: 40px;
+    background: linear-gradient(135deg, #013a63 0%, #014f86 100%);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 32px 48px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.client-footer-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.client-footer-brand {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 320px;
+}
+
+.client-footer-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.client-footer-brand-name {
+    font-weight: 700;
+    font-size: 20px;   
+    margin-bottom: 10px;   
+}
+
+.client-footer-brand-tagline {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.client-footer-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+    gap: 32px;
+}
+
+.client-footer-column {
+    min-width: 0;
+}
+
+.client-footer-heading {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.client-footer-column ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.client-footer-column li {
+    margin-bottom: 3px;
+}
+
+.client-footer-column a {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+}
+
+.client-footer-column a:hover {
+    text-decoration: underline;
+}
+
+.client-footer-content {
+    width: 100%;
+    margin: 0;
+}
+
+.client-footer-bottom {
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.client-footer-copy {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.client-footer-social {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.client-footer-social-link {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 15px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.client-footer-social-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =====================================================
+   LOGOUT CONFIRMATION MODAL
+   ===================================================== */
+
+.logout-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.logout-modal {
+    width: 360px;
+    max-width: 90vw;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+    padding: 24px 24px 20px;
+    text-align: center;
+    transform: translateY(4px) scale(0.96);
+    opacity: 0;
+    animation: logoutModalIn 0.22s ease-out forwards;
+}
+
+.logout-modal-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.logout-modal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logout-modal-title {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.logout-modal-text {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.logout-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.logout-modal-btn {
+    min-width: 108px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease;
+}
+
+.logout-modal-btn-secondary {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.logout-modal-btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.logout-modal-btn-primary {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.logout-modal-btn-primary:hover {
+    background: #dc2626;
+}
+
+@keyframes logoutModalIn {
+    from {
+        transform: translateY(10px) scale(0.94);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.client-footer-social-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    transform: translateY(-1px); 
+}
