@@ -354,6 +354,14 @@
     overflow: hidden;
 }
 
+.team-photo a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
 .team-photo img {
     width: 100%;
     height: 100%;
