@@ -79,13 +79,7 @@ const NAV_ITEMS = [
             </svg>
         )
     },
-    {
-        id: 'settings', label: 'Settings', path: '/admin/settings', icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-        )
-    },
+    // ...existing code...
 ];
 
 // Page titles for header — matches original
@@ -100,7 +94,7 @@ const PAGE_TITLES = {
     '/admin/repairs': 'Repairs',
     '/admin/latefees': 'Late Fees',
     '/admin/history': 'History',
-    '/admin/settings': 'Settings',
+    // ...existing code...
     '/admin/profile': 'Profile',
     '/admin/notifications': 'Notifications',
 };
@@ -221,7 +215,7 @@ export default function AdminLayout() {
                             <div className="sidebar-user-avatar">{userInitial}</div>
                             <div className="sidebar-user-info">
                                 <span className="sidebar-user-name">{userName}</span>
-                                <span className="sidebar-user-role">{userRole}</span>
+                                <span className="sidebar-user-role">Administrator</span>
                             </div>
                         </div>
                         {/* Mobile-only actions */}
@@ -266,73 +260,28 @@ export default function AdminLayout() {
                             <h2 className="header-page-title">{pageTitle}</h2>
                         </div>
                         <div className="header-right">
-                            {/* Theme toggle */}
-                            <button className="theme-toggle" id="themeToggle" onClick={toggleTheme} title="Toggle light/dark theme">
-                                <svg className="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                            {/* Theme toggle as the first element in header-right */}
+                            <button
+                                className="auth-theme-toggle"
+                                onClick={toggleTheme}
+                                aria-label="Toggle theme"
+                                style={{ marginRight: '5rem', marginTop: '-0.49rem' }}
+                            >
+                                <svg className="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="5" />
+                                    <line x1="12" y1="1" x2="12" y2="3" />
+                                    <line x1="12" y1="21" x2="12" y2="23" />
+                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                                    <line x1="1" y1="12" x2="3" y2="12" />
+                                    <line x1="21" y1="12" x2="23" y2="12" />
+                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                                 </svg>
-                                <svg className="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg className="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                                 </svg>
                             </button>
-
-                            {/* Notifications — matches original admin-components.js */}
-                            <div className={`dropdown ${notifOpen ? 'open' : ''}`} id="notificationDropdown" ref={notifRef}>
-                                <button className="header-btn" id="notificationBtn" onClick={() => { setNotifOpen(p => !p); setProfileOpen(false); }} title="View notifications">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                                    </svg>
-                                    <span className="notification-badge">3</span>
-                                </button>
-                                <div className="dropdown-menu notification-dropdown" id="notificationMenu">
-                                    <div className="dropdown-header">
-                                        <h4>Notifications</h4>
-                                        <span className="mark-read" id="markAllReadBtn">Mark all read</span>
-                                    </div>
-                                    <div className="notification-list">
-                                        <div className="notification-item unread">
-                                            <div className="notification-icon warning">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                                                </svg>
-                                            </div>
-                                            <div className="notification-content">
-                                                <div className="notification-title">New Booking Request</div>
-                                                <div className="notification-text">Juan dela Cruz requested Karaoke System A for Feb 15-17</div>
-                                                <div className="notification-time">5 minutes ago</div>
-                                            </div>
-                                        </div>
-                                        <div className="notification-item unread">
-                                            <div className="notification-icon success">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                                                </svg>
-                                            </div>
-                                            <div className="notification-content">
-                                                <div className="notification-title">Item Returned</div>
-                                                <div className="notification-text">Speaker System B has been returned and needs inspection</div>
-                                                <div className="notification-time">2 hours ago</div>
-                                            </div>
-                                        </div>
-                                        <div className="notification-item unread">
-                                            <div className="notification-icon info">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                                                </svg>
-                                            </div>
-                                            <div className="notification-content">
-                                                <div className="notification-title">Late Fee Payment</div>
-                                                <div className="notification-text">₱1,500 late fee received from Maria Santos</div>
-                                                <div className="notification-time">Yesterday</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="notification-footer">
-                                        <a href="#" onClick={(e) => { e.preventDefault(); setNotifOpen(false); navigate('/admin/notifications'); }}>View all notifications</a>
-                                    </div>
-                                </div>
-                            </div>
-
                             {/* Profile — matches original admin-components.js */}
                             <div className={`dropdown ${profileOpen ? 'open' : ''}`} id="profileDropdown" ref={profileRef}>
                                 <button className="header-btn profile-btn" id="profileBtn" onClick={() => { setProfileOpen(p => !p); setNotifOpen(false); }} title="Profile menu">
@@ -352,12 +301,6 @@ export default function AdminLayout() {
                                             <rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" />
                                         </svg>
                                         Dashboard
-                                    </button>
-                                    <button className="dropdown-item" onClick={() => { setProfileOpen(false); navigate('/admin/profile'); }}>
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                                        </svg>
-                                        My Profile
                                     </button>
                                     <button className="dropdown-item" onClick={() => { setProfileOpen(false); navigate('/admin/settings'); }}>
                                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
