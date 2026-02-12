@@ -156,11 +156,10 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 
     <div id="receiptModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-        <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:350px; border-radius:12px; position:relative;">
-            <span class="close-modal" onclick="closeModal('receiptModal')" style="position:absolute; right:15px; top:10px; cursor:pointer; font-size:24px;">&times;</span>
-            <div id="receiptDetails">
-                </div>
-            <button onclick="window.print()" style="width:100%; margin-top:15px; background:#f97316; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer;">Print Receipt</button>
+        <div class="modal-content receipt-modal-content">
+            <span class="close-modal" onclick="closeModal('receiptModal')">&times;</span>
+            <div id="receiptDetails"></div>
+            <button onclick="downloadReceiptPDF()" class="btn-download-receipt">Download Receipt</button>
         </div>
     </div>
 
