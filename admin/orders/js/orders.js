@@ -441,6 +441,151 @@ async function cancelOrder(orderId) {
 }
 
 /**
+ * Export orders to PDF using jsPDF + AutoTable
+ */
+function exportOrdersToPDF() {
+    const dataToExport = filteredOrdersData.length > 0 ? filteredOrdersData : ordersData;
+
+    if (!dataToExport || dataToExport.length === 0) {
+        alert('No orders to export.');
+        return;
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('PDF library failed to load. Please check your internet connection and reload the page.');
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+
+    // --- Header ---
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RentIt - Orders Report', 14, 18);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    doc.text(`Generated: ${dateStr} at ${timeStr}`, 14, 25);
+
+    // Applied filters summary
+    const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+    const dateFilter = document.getElementById('dateFilter')?.value || 'all';
+    const searchTerm = document.getElementById('orderSearchInput')?.value || '';
+    let filterParts = [];
+    if (statusFilter !== 'all') filterParts.push(`Status: ${getStatusText(statusFilter)}`);
+    if (dateFilter !== 'all') filterParts.push(`Date: ${dateFilter}`);
+    if (searchTerm) filterParts.push(`Search: "${searchTerm}"`);
+    if (filterParts.length > 0) {
+        doc.text(`Filters: ${filterParts.join(' | ')}`, 14, 31);
+    }
+
+    // KPI summary line
+    doc.setTextColor(0);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    const kpiY = filterParts.length > 0 ? 37 : 31;
+    doc.text(
+        `Pending: ${kpiCounts.pending || 0}   |   Confirmed: ${kpiCounts.confirmed || 0}   |   Out for Delivery: ${kpiCounts.out_for_delivery || 0}   |   Active: ${kpiCounts.active || 0}   |   Total shown: ${dataToExport.length}`,
+        14, kpiY
+    );
+
+    // --- Table ---
+    const tableRows = dataToExport.map(order => {
+        const itemNames = order.items.length === 0
+            ? 'No items'
+            : order.items.map(i => i.name).join(', ');
+        const totalItems = order.items.reduce((sum, i) => sum + i.quantity, 0);
+        const dateRange = `${formatDate(order.dates.start)} - ${formatDate(order.dates.end)} (${order.dates.duration}d)`;
+        return [
+            order.id,
+            order.customer.name,
+            order.customer.email,
+            itemNames,
+            totalItems,
+            dateRange,
+            formatCurrency(order.total),
+            getStatusText(order.status)
+        ];
+    });
+
+    doc.autoTable({
+        startY: kpiY + 5,
+        head: [['Order ID', 'Customer', 'Email', 'Items', 'Qty', 'Dates', 'Total', 'Status']],
+        body: tableRows,
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 3,
+            overflow: 'linebreak',
+            lineColor: [220, 220, 220],
+            lineWidth: 0.25
+        },
+        headStyles: {
+            fillColor: [41, 98, 255],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            fontSize: 8.5
+        },
+        alternateRowStyles: {
+            fillColor: [248, 249, 250]
+        },
+        columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 45 },
+            3: { cellWidth: 60 },
+            4: { cellWidth: 15, halign: 'center' },
+            5: { cellWidth: 40 },
+            6: { cellWidth: 25, halign: 'right' },
+            7: { cellWidth: 30, halign: 'center' }
+        },
+        didParseCell: function(data) {
+            // Color-code the Status column
+            if (data.section === 'body' && data.column.index === 7) {
+                const status = data.cell.raw.toLowerCase();
+                if (status.includes('pending')) {
+                    data.cell.styles.textColor = [180, 130, 0];
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status.includes('confirmed')) {
+                    data.cell.styles.textColor = [0, 128, 0];
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status.includes('active')) {
+                    data.cell.styles.textColor = [41, 98, 255];
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status.includes('late')) {
+                    data.cell.styles.textColor = [200, 0, 0];
+                    data.cell.styles.fontStyle = 'bold';
+                } else if (status.includes('cancelled')) {
+                    data.cell.styles.textColor = [150, 150, 150];
+                }
+            }
+        }
+    });
+
+    // --- Footer on every page ---
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+            `Page ${i} of ${pageCount}  |  RentIt Admin`,
+            doc.internal.pageSize.getWidth() / 2,
+            doc.internal.pageSize.getHeight() - 8,
+            { align: 'center' }
+        );
+    }
+
+    // --- Save ---
+    const filename = `RentIt_Orders_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.pdf`;
+    doc.save(filename);
+}
+
+/**
  * Initialize page
  */
 document.addEventListener('DOMContentLoaded', function() {
@@ -463,7 +608,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Refresh button
     document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
-        fetchOrders();
+        const btn = document.getElementById('refreshOrdersBtn');
+        btn.disabled = true;
+        btn.innerHTML = `
+            <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <polyline points="23 4 23 10 17 10"/>
+                <polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Refreshing...`;
+        fetchOrders().finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <polyline points="1 20 1 14 7 14"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Refresh`;
+        });
     });
 
     // Pagination buttons
@@ -481,8 +644,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Export button (placeholder)
+    // Export button — generates PDF
     document.getElementById('exportOrdersBtn')?.addEventListener('click', () => {
-        alert('Export functionality would generate a CSV/PDF of the current order list.');
+        exportOrdersToPDF();
     });
 });

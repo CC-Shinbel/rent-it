@@ -265,6 +265,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         </main>
     </div>
 
+    <!-- PDF Export Libraries (absolute URLs, unaffected by base tag) -->
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
     <!-- Admin Scripts -->
     <script src="admin/shared/js/admin-components.js"></script>
     <script src="admin/orders/js/orders.js"></script>
