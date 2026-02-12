@@ -221,10 +221,13 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                     </div>
                 </label>
 
-                <label class="delivery-option">
-                    <input type="radio" name="delivery" value="pickup" data-price="0">
+                <label class="delivery-option disabled">
+                    <input type="radio" name="delivery" value="pickup" data-price="0" disabled>
                     <div class="option-content">
-                        <div class="option-info"><span class="option-name">Store Pickup</span></div>
+                        <div class="option-info">
+                            <span class="option-name">Store Pickup</span>
+                            <span class="option-unavailable">Coming Soon</span>
+                        </div>
                         <span class="option-price">Free</span>
                     </div>
                 </label>
@@ -244,31 +247,30 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
         // Image logic
         $imgName = !empty($item['image']) ? $item['image'] : 'catalog-fallback.svg';
     ?>
-    <div class="order-item" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #eee;">
-        <div style="width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; background: #fff; border: 1px solid #eee; border-radius: 4px; overflow: hidden; flex-shrink: 0;">
+    <div class="order-item checkout-order-item">
+        <div class="checkout-item-thumb">
             <img src="../../assets/images/<?php echo htmlspecialchars($imgName); ?>" 
-                 style="max-width: 90%; max-height: 90%; object-fit: contain;"
                  onerror="this.src='../../assets/images/catalog-fallback.svg'">
         </div>
         
-        <div class="order-item-details" style="flex: 1;">
-            <h4 class="order-item-name" style="margin: 0; font-size: 0.95rem; color: #333;">
+        <div class="order-item-details">
+            <h4 class="order-item-name">
                 <?php echo htmlspecialchars($item['item_name']); ?>
             </h4>
             
-            <div style="font-size: 0.8rem; color: #666; margin: 4px 0;">
-                <div style="display: flex; justify-content: space-between;">
+            <div class="checkout-item-dates">
+                <div>
                     <span>Start: <b><?php echo date('M d, Y', strtotime($item['start_date'])); ?></b></span>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
+                <div>
                     <span>End: <b><?php echo date('M d, Y', strtotime($item['end_date'])); ?></b></span>
                 </div>
-                <small style="color: #4f46e5; font-weight: 600;">
+                <small class="checkout-rental-duration">
                     (<?php echo $item['rental_days']; ?> <?php echo ($item['rental_days'] > 1 ? 'days' : 'day'); ?> rental)
                 </small>
             </div>
 
-            <span class="item-subtotal" style="font-weight: 600; color: #f38630;">
+            <span class="item-subtotal">
                 ₱<?php echo number_format($item['line_total'], 2); ?>
             </span>
         </div>
@@ -301,8 +303,8 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                 <h3>Payment Method</h3>
                 <div class="payment-options">
                     <label class="payment-option selected"><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label>
-                    <label class="payment-option"><input type="radio" name="payment" value="gcash"> GCash</label>
-                    <label class="payment-option"><input type="radio" name="payment" value="bt"> Bank Transfer</label>
+                    <label class="payment-option disabled"><input type="radio" name="payment" value="gcash" disabled> GCash <span class="option-unavailable">Coming Soon</span></label>
+                    <label class="payment-option disabled"><input type="radio" name="payment" value="bt" disabled> Bank Transfer <span class="option-unavailable">Coming Soon</span></label>
                 </div>
             </div>
 
@@ -318,8 +320,8 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
 
             <p class="terms-note">
                                 By confirming, you agree to our 
-                                <a href="/pages/terms.html">Terms of Service</a> and 
-                                <a href="/pages/privacy.html">Privacy Policy</a>.
+                                <a href="/rent-it/pages/terms.html">Terms of Service</a> and 
+                                <a href="/rent-it/pages/privacy-policy.html">Privacy Policy</a>.
                             </p>
                         </div>
             
