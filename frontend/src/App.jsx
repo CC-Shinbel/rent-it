@@ -18,6 +18,7 @@ import AdminLoginPage from './admin/pages/AdminLoginPage';
 import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
 import AdminLayout from './admin/components/AdminLayout';
 import AdminDashboardPage from './admin/pages/AdminDashboardPage';
+import AdminCalendarPage from './admin/pages/AdminCalendarPage';
 
 function ScrollToTopOnRouteChange() {
   const location = useLocation();
@@ -74,12 +75,13 @@ function App() {
         <Route path="/admin/*" element={
           <AdminAuthProvider>
             <Routes>
-              <Route element={<AdminProtectedRoute />}>
-                <Route element={<AdminLayout />}>
-                  <Route index element={<AdminDashboardPage />} />
-                  {/* Future admin pages go here */}
+                <Route element={<AdminProtectedRoute />}>
+                  <Route element={<AdminLayout />}>
+                    <Route index element={<AdminDashboardPage />} />
+                    <Route path="calendar" element={<AdminCalendarPage />} />
+                    {/* Future admin pages go here */}
+                  </Route>
                 </Route>
-              </Route>
             </Routes>
           </AdminAuthProvider>
         } />
