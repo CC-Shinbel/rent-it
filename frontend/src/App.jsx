@@ -23,6 +23,7 @@ import NewItemPage from './admin/pages/NewItemPage';
 import ItemsPage from './admin/pages/ItemsPage';
 import OrdersPage from './admin/pages/OrdersPage';
 import DispatchPage from './admin/pages/DispatchPage';
+import CustomersPage from './admin/pages/CustomersPage';
 
 function ScrollToTopOnRouteChange() {
   const location = useLocation();
@@ -87,6 +88,7 @@ function App() {
                     <Route path="items" element={<ItemsPage />} />
                     <Route path="orders" element={<OrdersPage />} />
                     <Route path="dispatch" element={<DispatchPage />} />
+                    <Route path="customers" element={<CustomersPage />} />
                     {/* Future admin pages go here */}
                   </Route>
                 </Route>
