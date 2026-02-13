@@ -20,6 +20,7 @@ import AdminLayout from './admin/components/AdminLayout';
 import AdminDashboardPage from './admin/pages/AdminDashboardPage';
 import AdminCalendarPage from './admin/pages/AdminCalendarPage';
 import NewItemPage from './admin/pages/NewItemPage';
+import ItemsPage from './admin/pages/ItemsPage';
 
 function ScrollToTopOnRouteChange() {
   const location = useLocation();
@@ -81,6 +82,7 @@ function App() {
                     <Route index element={<AdminDashboardPage />} />
                     <Route path="calendar" element={<AdminCalendarPage />} />
                     <Route path="newitem" element={<NewItemPage />} />
+                    <Route path="items" element={<ItemsPage />} />
                     {/* Future admin pages go here */}
                   </Route>
                 </Route>
