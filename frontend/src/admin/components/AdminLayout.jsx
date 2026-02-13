@@ -99,7 +99,7 @@ const PAGE_TITLES = {
     '/admin/notifications': 'Notifications',
 };
 
-export default function AdminLayout() {
+export default function AdminLayout({ children }) {
     const { user, logout } = useAdminAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -320,9 +320,9 @@ export default function AdminLayout() {
                         </div>
                     </header>
 
-                    {/* Content Area — Outlet renders the active page */}
+                    {/* Content Area — Renders children if provided, else Outlet for nested routes */}
                     <div className="admin-content">
-                        <Outlet />
+                        {children ?? <Outlet />}
                     </div>
 
                     {/* Footer — matches original admin-components.js injectFooter */}
