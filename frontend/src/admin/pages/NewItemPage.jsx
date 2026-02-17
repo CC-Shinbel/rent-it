@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/admin-components.css";
 import "../styles/admin-globals.css";
 import "../styles/admin-theme.css";
@@ -25,10 +25,70 @@ const defaultForm = {
 
 export default function NewItemPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState(defaultForm);
   const [imagePreview, setImagePreview] = useState(null);
   const [tags, setTags] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editItemId, setEditItemId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef();
+
+  // Load item data if in edit mode
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+    if (editId) {
+      setIsEditMode(true);
+      setEditItemId(editId);
+      loadItemForEdit(editId);
+    }
+  }, [searchParams]);
+
+  const loadItemForEdit = async (itemId) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/admin/api/get_item.php?id=${itemId}`, {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to load item");
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to load item");
+      }
+
+      const item = result.data;
+      setForm({
+        itemName: item.item_name || "",
+        itemDescription: item.description || "",
+        itemCategory: item.category || "",
+        dailyRate: item.price_per_day || "",
+        depositAmount: item.deposit || "",
+        totalUnits: item.total_units || 1,
+        availableUnits: item.available_units || 1,
+        itemCondition: item.condition || "good",
+        itemStatus: item.status || "Available",
+        isVisible: item.is_visible == 1,
+        isFeatured: item.is_featured == 1,
+        itemTags: item.tags || "",
+        itemImage: null,
+      });
+
+      if (item.tags) {
+        setTags(item.tags.split(",").map((t) => t.trim()).filter((t) => t));
+      }
+
+      if (item.image) {
+        setImagePreview(`/assets/images/items/${item.image}`);
+      }
+    } catch (err) {
+      console.error("Error loading item:", err);
+      alert("Failed to load item data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -66,26 +126,129 @@ export default function NewItemPage() {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement API call to save item
-    alert("Item saved (mock)");
+    setSubmitting(true);
+
+    try {
+      // Validate form
+      if (!form.itemName || !form.itemDescription || !form.itemCategory || !form.dailyRate) {
+        alert("Please fill in all required fields");
+        setSubmitting(false);
+        return;
+      }
+
+      // Prepare API endpoint
+      const endpoint = isEditMode ? "/admin/api/update_item.php" : "/admin/api/add_item.php";
+
+      // Prepare form data
+      let body;
+      const headers = {};
+
+      if (form.itemImage) {
+        // Use FormData if we have an image file
+        const formData = new FormData();
+        formData.append("itemImage", form.itemImage);
+        formData.append("item_name", form.itemName);
+        formData.append("description", form.itemDescription);
+        formData.append("category", form.itemCategory);
+        formData.append("price_per_day", form.dailyRate);
+        formData.append("deposit", form.depositAmount || null);
+        formData.append("condition", form.itemCondition);
+        formData.append("status", form.itemStatus);
+        formData.append("total_units", form.totalUnits);
+        formData.append("available_units", form.availableUnits);
+        formData.append("is_visible", form.isVisible ? 1 : 0);
+        formData.append("is_featured", form.isFeatured ? 1 : 0);
+        formData.append("tags", form.itemTags || null);
+        if (isEditMode && editItemId) {
+          formData.append("item_id", editItemId);
+        }
+        body = formData;
+      } else {
+        // Use JSON if no image
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify({
+          item_name: form.itemName,
+          description: form.itemDescription,
+          category: form.itemCategory,
+          price_per_day: form.dailyRate,
+          deposit: form.depositAmount || null,
+          condition: form.itemCondition,
+          status: form.itemStatus,
+          total_units: form.totalUnits,
+          available_units: form.availableUnits,
+          is_visible: form.isVisible ? 1 : 0,
+          is_featured: form.isFeatured ? 1 : 0,
+          tags: form.itemTags || null,
+          ...(isEditMode && editItemId && { item_id: editItemId }),
+        });
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body,
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(isEditMode ? "Item updated successfully!" : "Item created successfully!");
+        navigate("/admin/items");
+      } else {
+        throw new Error(result.message || "Failed to save item");
+      }
+    } catch (err) {
+      console.error("Error saving item:", err);
+      alert(`Failed to save item: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
+      {loading && (
+        <div className="admin-skeleton-overlay" aria-hidden="true">
+          <div className="admin-skeleton-shell">
+            <aside className="admin-skeleton-sidebar">
+              <div className="admin-skeleton-logo"></div>
+              <div className="admin-skeleton-nav">
+                <span className="admin-skeleton-pill w-70"></span>
+                <span className="admin-skeleton-pill w-60"></span>
+                <span className="admin-skeleton-pill w-80"></span>
+              </div>
+            </aside>
+            <section className="admin-skeleton-main">
+              <div className="admin-skeleton-topbar">
+                <span className="admin-skeleton-line w-40"></span>
+              </div>
+              <div className="admin-skeleton-loader">
+                <span className="admin-skeleton-spinner"></span>
+                <span>Loading item data...</span>
+              </div>
+            </section>
+          </div>
+        </div>
+      )}
       <div className="admin-page-header">
             <div>
-              <h1 className="admin-page-title">Add New Item</h1>
+              <h1 className="admin-page-title">{isEditMode ? "Edit Item" : "Add New Item"}</h1>
               <p className="admin-page-subtitle">
-                Create a new rental item to display in the catalog
+                {isEditMode ? "Update the details for this rental item" : "Create a new rental item to display in the catalog"}
               </p>
             </div>
             <div className="admin-page-actions">
               <button
                 className="btn btn-secondary"
                 title="Cancel and go back"
-                onClick={() => navigate('/admin')}
+                onClick={() => navigate('/admin/items')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
                   <line x1="19" y1="12" x2="5" y2="12" />
@@ -96,15 +259,16 @@ export default function NewItemPage() {
               <button
                 className="btn btn-primary"
                 id="saveItemBtn"
-                title="Save new item"
+                title={isEditMode ? "Update item" : "Save new item"}
                 onClick={handleSubmit}
+                disabled={submitting || loading}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
                   <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                   <polyline points="17 21 17 13 7 13 7 21" />
                   <polyline points="7 3 7 8 15 8" />
                 </svg>
-                Save Item
+                {submitting ? "Saving..." : isEditMode ? "Update Item" : "Save Item"}
               </button>
             </div>
           </div>
