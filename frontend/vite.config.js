@@ -11,6 +11,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/admin/api': {
+        target: 'http://localhost/rent-it',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/assets': {
+        target: 'http://localhost/rent-it',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

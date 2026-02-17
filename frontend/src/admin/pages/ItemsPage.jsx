@@ -13,69 +13,33 @@ export default function ItemsPage() {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with API call
+  // Fetch items on mount
   useEffect(() => {
-    const mockItems = [
-      {
-        id: 1,
-        name: "Karaoke Pro System X-200",
-        description: "Professional karaoke system with dual microphones",
-        category: "Premium",
-        dailyRate: 850,
-        depositAmount: 3000,
-        status: "Available",
-        isVisible: true,
-        isFeatured: true,
-        tags: ["karaoke", "sound", "premium"],
-        timesRented: 12,
-        image: null,
-      },
-      {
-        id: 2,
-        name: "Portable Bluetooth Speaker",
-        description: "Portable speaker with 8-hour battery",
-        category: "Portable",
-        dailyRate: 150,
-        depositAmount: 500,
-        status: "Available",
-        isVisible: true,
-        isFeatured: false,
-        tags: ["bluetooth", "portable"],
-        timesRented: 28,
-        image: null,
-      },
-      {
-        id: 3,
-        name: "LED Projector 4K",
-        description: "4K LED projector for events",
-        category: "Professional",
-        dailyRate: 1200,
-        depositAmount: 5000,
-        status: "Booked",
-        isVisible: true,
-        isFeatured: true,
-        tags: ["projector", "4k", "professional"],
-        timesRented: 15,
-        image: null,
-      },
-      {
-        id: 4,
-        name: "Microphone Stand Pro",
-        description: "Adjustable microphone stand",
-        category: "Portable",
-        dailyRate: 100,
-        depositAmount: 300,
-        status: "Under Maintenance",
-        isVisible: false,
-        isFeatured: false,
-        tags: ["microphone", "stand"],
-        timesRented: 8,
-        image: null,
-      },
-    ];
-    setItems(mockItems);
+    fetchItems();
   }, []);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_items.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch items");
+      const result = await response.json();
+      if (result.success) {
+        setItems(result.data || []);
+      } else {
+        alert(result.message || "Failed to load items");
+      }
+    } catch (err) {
+      console.error("Error fetching items:", err);
+      alert("Failed to load items");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter and search
   useEffect(() => {
@@ -83,7 +47,9 @@ export default function ItemsPage() {
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter((item) => item.status === statusFilter);
+      filtered = filtered.filter(
+        (item) => (item.status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
     }
 
     // Apply search
@@ -91,9 +57,9 @@ export default function ItemsPage() {
       const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (item) =>
-          item.name.toLowerCase().includes(term) ||
-          item.category.toLowerCase().includes(term) ||
-          item.status.toLowerCase().includes(term)
+          (item.item_name || "").toLowerCase().includes(term) ||
+          (item.category || "").toLowerCase().includes(term) ||
+          (item.status || "").toLowerCase().includes(term)
       );
     }
 
@@ -118,29 +84,51 @@ export default function ItemsPage() {
     }
   };
 
-  const handleRefresh = () => {
-    // TODO: Implement API call to refresh items
-    console.log("Refresh clicked");
+  const handleRefresh = async () => {
+    await fetchItems();
   };
 
   const handleEditItem = (itemId) => {
-    // TODO: Navigate to edit page
-    console.log("Edit item:", itemId);
+    navigate(`/admin/newitem?edit=${itemId}`);
+  };
+
+  const handleStatusChange = async (itemId, newStatus) => {
+    try {
+      const response = await fetch("/admin/api/update_item_status.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          item_id: itemId,
+          status: newStatus,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+      const result = await response.json();
+
+      if (result.success) {
+        alert(result.message || "Status updated successfully");
+        await fetchItems();
+      } else {
+        alert(result.message || "Failed to update status");
+      }
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update item status");
+    }
   };
 
   const handleRepairItem = (itemId) => {
-    // TODO: Implement repair status update
-    console.log("Set to repair:", itemId);
+    handleStatusChange(itemId, "Repairing");
   };
 
   const handleSetUnavailable = (itemId) => {
-    // TODO: Implement unavailable status update
-    console.log("Set unavailable:", itemId);
+    handleStatusChange(itemId, "Unavailable");
   };
 
   const handleSetAvailable = (itemId) => {
-    // TODO: Implement available status update
-    console.log("Set available:", itemId);
+    handleStatusChange(itemId, "Available");
   };
 
   return (
@@ -234,142 +222,176 @@ export default function ItemsPage() {
       </div>
 
       <div className="items-table-container">
-        <table className="admin-table items-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Pricing</th>
-              <th>Status &amp; Visibility</th>
-              <th>Tags</th>
-              <th>Times Rented</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="itemsTableBody">
-            {filteredItems.map((item) => (
-              <tr key={item.id}>
-                <td>#{item.id}</td>
-                <td>
-                  <div className="item-cell">
-                    <div className="item-thumb">
-                      {item.image ? (
-                        <img src={item.image} alt={item.name} />
-                      ) : (
-                        <div className="item-thumb-placeholder">
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            width="24"
-                            height="24"
-                          >
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
-                          </svg>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "2rem", color: "var(--admin-text-muted)" }}>
+            Loading items...
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "2rem", color: "var(--admin-text-muted)" }}>
+            No items found
+          </div>
+        ) : (
+          <table className="admin-table items-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Pricing</th>
+                <th>Status &amp; Visibility</th>
+                <th>Tags</th>
+                <th>Times Rented</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+              {filteredItems.map((item) => (
+                <tr key={item.item_id}>
+                  <td>#{item.item_id}</td>
+                  <td>
+                    <div className="item-cell">
+                      <div className="item-thumb">
+                        {item.image ? (
+                          <img src={`/assets/images/items/${item.image}`} alt={item.item_name} />
+                        ) : (
+                          <div className="item-thumb-placeholder">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              width="24"
+                              height="24"
+                            >
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div className="item-info">
+                        <div className="item-name">{item.item_name}</div>
+                        <div className="item-desc">{item.description}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{item.category}</td>
+                  <td>
+                    <div className="item-pricing">
+                      <div className="price-main">₱{Number(item.price_per_day).toLocaleString("en-PH", { minimumFractionDigits: 2 })}/day</div>
+                      {item.deposit > 0 && (
+                        <div className="price-deposit">
+                          Deposit: ₱{Number(item.deposit).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
                         </div>
                       )}
                     </div>
-                    <div className="item-info">
-                      <div className="item-name">{item.name}</div>
-                      <div className="item-desc">{item.description}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>{item.category}</td>
-                <td>
-                  <div className="item-pricing">
-                    <div className="price-main">₱{item.dailyRate}/day</div>
-                    {item.depositAmount > 0 && (
-                      <div className="price-deposit">
-                        Deposit: ₱{item.depositAmount}
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="item-status-visibility">
-                    <span
-                      className={`status-badge ${getStatusBadgeClass(
-                        item.status
-                      )}`}
-                    >
-                      {item.status}
-                    </span>
-                    <div className="visibility-badges">
-                      {item.isVisible && (
-                        <span className="visibility-badge visible">Visible</span>
-                      )}
-                      {!item.isVisible && (
-                        <span className="visibility-badge hidden">Hidden</span>
-                      )}
-                      {item.isFeatured && (
-                        <span className="visibility-badge featured">Featured</span>
-                      )}
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="item-tags">
-                    {item.tags && item.tags.length > 0 ? (
-                      item.tags.map((tag, idx) => (
-                        <span key={idx} className="item-tag">
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="item-no-tags">No tags</span>
-                    )}
-                  </div>
-                </td>
-                <td>{item.timesRented}</td>
-                <td>
-                  <div className="item-actions">
-                    <button
-                      className="item-action-btn item-action-edit"
-                      onClick={() => handleEditItem(item.id)}
-                      title="Edit item"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        width="14"
-                        height="14"
+                  </td>
+                  <td>
+                    <div className="item-status-visibility">
+                      <span
+                        className={`status-badge ${getStatusBadgeClass(
+                          item.status
+                        )}`}
                       >
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                      </svg>
-                      Edit
-                    </button>
-
-                    {item.status === "Available" && (
-                      <>
-                        <button
-                          className="item-action-btn item-action-repair"
-                          onClick={() => handleRepairItem(item.id)}
-                          title="Mark as under repair"
+                        {item.status}
+                      </span>
+                      <div className="visibility-badges">
+                        {parseInt(item.is_visible) === 1 && (
+                          <span className="visibility-badge visible">Visible</span>
+                        )}
+                        {parseInt(item.is_visible) === 0 && (
+                          <span className="visibility-badge hidden">Hidden</span>
+                        )}
+                        {parseInt(item.is_featured) === 1 && (
+                          <span className="visibility-badge featured">Featured</span>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="item-tags">
+                      {item.tags && item.tags.length > 0 ? (
+                        item.tags.split(",").map((tag, idx) => (
+                          <span key={idx} className="item-tag">
+                            {tag.trim()}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="item-no-tags">No tags</span>
+                      )}
+                    </div>
+                  </td>
+                  <td>{item.total_times_rented || 0}</td>
+                  <td>
+                    <div className="item-actions">
+                      <button
+                        className="item-action-btn item-action-edit"
+                        onClick={() => handleEditItem(item.item_id)}
+                        title="Edit item"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          width="14"
+                          height="14"
                         >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            width="14"
-                            height="14"
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                        Edit
+                      </button>
+
+                      {(item.status === "Available" || !item.status) && (
+                        <>
+                          <button
+                            className="item-action-btn item-action-repair"
+                            onClick={() => handleRepairItem(item.item_id)}
+                            title="Mark as under repair"
                           >
-                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                          </svg>
-                          Repair
-                        </button>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              width="14"
+                              height="14"
+                            >
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                            Repair
+                          </button>
+                          <button
+                            className="item-action-btn item-action-unavailable"
+                            onClick={() => handleSetUnavailable(item.item_id)}
+                            title="Mark as unavailable"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              width="14"
+                              height="14"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="15" y1="9" x2="9" y2="15" />
+                              <line x1="9" y1="9" x2="15" y2="15" />
+                            </svg>
+                            Unavailable
+                          </button>
+                        </>
+                      )}
+
+                      {(item.status === "Repairing" ||
+                        item.status === "Under Maintenance" ||
+                        item.status === "Unavailable") && (
                         <button
-                          className="item-action-btn item-action-unavailable"
-                          onClick={() => handleSetUnavailable(item.id)}
-                          title="Mark as unavailable"
+                          className="item-action-btn item-action-available"
+                          onClick={() => handleSetAvailable(item.item_id)}
+                          title="Mark as available"
                         >
                           <svg
                             viewBox="0 0 24 24"
@@ -380,62 +402,18 @@ export default function ItemsPage() {
                             height="14"
                           >
                             <circle cx="12" cy="12" r="10" />
-                            <line x1="15" y1="9" x2="9" y2="15" />
-                            <line x1="9" y1="9" x2="15" y2="15" />
+                            <polyline points="12 6 12 12 16 14" />
                           </svg>
-                          Unavailable
+                          Available
                         </button>
-                      </>
-                    )}
-
-                    {(item.status === "Repairing" ||
-                      item.status === "Under Maintenance") && (
-                      <button
-                        className="item-action-btn item-action-available"
-                        onClick={() => handleSetAvailable(item.id)}
-                        title="Mark as available"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          width="14"
-                          height="14"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        Available
-                      </button>
-                    )}
-
-                    {item.status === "Unavailable" && (
-                      <button
-                        className="item-action-btn item-action-available"
-                        onClick={() => handleSetAvailable(item.id)}
-                        title="Mark as available"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          width="14"
-                          height="14"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        Available
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );
