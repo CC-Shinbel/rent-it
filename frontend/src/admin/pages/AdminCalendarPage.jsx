@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import api from "../api/client";
 import "../styles/admin-theme.css";
 import "../styles/admin-globals.css";
 import "../styles/admin-components.css";
@@ -72,10 +71,16 @@ const AdminCalendarPage = () => {
         const start = formatDateISO(weekDays[0]);
         const end = formatDateISO(weekDays[5]);
 
-        // Use the same admin API client + routing as other admin pages
-        const { data } = await api.get(
-          `/get_calendar.php?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`
+        const response = await fetch(
+          `/admin/api/get_calendar.php?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`,
+          { credentials: "include" }
         );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
 
         if (!data.success) {
           throw new Error(data.message || "Failed to load calendar data");
