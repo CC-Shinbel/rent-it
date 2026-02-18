@@ -15,172 +15,58 @@ export default function RepairsPage() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedRepair, setSelectedRepair] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ inProgress: 0, awaitingParts: 0, completed: 0, unavailable: 0 });
 
-  // Mock data
+  // Fetch repairs from API
   useEffect(() => {
-    const mockRepairs = [
-      {
-        id: "RPR-001",
-        equipment: "KRK-001 Pro System",
-        category: "karaoke",
-        serial: "KRK-2024-001",
-        issueType: "Audio Distortion",
-        priority: "high",
-        status: "in-progress",
-        created: "2025-02-10",
-        eta: "2025-02-15",
-        cost: "₱2,500",
-        description: "Audio distortion detected during quality check after last rental. Customer reported crackling sound at higher volumes. Suspected amplifier board issue requiring component-level diagnosis.",
-        technician: "Mike Rodriguez",
-        timeline: [
-          { date: "2025-02-10", time: "10:30 AM", text: "Ticket created and assigned", status: "completed" },
-          { date: "2025-02-11", time: "09:00 AM", text: "Initial inspection completed", status: "completed" },
-          { date: "2025-02-12", time: "02:30 PM", text: "Components ordered, awaiting delivery", status: "completed" },
-          { date: "2025-02-15", time: "04:00 PM", text: "Testing and quality assurance", status: "active" },
-          { date: "2025-02-16", time: "10:00 AM", text: "Ready for return", status: "pending" }
-        ]
-      },
-      {
-        id: "RPR-002",
-        equipment: "SPK-042 Bluetooth Speaker",
-        category: "speakers",
-        serial: "SPK-2024-042",
-        issueType: "Power Issue",
-        priority: "high",
-        status: "awaiting-parts",
-        created: "2025-02-09",
-        eta: "2025-02-18",
-        cost: "₱1,200",
-        description: "Device won't power on. Battery may be defective. Replacement battery ordered awaiting arrival.",
-        technician: "Sarah Chen",
-        timeline: [
-          { date: "2025-02-09", time: "03:15 PM", text: "Ticket created", status: "completed" },
-          { date: "2025-02-10", time: "11:00 AM", text: "Diagnosed battery failure", status: "completed" },
-          { date: "2025-02-12", time: "01:30 PM", text: "Replacement battery ordered", status: "active" },
-          { date: "2025-02-18", time: "02:00 PM", text: "Installation and testing", status: "pending" }
-        ]
-      },
-      {
-        id: "RPR-003",
-        equipment: "MIC-015 Professional Microphone",
-        category: "microphones",
-        serial: "MIC-2024-015",
-        issueType: "Sound Quality",
-        priority: "medium",
-        status: "completed",
-        created: "2025-02-01",
-        eta: "2025-02-08",
-        cost: "₱800",
-        description: "Intermittent audio feedback issues. Replaced internal capacitors and recalibrated.",
-        technician: "John Martinez",
-        timeline: [
-          { date: "2025-02-01", time: "09:45 AM", text: "Ticket created", status: "completed" },
-          { date: "2025-02-02", time: "10:30 AM", text: "Diagnostic testing started", status: "completed" },
-          { date: "2025-02-05", time: "03:00 PM", text: "Components replaced", status: "completed" },
-          { date: "2025-02-08", time: "11:00 AM", text: "Quality assurance passed", status: "completed" }
-        ]
-      },
-      {
-        id: "RPR-004",
-        equipment: "LGT-088 LED Lights",
-        category: "lighting",
-        serial: "LGT-2024-088",
-        issueType: "Control Failure",
-        priority: "low",
-        status: "in-progress",
-        created: "2025-02-11",
-        eta: "2025-02-14",
-        cost: "₱950",
-        description: "DMX controller not responding. Suspected firmware issue. Updating controller software.",
-        technician: "Alex Thompson",
-        timeline: [
-          { date: "2025-02-11", time: "02:30 PM", text: "Received and inspected", status: "completed" },
-          { date: "2025-02-12", time: "09:00 AM", text: "Firmware update in progress", status: "active" },
-          { date: "2025-02-14", time: "04:00 PM", text: "Final testing", status: "pending" }
-        ]
-      },
-      {
-        id: "RPR-005",
-        equipment: "ACC-033 Cable Harness",
-        category: "accessories",
-        serial: "ACC-2024-033",
-        issueType: "Physical Damage",
-        priority: "medium",
-        status: "to-remove",
-        created: "2025-02-06",
-        eta: "2025-02-13",
-        cost: "₱450",
-        description: "Heavy wear and fraying on connection points. Beyond economical repair. Recommend replacement.",
-        technician: "Mike Rodriguez",
-        timeline: [
-          { date: "2025-02-06", time: "11:15 AM", text: "Damage assessment", status: "completed" },
-          { date: "2025-02-07", time: "10:00 AM", text: "Deemed unrepairable", status: "completed" },
-          { date: "2025-02-13", time: "09:00 AM", text: "Marked for removal from inventory", status: "active" }
-        ]
-      },
-      {
-        id: "RPR-006",
-        equipment: "KRK-003 Karaoke System",
-        category: "karaoke",
-        serial: "KRK-2024-003",
-        issueType: "Display Issue",
-        priority: "low",
-        status: "completed",
-        created: "2025-01-28",
-        eta: "2025-02-05",
-        cost: "₱1,800",
-        description: "LCD screen flickering intermittently. Replaced screen module and power supply.",
-        technician: "Sarah Chen",
-        timeline: [
-          { date: "2025-01-28", time: "04:00 PM", text: "Customer reported issue", status: "completed" },
-          { date: "2025-01-30", time: "09:30 AM", text: "Screen module replaced", status: "completed" },
-          { date: "2025-02-03", time: "02:15 PM", text: "Testing completed", status: "completed" },
-          { date: "2025-02-05", time: "11:00 AM", text: "Ready for rental", status: "completed" }
-        ]
-      },
-      {
-        id: "RPR-007",
-        equipment: "SPK-051 Subwoofer",
-        category: "speakers",
-        serial: "SPK-2024-051",
-        issueType: "No Power",
-        priority: "high",
-        status: "unavailable",
-        created: "2025-01-15",
-        eta: "N/A",
-        cost: "₱3,200",
-        description: "Multiple electrical malfunctions. Cost of repair exceeds 60% of replacement value. Marked unavailable.",
-        technician: "John Martinez",
-        timeline: [
-          { date: "2025-01-15", time: "01:45 PM", text: "Received for repair", status: "completed" },
-          { date: "2025-01-17", time: "11:00 AM", text: "Initial diagnosis", status: "completed" },
-          { date: "2025-01-20", time: "03:30 PM", text: "Cost-benefit analysis", status: "completed" },
-          { date: "2025-01-22", time: "09:00 AM", text: "Marked unavailable - units scrapped", status: "completed" }
-        ]
-      },
-      {
-        id: "RPR-008",
-        equipment: "MIC-022 Wireless Microphone",
-        category: "microphones",
-        serial: "MIC-2024-022",
-        issueType: "Frequency Issue",
-        priority: "medium",
-        status: "in-progress",
-        created: "2025-02-08",
-        eta: "2025-02-16",
-        cost: "₱1,100",
-        description: "Frequency module not syncing with receiver. Replacing frequency selector board.",
-        technician: "Alex Thompson",
-        timeline: [
-          { date: "2025-02-08", time: "10:20 AM", text: "Ticket opened", status: "completed" },
-          { date: "2025-02-10", time: "02:00 PM", text: "Module diagnosis completed", status: "completed" },
-          { date: "2025-02-12", time: "10:30 AM", text: "Replacement board installed", status: "active" },
-          { date: "2025-02-16", time: "03:00 PM", text: "Final calibration", status: "pending" }
-        ]
-      }
-    ];
-    setRepairs(mockRepairs);
+    fetchRepairs();
   }, []);
+
+  const fetchRepairs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_repairs.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch repairs");
+      const result = await response.json();
+      if (result.success) {
+        const repairsData = (result.data || []).map((repair) => ({
+          id: `RPR-${String(repair.repair_id).padStart(3, "0")}`,
+          repair_id: repair.repair_id,
+          equipment: repair.item_name || `Item #${repair.item_id}`,
+          category: repair.category || "general",
+          serial: repair.serial_number || repair.item_id || "",
+          issueType: repair.issue_type || repair.problem_description || "General Issue",
+          priority: (repair.priority || "medium").toLowerCase(),
+          status: (repair.status || "pending").toLowerCase().replace(/ /g, "-"),
+          created: repair.created_date || new Date().toISOString().split("T")[0],
+          eta: repair.eta_date || "N/A",
+          cost: typeof repair.estimated_cost === "number" ? `₱${repair.estimated_cost.toLocaleString()}` : `₱${parseInt(repair.estimated_cost || 0).toLocaleString()}`,
+          description: repair.description || repair.problem_description || "",
+          technician: repair.assigned_to || "Unassigned",
+          timeline: repair.timeline || [],
+        }));
+        setRepairs(repairsData);
+        setStats({
+          inProgress: result.stats?.in_progress || 0,
+          awaitingParts: result.stats?.awaiting_parts || 0,
+          completed: result.stats?.completed || 0,
+          unavailable: result.stats?.unavailable || 0,
+        });
+      } else {
+        alert(result.message || "Failed to load repairs");
+      }
+    } catch (err) {
+      console.error("Error fetching repairs:", err);
+      alert("Failed to load repairs");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   // Filter repairs
   useEffect(() => {
@@ -211,15 +97,7 @@ export default function RepairsPage() {
     setFilteredRepairs(filtered);
   }, [repairs, statusFilter, priorityFilter, categoryFilter, searchTerm]);
 
-  const getStats = () => {
-    const inProgress = repairs.filter((r) => r.status === "in-progress").length;
-    const awaitingParts = repairs.filter((r) => r.status === "awaiting-parts").length;
-    const completed = repairs.filter((r) => r.status === "completed").length;
-    const unavailable = repairs.filter((r) => r.status === "unavailable").length;
-    return { inProgress, awaitingParts, completed, unavailable };
-  };
 
-  const stats = getStats();
 
   const handleViewRepair = (repair) => {
     setSelectedRepair(repair);
@@ -473,7 +351,11 @@ export default function RepairsPage() {
 
       {/* Repairs Table */}
       <div className="admin-card repairs-table-container">
-        {filteredRepairs.length > 0 ? (
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "2rem", color: "var(--admin-text-muted)" }}>
+            Loading repairs...
+          </div>
+        ) : filteredRepairs.length > 0 ? (
           <table className="admin-table repairs-table">
             <thead>
               <tr>
