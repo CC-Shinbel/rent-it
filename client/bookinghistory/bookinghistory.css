@@ -329,7 +329,7 @@
 .item-info .item-name {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .item-info .small-muted {
@@ -341,7 +341,7 @@
 .period .date-start {
     font-size: 13px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .period .date-end {
@@ -352,7 +352,7 @@
 /* Amount Cell */
 .amount-cell {
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 /* Status Pills */
