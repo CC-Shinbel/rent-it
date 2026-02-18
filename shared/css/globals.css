@@ -111,7 +111,7 @@
     --anim-entrance-transform: translateY(12px);
     
     /* Layout */
-    --sidebar-width: 280px;
+    --sidebar-width: 240px;
     --topbar-height: 70px;
 }
 
@@ -1164,4 +1164,65 @@ img {
     .btn-review-submit {
         width: 100%;
     }
+}
+
+/* =====================================================
+   SHARED PAGINATION CONTROLS
+   ===================================================== */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 16px 0;
+}
+
+.pagination-controls.is-hidden {
+    display: none;
+}
+
+.page-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.page-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.page-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
+.page-ellipsis {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    padding: 0 4px;
 }
