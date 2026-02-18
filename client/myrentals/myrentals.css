@@ -330,14 +330,14 @@
 }
 
 .btn-return {
-    background: transparent;
-    border: 1px solid var(--border-color);
+    background: var(--bg-elevated);
+    border: 1px solid var(--text-tertiary);
     color: var(--text-primary);
 }
 
 .btn-return:hover {
-    background: var(--bg-elevated);
-    border-color: var(--text-tertiary);
+    background: var(--bg-hover, var(--bg-secondary));
+    border-color: var(--text-secondary);
 }
 
 /* Booking History Section */
