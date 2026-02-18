@@ -104,7 +104,8 @@ export default function SettingsPage() {
                 },
                 body: JSON.stringify({
                     currentPassword,
-                    newPassword
+                    newPassword,
+                    confirmPassword
                 })
             });
 
