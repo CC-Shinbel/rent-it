@@ -6,6 +6,8 @@ const LateFeesPage = () => {
   const [overdueItems, setOverdueItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [filterValue, setFilterValue] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [stats, setFormattedStats] = useState({ outstandingFees: 0, overdueCount: 0, collectedMonth: 0, remindersSent: 0 });
 
   // State for reminders modal
   const [reminderModalOpen, setReminderModalOpen] = useState(false);
@@ -27,6 +29,62 @@ const LateFeesPage = () => {
 
   // State for phone reveal
   const [revealedPhones, setRevealedPhones] = useState({});
+
+  // Fetch late fees from API
+  useEffect(() => {
+    fetchLateFees();
+  }, []);
+
+  const fetchLateFees = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_latefees.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch late fees");
+      const result = await response.json();
+      if (result.success) {
+        const overdueData = (result.overdue || []).map((item) => ({
+          order_id: item.order_id,
+          order_id_formatted: item.order_id_formatted || `ORD-${String(item.order_id).padStart(5, "0")}`,
+          customer: {
+            name: item.customer_name || item.customer?.name || "Unknown",
+            email: item.customer_email || item.customer?.email || "",
+            phone: item.customer_phone || item.customer?.phone || "",
+          },
+          items: (item.items || []).map((i) => ({
+            item_name: typeof i === "string" ? i : i.item_name || i.name || "",
+          })),
+          end_date: item.end_date || item.due_date || "",
+          days_overdue: item.days_overdue || 0,
+          late_fee: item.late_fee || 0,
+          priority: item.priority || (item.days_overdue > 7 ? "critical" : item.days_overdue > 3 ? "warning" : "mild"),
+        }));
+        setOverdueItems(overdueData);
+        setFilteredItems(overdueData);
+        setFormattedStats({
+          outstandingFees: result.stats?.total_outstanding || 0,
+          overdueCount: result.stats?.overdue_count || overdueData.length,
+          collectedMonth: result.stats?.collected_month || 0,
+          remindersSent: result.stats?.reminders_sent || 0,
+        });
+        setActivities([
+          {
+            type: "sent",
+            text: `Loaded ${overdueData.length} overdue rental${overdueData.length !== 1 ? "s" : ""}`,
+            time: new Date().toLocaleTimeString(),
+          },
+        ]);
+      } else {
+        alert(result.message || "Failed to load late fees");
+      }
+    } catch (err) {
+      console.error("Error fetching late fees:", err);
+      alert("Failed to load late fees");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Editable templates
   const [templates, setTemplates] = useState({
@@ -57,116 +115,9 @@ const LateFeesPage = () => {
     }
   });
 
-  // Mock overdue data
-  useEffect(() => {
-    const mockData = [
-      {
-        order_id: 1,
-        order_id_formatted: 'ORD-2026-00145',
-        customer: {
-          name: 'Michael Chen',
-          email: 'michael.chen@email.com',
-          phone: '(63) 917-123-4567'
-        },
-        items: [
-          { item_name: 'Karaoke System Pro' },
-          { item_name: 'Wireless Mics (2x)' }
-        ],
-        end_date: '2026-02-03',
-        days_overdue: 10,
-        late_fee: 2500,
-        priority: 'critical'
-      },
-      {
-        order_id: 2,
-        order_id_formatted: 'ORD-2026-00148',
-        customer: {
-          name: 'Sofia Rodriguez',
-          email: 'sofia.rod@email.com',
-          phone: '(63) 917-234-5678'
-        },
-        items: [
-          { item_name: 'DJ Speaker System' }
-        ],
-        end_date: '2026-02-05',
-        days_overdue: 8,
-        late_fee: 1600,
-        priority: 'warning'
-      },
-      {
-        order_id: 3,
-        order_id_formatted: 'ORD-2026-00152',
-        customer: {
-          name: 'James Anderson',
-          email: 'j.anderson@email.com',
-          phone: '(63) 917-345-6789'
-        },
-        items: [
-          { item_name: 'LED Lighting Kit' },
-          { item_name: 'Light Stand (3x)' }
-        ],
-        end_date: '2026-02-07',
-        days_overdue: 6,
-        late_fee: 1200,
-        priority: 'warning'
-      },
-      {
-        order_id: 4,
-        order_id_formatted: 'ORD-2026-00156',
-        customer: {
-          name: 'Patricia Lim',
-          email: 'p.lim@email.com',
-          phone: '(63) 917-456-7890'
-        },
-        items: [
-          { item_name: 'Portable Monitor Speaker' }
-        ],
-        end_date: '2026-02-10',
-        days_overdue: 3,
-        late_fee: 600,
-        priority: 'mild'
-      }
-    ];
 
-    setOverdueItems(mockData);
-    setFilteredItems(mockData);
 
-    // Initial activity
-    setActivities([
-      {
-        type: 'sent',
-        text: 'Reminder sent to Michael Chen',
-        time: 'Today 2:45 PM'
-      },
-      {
-        type: 'resolved',
-        text: 'Late fee resolved for Sofia Rodriguez',
-        time: 'Today 1:30 PM'
-      },
-      {
-        type: 'sent',
-        text: 'Bulk reminders sent (4 customers)',
-        time: 'Yesterday 9:00 AM'
-      }
-    ]);
-  }, []);
 
-  // Get stats
-  const getStats = () => {
-    const outstandingFees = overdueItems.reduce((sum, item) => sum + item.late_fee, 0);
-    const overdueCount = overdueItems.length;
-    const collectedMonth = 5200; // Mock amount
-    const remindersSent = 3;
-
-    return {
-      outstandingFees,
-      overdueCount,
-      collectedMonth,
-      remindersSent
-    };
-  };
-
-  const stats = getStats();
 
   // Filter items
   const handleFilterChange = (e) => {
@@ -469,7 +420,11 @@ const LateFeesPage = () => {
               </div>
             </div>
             <div className="overdue-list">
-              {filteredItems.length === 0 ? (
+              {loading ? (
+                <div className="overdue-empty">
+                  <p style={{ color: 'var(--admin-text-muted)' }}>Loading overdue rentals...</p>
+                </div>
+              ) : filteredItems.length === 0 ? (
                 <div className="overdue-empty">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"/>
