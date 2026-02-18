@@ -1127,52 +1127,14 @@ function addToCart(itemId) {
 }
 
 /**
- * Get mock bookings for a product
+ * Get bookings for a product from the server
  */
 function getProductBookings(productId) {
-    // Mock booking data - in real app, this would come from an API
-    const bookings = {
-        '1': [
-            { start: 'Feb 15, 2026', end: 'Feb 17, 2026' },
-            { start: 'Mar 5, 2026', end: 'Mar 7, 2026' }
-        ],
-        '2': [],
-        '3': [
-            { start: 'Feb 20, 2026', end: 'Feb 22, 2026' }
-        ],
-        '4': [],
-        '5': [],
-        '6': [
-            { start: 'Feb 12, 2026', end: 'Feb 12, 2026' }
-        ]
-    };
-    return bookings[productId] || [];
+    return []; // TODO: Fetch from API (e.g. ../catalog/get_bookings.php?item_id=productId)
 }
 
 function getProductReviews(productId) {
-    // Mock review data - in real app, this would come from an API
-    const reviews = {
-        '1': [
-            { author: 'Maria Santos', rating: 5, date: 'Jan 28, 2026', text: 'Amazing sound quality! The dual-mic setup was perfect for our family reunion. Highly recommend!' },
-            { author: 'Juan Dela Cruz', rating: 4, date: 'Jan 20, 2026', text: 'Great machine, lots of songs. Only wish it had more OPM classics.' },
-            { author: 'Anna Reyes', rating: 5, date: 'Jan 15, 2026', text: 'Professional quality! Made our birthday party unforgettable.' }
-        ],
-        '2': [
-            { author: 'Pedro Garcia', rating: 5, date: 'Jan 25, 2026', text: 'Perfect for small gatherings. Easy to carry and set up!' }
-        ],
-        '3': [
-            { author: 'Rosa Mendoza', rating: 4, date: 'Jan 22, 2026', text: 'Good value for money. Kids loved it!' }
-        ],
-        '4': [],
-        '5': [
-            { author: 'Carlos Tan', rating: 5, date: 'Jan 18, 2026', text: 'Concert-level sound! Worth every peso.' },
-            { author: 'Liza Aquino', rating: 5, date: 'Jan 10, 2026', text: 'Used for our wedding reception. Absolutely perfect!' }
-        ],
-        '6': [
-            { author: 'Miguel Santos', rating: 4, date: 'Jan 5, 2026', text: 'Industrial quality, great for large venues.' }
-        ]
-    };
-    return reviews[productId] || [];
+    return []; // TODO: Fetch from API (e.g. ../catalog/get_reviews.php?item_id=productId)
 }
 function showToast(message, type = 'info') {
     const existing = document.querySelector('.toast-notification');
