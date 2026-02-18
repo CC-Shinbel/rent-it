@@ -116,7 +116,7 @@ function renderDispatchCard(dispatch) {
                                 <polyline points="22 4 12 14.01 9 11.01"/>
                             </svg>
                         </button>
-                    ` : dispatch.status !== 'completed' ? `
+                    ` : (dispatch.status !== 'completed' && dispatch.status !== 'cancelled') ? `
                         <button class="dispatch-action-btn" title="Mark complete" onclick="markComplete('${dispatch.id}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"/>
