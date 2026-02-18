@@ -242,21 +242,63 @@ function getDirections(address) {
 /**
  * Mark dispatch as complete
  */
-function markComplete(dispatchId) {
+async function markComplete(dispatchId) {
     const dispatch = dispatchesData.find(d => d.id === dispatchId);
-    if (dispatch && confirm(`Mark ${dispatch.type} for ${dispatch.customer.name} as complete?`)) {
-        // In production, this would make an API call to update the status
-        dispatch.status = 'completed';
-        filterDispatches();
-        // Recalculate stats
-        const stats = {
-            deliveries: dispatchesData.filter(d => d.type === 'delivery' && d.status !== 'completed').length,
-            pickups: dispatchesData.filter(d => d.type === 'pickup' && d.status !== 'completed').length,
-            pending: dispatchesData.filter(d => d.status === 'pending').length,
-            completed: dispatchesData.filter(d => d.status === 'completed').length
-        };
-        updateStats(stats);
-        alert(`${dispatch.type.charAt(0).toUpperCase() + dispatch.type.slice(1)} marked as complete!`);
+    if (!dispatch) {
+        AdminComponents.showToast('Dispatch not found', 'error');
+        return;
+    }
+    
+    // Determine next status based on current status
+    let nextStatus;
+    let confirmMessage;
+    
+    switch (dispatch.status) {
+        case 'active':
+            nextStatus = 'Pending Return';
+            confirmMessage = `Schedule return for ${dispatch.customer.name}?`;
+            break;
+        case 'return_scheduled':
+            nextStatus = 'Returned';
+            confirmMessage = `Mark order for ${dispatch.customer.name} as returned?`;
+            break;
+        case 'returned':
+            nextStatus = 'Completed';
+            confirmMessage = `Mark order for ${dispatch.customer.name} as completed?`;
+            break;
+        default:
+            nextStatus = 'Active';
+            confirmMessage = `Mark ${dispatch.type} for ${dispatch.customer.name} as active?`;
+            break;
+    }
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/rent-it/admin/api/update_order_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                order_id: dispatch.orderId,
+                status: nextStatus
+            })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            AdminComponents.showToast('Status updated successfully!', 'success');
+            const dateRange = document.getElementById('dateRangeSelect')?.value || 'week';
+            fetchDispatches(dateRange);
+        } else {
+            AdminComponents.showToast(data.message || 'Failed to update status', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        AdminComponents.showToast('Error updating dispatch status', 'error');
     }
 }
 
