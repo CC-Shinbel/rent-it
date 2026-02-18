@@ -397,13 +397,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            </div> <!-- close admin-content -->
 
-    <!-- Footer Container (injected via JS) -->
-    <div id="footerContainer"></div>
-    </main>
-    </div>
+            <!-- Footer Container (injected via JS) -->
+            <div id="footerContainer"></div>
+        </main>
+    </div> <!-- close admin-wrapper -->
     
     <!-- Send Reminder Modal -->
     <div class="modal" id="reminderModal">
