@@ -139,7 +139,7 @@ const Components = {
         container.innerHTML = `
             <aside class="sidebar${isCollapsed ? ' collapsed' : ''}" id="sidebar">
                                 <div class="sidebar-header">
-                                        <a class="sidebar-logo" href="/rent-it/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" title="View RentIT logo">
+                                        <a class="sidebar-logo" href="/rent-it/client/dashboard/dashboard.php" title="Go to Dashboard">
                                             <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon">
                                                 <span class="sidebar-logo-text">RentIT</span>
                                         </a>

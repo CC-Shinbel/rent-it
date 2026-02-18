@@ -200,7 +200,7 @@ const AdminComponents = {
         container.innerHTML = `
             <aside class="admin-sidebar ${isCollapsed ? 'collapsed' : ''}" id="adminSidebar">
                 <div class="sidebar-logo">
-                    <a href="${this.baseUrl('/assets/images/rIT_logo_tp.png')}" target="_blank" rel="noopener noreferrer" class="sidebar-logo-link" title="View RentIT logo">
+                    <a href="${this.baseUrl('/admin/dashboard/dashboard.php')}" class="sidebar-logo-link" title="Go to Dashboard">
                         <img src="${this.baseUrl('/assets/images/rIT_logo_tp.png')}" alt="RentIT Logo" class="sidebar-logo-icon" onerror="this.style.display='none'">
                         <span class="sidebar-logo-text">RentIT</span>
                     </a>
