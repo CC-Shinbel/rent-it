@@ -14,11 +14,36 @@ export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
-  // Mock data - replace with API call
+  // Fetch orders on mount
   useEffect(() => {
-    const mockOrders = [
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_orders.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch orders");
+      const result = await response.json();
+      if (result.success) {
+        setOrders(result.data || []);
+      } else {
+        alert(result.message || "Failed to load orders");
+      }
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      alert("Failed to load orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockOrders = [
       {
         id: "ORD-001",
         customerName: "Juan Dela Cruz",
@@ -150,8 +175,7 @@ export default function OrdersPage() {
         paymentStatus: "paid",
       },
     ];
-    setOrders(mockOrders);
-  }, []);
+    // Removed mock data setup - using API endpoint instead
 
   // Filter and search
   useEffect(() => {
@@ -159,19 +183,23 @@ export default function OrdersPage() {
 
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter((order) => order.status === statusFilter);
+      filtered = filtered.filter(
+        (order) => (order.status || "").toLowerCase() === statusFilter.toLowerCase()
+      );
     }
 
     // Apply search
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (order) =>
-          order.id.toLowerCase().includes(term) ||
-          order.customerName.toLowerCase().includes(term) ||
-          order.customerEmail.toLowerCase().includes(term) ||
-          order.items.toLowerCase().includes(term)
-      );
+      filtered = filtered.filter((order) => {
+        const itemNames = order.items ? order.items.map((i) => i.name).join(" ") : "";
+        return (
+          (order.id || "").toLowerCase().includes(term) ||
+          (order.customer?.name || "").toLowerCase().includes(term) ||
+          (order.customer?.email || "").toLowerCase().includes(term) ||
+          itemNames.toLowerCase().includes(term)
+        );
+      });
     }
 
     setFilteredOrders(filtered);
@@ -199,10 +227,10 @@ export default function OrdersPage() {
   };
 
   const getKPIStats = () => {
-    const pending = orders.filter((o) => o.status === "pending").length;
-    const active = orders.filter((o) => o.status === "active").length;
-    const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-    const completed = orders.filter((o) => o.status === "completed").length;
+    const pending = orders.filter((o) => (o.status || "").toLowerCase() === "pending").length;
+    const active = orders.filter((o) => (o.status || "").toLowerCase() === "active").length;
+    const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+    const completed = orders.filter((o) => (o.status || "").toLowerCase() === "completed").length;
 
     return { pending, active, totalRevenue, completed };
   };
@@ -210,23 +238,61 @@ export default function OrdersPage() {
   const stats = getKPIStats();
 
   const handleExportOrders = () => {
-    console.log("Export orders clicked");
+    alert("Export functionality coming soon");
   };
 
-  const handleRefreshOrders = () => {
-    console.log("Refresh orders clicked");
+  const handleRefreshOrders = async () => {
+    await fetchOrders();
   };
 
   const handleViewOrder = (orderId) => {
     navigate(`/admin/orders/${orderId}`);
   };
 
-  const handleConfirmOrder = (orderId) => {
-    console.log("Confirm order:", orderId);
+  const handleConfirmOrder = async (orderId) => {
+    if (!confirm("Confirm this order?")) return;
+    try {
+      const response = await fetch("/admin/api/update_order_status.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ order_id: orderId, status: "Confirmed" }),
+      });
+      if (!response.ok) throw new Error("Failed to confirm order");
+      const result = await response.json();
+      if (result.success) {
+        alert("Order confirmed successfully!");
+        await fetchOrders();
+      } else {
+        alert(result.message || "Failed to confirm order");
+      }
+    } catch (err) {
+      console.error("Error confirming order:", err);
+      alert("Error confirming order");
+    }
   };
 
-  const handleCancelOrder = (orderId) => {
-    console.log("Cancel order:", orderId);
+  const handleCancelOrder = async (orderId) => {
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+    try {
+      const response = await fetch("/admin/api/update_order_status.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ order_id: orderId, status: "Cancelled" }),
+      });
+      if (!response.ok) throw new Error("Failed to cancel order");
+      const result = await response.json();
+      if (result.success) {
+        alert("Order cancelled.");
+        await fetchOrders();
+      } else {
+        alert(result.message || "Failed to cancel order");
+      }
+    } catch (err) {
+      console.error("Error cancelling order:", err);
+      alert("Error cancelling order");
+    }
   };
 
   return (
@@ -410,7 +476,11 @@ export default function OrdersPage() {
 
       {/* Orders Table */}
       <div className="orders-table-container">
-        {paginatedOrders.length > 0 ? (
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "2rem", color: "var(--admin-text-muted)" }}>
+            Loading orders...
+          </div>
+        ) : paginatedOrders.length > 0 ? (
           <table className="admin-table orders-table">
             <thead>
               <tr>
@@ -424,76 +494,65 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody id="ordersTableBody">
-              {paginatedOrders.map((order) => (
-                <tr key={order.id}>
-                  <td>
-                    <span
-                      className="order-id"
-                      onClick={() => handleViewOrder(order.id)}
-                    >
-                      {order.id}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="customer-cell">
-                      <div className="customer-avatar">{order.customerAvatar}</div>
-                      <div className="customer-info">
-                        <div className="customer-name">{order.customerName}</div>
-                        <div className="customer-email">{order.customerEmail}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="items-cell">
-                      <div className="item-name">{order.items}</div>
-                      <span className="item-count">{order.itemCount} item(s)</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="dates-cell">
-                      <div className="date-range">
-                        {new Date(order.rentalStart).toLocaleDateString()} -{" "}
-                        {new Date(order.rentalEnd).toLocaleDateString()}
-                      </div>
-                      <div className="date-duration">
-                        {getDaysDifference(order.rentalStart, order.rentalEnd)} days
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="total-amount">
-                      ₱{order.totalAmount.toLocaleString()}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={getStatusBadgeClass(order.status)}>
-                      {order.status.replace(/_/g, " ")}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="actions-cell">
-                      <button
-                        className="action-btn view"
-                        onClick={() => handleViewOrder(order.id)}
-                        title="View order details"
+              {paginatedOrders.map((order) => {
+                const itemsText = !order.items || order.items.length === 0
+                  ? "No items"
+                  : order.items.length === 1
+                  ? order.items[0].name
+                  : `${order.items[0].name} +${order.items.length - 1} more`;
+                const totalItems = order.items ? order.items.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
+                return (
+                  <tr key={order.order_id}>
+                    <td>
+                      <span
+                        className="order-id"
+                        onClick={() => handleViewOrder(order.order_id)}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          width="14"
-                          height="14"
-                        >
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      </button>
-                      {order.status === "pending" && (
+                        {order.id}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="customer-cell">
+                        <div className="customer-avatar">{(order.customer?.name || "?").charAt(0).toUpperCase()}</div>
+                        <div className="customer-info">
+                          <div className="customer-name">{order.customer?.name}</div>
+                          <div className="customer-email">{order.customer?.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="items-cell">
+                        <div className="item-name">{itemsText}</div>
+                        <span className="item-count">{totalItems} item(s)</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="dates-cell">
+                        <div className="date-range">
+                          {new Date(order.dates?.start).toLocaleDateString()} -{" "}
+                          {new Date(order.dates?.end).toLocaleDateString()}
+                        </div>
+                        <div className="date-duration">
+                          {order.dates?.duration || 0} days
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="total-amount">
+                        ₱{Number(order.total || 0).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                      </div>
+                    </td>
+                    <td>
+                      <span className={getStatusBadgeClass(order.status)}>
+                        {(order.status || "unknown").replace(/_/g, " ")}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="actions-cell">
                         <button
-                          className="action-btn confirm"
-                          onClick={() => handleConfirmOrder(order.id)}
-                          title="Confirm order"
+                          className="action-btn view"
+                          onClick={() => handleViewOrder(order.order_id)}
+                          title="View order details"
                         >
                           <svg
                             viewBox="0 0 24 24"
@@ -503,35 +562,54 @@ export default function OrdersPage() {
                             width="14"
                             height="14"
                           >
-                            <polyline points="20 6 9 17 4 12" />
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
                           </svg>
                         </button>
-                      )}
-                      {(order.status === "pending" ||
-                        order.status === "confirmed") && (
-                        <button
-                          className="action-btn cancel"
-                          onClick={() => handleCancelOrder(order.id)}
-                          title="Cancel order"
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            width="14"
-                            height="14"
+                        {(order.status || "").toLowerCase() === "pending" && (
+                          <button
+                            className="action-btn confirm"
+                            onClick={() => handleConfirmOrder(order.order_id)}
+                            title="Confirm order"
                           >
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="15" y1="9" x2="9" y2="15" />
-                            <line x1="9" y1="9" x2="15" y2="15" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              width="14"
+                              height="14"
+                            >
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </button>
+                        )}
+                        {((order.status || "").toLowerCase() === "pending" ||
+                          (order.status || "").toLowerCase() === "confirmed") && (
+                          <button
+                            className="action-btn cancel"
+                            onClick={() => handleCancelOrder(order.order_id)}
+                            title="Cancel order"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              width="14"
+                              height="14"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="15" y1="9" x2="9" y2="15" />
+                              <line x1="9" y1="9" x2="15" y2="15" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
