@@ -18,16 +18,61 @@ const TOPBAR_TITLES = {
   '/client/favorites': 'My Favorites',
   '/client/cart': 'My Cart',
   '/client/myrentals': 'My Rentals',
+  '/client/pending': 'Pending Orders',
   '/client/bookinghistory': 'My Booking History',
   '/client/returns': 'Returns & Extensions',
-  '/client/contact': 'Contact Us',
   '/client/profile': 'My Profile',
 };
 
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
 
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
+
+/* Sidebar line-art icons (inactive: white/light gray; active: white on orange) */
+const NavIcons = {
+  dashboard: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  ),
+  catalog: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  ),
+  favorites: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  ),
+  cart: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  ),
+  rentals: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="22" />
+      <line x1="8" y1="22" x2="16" y2="22" />
+    </svg>
+  ),
+  booking: (
+    <svg className="nav-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  ),
+};
 
 function getInitialUser() {
   try {
@@ -47,6 +92,18 @@ function getInitialUser() {
   return { full_name: '', email: '', membership_level: '', profile_picture: null };
 }
 
+const THEME_KEY = 'rentit-theme';
+
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'light';
+}
+
+function setTheme(theme) {
+  const value = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', value);
+  localStorage.setItem(THEME_KEY, value);
+}
+
 function ClientShellLayout({ children, showFooter = true }) {
   const location = useLocation();
   const [user, setUser] = useState(getInitialUser);
@@ -61,7 +118,7 @@ function ClientShellLayout({ children, showFooter = true }) {
   const topbarTitle = TOPBAR_TITLES[location.pathname] ?? 'Dashboard';
 
   useEffect(() => {
-    fetch(`${API_BASE}/client/dashboard/dashboard.php`, {
+    fetch(`${API_BASE}/client/dashboard/dashboard.php?format=json`, {
       credentials: 'include',
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -159,7 +216,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Dashboard"
           >
-            <span className="nav-icon">🏠</span>
+            <span className="nav-icon">{NavIcons.dashboard}</span>
             <span className="nav-label">Dashboard</span>
           </NavLink>
           <NavLink
@@ -167,7 +224,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Browse Catalog"
           >
-            <span className="nav-icon">📦</span>
+            <span className="nav-icon">{NavIcons.catalog}</span>
             <span className="nav-label">Browse Catalog</span>
           </NavLink>
           <NavLink
@@ -175,7 +232,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Favorites"
           >
-            <span className="nav-icon">❤️</span>
+            <span className="nav-icon">{NavIcons.favorites}</span>
             <span className="nav-label">Favorites</span>
           </NavLink>
           <NavLink
@@ -183,32 +240,24 @@ function ClientShellLayout({ children, showFooter = true }) {
             className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="My Cart"
           >
-            <span className="nav-icon">🛒</span>
+            <span className="nav-icon">{NavIcons.cart}</span>
             <span className="nav-label">My Cart</span>
           </NavLink>
           <NavLink
             to="/client/myrentals"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={`nav-item${location.pathname === '/client/myrentals' || location.pathname === '/client/pending' ? ' active' : ''}`}
             data-tooltip="My Rentals"
           >
-            <span className="nav-icon">🎤</span>
+            <span className="nav-icon">{NavIcons.rentals}</span>
             <span className="nav-label">My Rentals</span>
           </NavLink>
           <NavLink
             to="/client/bookinghistory"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+            className={`nav-item${location.pathname === '/client/bookinghistory' || location.pathname === '/client/returns' ? ' active' : ''}`}
             data-tooltip="Booking History"
           >
-            <span className="nav-icon">📅</span>
+            <span className="nav-icon">{NavIcons.booking}</span>
             <span className="nav-label">Booking History</span>
-          </NavLink>
-          <NavLink
-            to="/client/contact"
-            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
-            data-tooltip="Contact Us"
-          >
-            <span className="nav-icon">💬</span>
-            <span className="nav-label">Contact Us</span>
           </NavLink>
         </nav>
 
@@ -250,10 +299,15 @@ function ClientShellLayout({ children, showFooter = true }) {
           </h1>
           <div className="topbar-actions">
             <button
+              type="button"
               className="btn-icon client-theme-toggle"
               id="themeToggle"
               aria-label="Toggle theme"
               title="Toggle light/dark theme"
+              onClick={() => {
+                const next = getTheme() === 'dark' ? 'light' : 'dark';
+                setTheme(next);
+              }}
             >
               <svg
                 className="theme-icon-light"
@@ -384,6 +438,9 @@ function ClientShellLayout({ children, showFooter = true }) {
                       <NavLink to="/client/myrentals">My Rentals</NavLink>
                     </li>
                     <li>
+                      <NavLink to="/client/pending">Pending Orders</NavLink>
+                    </li>
+                    <li>
                       <NavLink to="/client/bookinghistory">Booking History</NavLink>
                     </li>
                     <li>
@@ -394,9 +451,6 @@ function ClientShellLayout({ children, showFooter = true }) {
                 <div className="client-footer-column">
                   <h4 className="client-footer-heading">Support</h4>
                   <ul>
-                    <li>
-                      <NavLink to="/client/contact">Contact Us</NavLink>
-                    </li>
                     <li>
                       <a href="/pages/about.html">About</a>
                     </li>

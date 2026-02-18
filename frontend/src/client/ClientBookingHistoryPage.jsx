@@ -85,16 +85,16 @@ function ClientBookingHistoryContent() {
       </div>
 
       <div className="myrentals-tabs">
+        <Link to="/client/pending" className="myrentals-tab-link">
+          Pending Orders
+        </Link>
         <Link to="/client/myrentals" className="myrentals-tab-link">
           Active Rentals
         </Link>
         <Link to="/client/bookinghistory" className="myrentals-tab-link myrentals-tab-active">
           Booking History
         </Link>
-        <Link
-          to="/client/returns"
-          className="myrentals-tab-link"
-        >
+        <Link to="/client/returns" className="myrentals-tab-link">
           Returns &amp; Extensions
         </Link>
       </div>

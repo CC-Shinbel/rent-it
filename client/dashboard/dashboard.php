@@ -52,64 +52,64 @@ $upcoming_returns = ($res_upcoming && ($row = mysqli_fetch_assoc($res_upcoming))
 
 // JSON API for React: return early so PHP dashboard HTML is not sent
 if (isset($_GET['format']) && $_GET['format'] === 'json') {
-    $active_rentals = [];
+$active_rentals = [];
     $ar_query = "SELECT r.*, i.item_name FROM RENTAL r
-        LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id
-        LEFT JOIN ITEM i ON ri.item_id = i.item_id
+    LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id
+    LEFT JOIN ITEM i ON ri.item_id = i.item_id
         WHERE r.user_id = $user_id AND r.rental_status IN ('Active','Rented', 'Pending Extension')
         GROUP BY r.order_id";
     if ($res = mysqli_query($conn, $ar_query)) {
-        while ($row = mysqli_fetch_assoc($res)) {
-            $active_rentals[] = [
+    while ($row = mysqli_fetch_assoc($res)) {
+        $active_rentals[] = [
                 'order_id' => (int) $row['order_id'],
                 'item_name' => $row['item_name'],
                 'end_date' => $row['end_date'],
-                'formatted_end_date' => date('M d, Y', strtotime($row['end_date'])),
+            'formatted_end_date' => date('M d, Y', strtotime($row['end_date'])),
                 'rental_status' => $row['rental_status'],
-            ];
-        }
+        ];
     }
-    $history = [];
+}
+$history = [];
     $hist_query = "SELECT r.*, i.item_name FROM RENTAL r
-        LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id
-        LEFT JOIN ITEM i ON ri.item_id = i.item_id
+    LEFT JOIN RENTAL_ITEM ri ON r.order_id = ri.order_id
+    LEFT JOIN ITEM i ON ri.item_id = i.item_id
         WHERE r.user_id = $user_id AND r.rental_status IN ('Active', 'Returned', 'Extended')
         ORDER BY r.start_date DESC LIMIT 5";
     if ($res = mysqli_query($conn, $hist_query)) {
-        while ($row = mysqli_fetch_assoc($res)) {
-            $history[] = [
+    while ($row = mysqli_fetch_assoc($res)) {
+        $history[] = [
                 'order_id' => (int) $row['order_id'],
                 'item_name' => $row['item_name'],
                 'start_date' => $row['start_date'],
                 'end_date' => $row['end_date'],
                 'formatted_period' => date('M d', strtotime($row['start_date'])) . ' - ' . date('M d', strtotime($row['end_date'])),
                 'total_price' => (float) $row['total_price'],
-                'formatted_total_price' => number_format($row['total_price'], 2),
+            'formatted_total_price' => number_format($row['total_price'], 2),
                 'rental_status' => $row['rental_status'],
-            ];
-        }
+        ];
     }
-    $member_status = $user_data['membership_level'] ?? 'Bronze';
+}
+$member_status = $user_data['membership_level'] ?? 'Bronze';
     $member_since = $user_data['created_at'] ? date('F Y', strtotime($user_data['created_at'])) : null;
-    header('Access-Control-Allow-Origin: http://localhost:5173');
-    header('Access-Control-Allow-Credentials: true');
-    header('Content-Type: application/json');
-    echo json_encode([
-        'user' => [
+header('Access-Control-Allow-Origin: http://localhost:5173');
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
+echo json_encode([
+    'user' => [
             'full_name' => $user_data['full_name'] ?? 'User',
             'email' => $user_data['email'] ?? '',
-            'membership_level' => $member_status,
+        'membership_level' => $member_status,
             'phone' => $user_data['phone'] ?? '',
             'address' => $user_data['address'] ?? '',
             'profile_picture' => $user_data['profile_picture'] ?? null,
             'member_since' => $member_since,
-        ],
-        'totals' => [
+    ],
+    'totals' => [
             'total_spent' => $total_spent,
             'active_count' => $active_count,
-            'upcoming_returns' => $upcoming_returns,
-        ],
-        'active_rentals' => $active_rentals,
+        'upcoming_returns' => $upcoming_returns,
+    ],
+    'active_rentals' => $active_rentals,
         'history' => $history,
     ]);
     exit();

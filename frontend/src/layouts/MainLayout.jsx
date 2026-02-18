@@ -1,10 +1,26 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const BASE_URL = 'http://localhost/rent-it';
+const BASE_URL = '/rent-it';
+const THEME_KEY = 'rentit-theme';
+
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'light';
+}
+
+function setTheme(theme) {
+  const value = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', value);
+  localStorage.setItem(THEME_KEY, value);
+}
 
 function MainLayout({ children }) {
   const location = useLocation();
+
+  const handleThemeToggle = () => {
+    const next = getTheme() === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+  };
   const isAbout = location.pathname === '/about';
   const isContact = location.pathname === '/contact';
   const isAuthPage = location.pathname === '/login';
@@ -30,7 +46,7 @@ function MainLayout({ children }) {
 
           <a href="/" className="brand">
             <div className="logo-drawer">
-              <img src="http://localhost/rent-it/assets/images/rIT_logo_tp.png" alt="RentIt Logo" />
+              <img src={`${BASE_URL}/assets/images/rIT_logo_tp.png`} alt="RentIt Logo" />
             </div>
             <span className="brand-name">
               Rent<span className="accent">It</span>
@@ -76,7 +92,13 @@ function MainLayout({ children }) {
           </nav>
 
           <div className="header-actions">
-            <button className="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <button
+              type="button"
+              className="theme-toggle"
+              id="themeToggle"
+              aria-label="Toggle theme"
+              onClick={handleThemeToggle}
+            >
               <svg
                 className="sun-icon"
                 width="20"
@@ -161,10 +183,10 @@ function MainLayout({ children }) {
       {!isAuthPage && (
       <footer className="site-footer">
         <div className="container">
-          <div className="footer-inner">
+            <div className="footer-inner">
             <div className="footer-brand">
               <div className="logo-drawer">
-                <img src="http://localhost/rent-it/assets/images/rIT_logo_tp.png" alt="RentIt Logo" />
+                <img src={`${BASE_URL}/assets/images/rIT_logo_tp.png`} alt="RentIt Logo" />
               </div>
               <div className="brand-text">
                 <h4 className="brand-title">RentIt</h4>

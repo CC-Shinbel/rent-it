@@ -89,13 +89,17 @@
 .favorite-name {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #333;
+    color: var(--text-primary, #333);
     margin-bottom: 8px;
-    /* Para hindi lumubog ang text kung mahaba ang name */
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Dark theme: item name on favorites */
+[data-theme="dark"] .favorite-name {
+    color: var(--text-primary);
 }
 
 .favorite-card:hover .favorite-image {

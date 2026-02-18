@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/ClientFavoritesPage.css';
 
 // Backend/API base: dev uses Vite proxy (/api), prod uses direct /rent-it path
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
 // Public base for assets
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 const ClientFavoritesPage = () => {
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  // Reuse the catalog modal pattern for viewing item details in-place
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -122,15 +120,12 @@ const ClientFavoritesPage = () => {
     }
   };
 
-  const openModalForFavorite = (fav) => {
+  const handleViewDetails = (fav) => {
     if (!fav) return;
-    setSelectedItem(fav);
-    setIsModalOpen(true);
-  };
-
-  const closeFavoriteModal = () => {
-    setIsModalOpen(false);
-    setSelectedItem(null);
+    const itemId = fav.item_id || fav.id;
+    if (itemId) {
+      navigate(`/client/item/${itemId}`);
+    }
   };
 
   return (
@@ -213,7 +208,7 @@ const ClientFavoritesPage = () => {
                         <button
                           type="button"
                           className="btn-view-details"
-                          onClick={() => openModalForFavorite(fav)}
+                          onClick={() => handleViewDetails(fav)}
                         >
                           View Details
                         </button>
@@ -238,158 +233,6 @@ const ClientFavoritesPage = () => {
             </div>
           )}
         </section>
-
-        {/* Product Details Modal (favorites view) */}
-        <div
-          className={`modal-overlay${isModalOpen ? ' active' : ''}`}
-          id="favoritesProductModal"
-          onClick={closeFavoriteModal}
-        >
-          <div
-            className="modal-container favorites-product-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="modal-close"
-              id="closeFavoritesProductModal"
-              aria-label="Close modal"
-              type="button"
-              onClick={closeFavoriteModal}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            <div className="modal-body favorites-product-modal-body">
-              <div className="modal-product-main">
-                <div className="modal-product-image-section">
-                  <img
-                    src={selectedItem?.image
-                      ? `${PUBLIC_BASE}/assets/images/${selectedItem.image}`
-                      : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`}
-                    alt={selectedItem?.item_name || 'Catalog item image'}
-                    className="modal-product-image"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
-                    }}
-                  />
-                  <span
-                    className={`modal-product-badge ${(selectedItem?.status || 'available').toLowerCase()}`}
-                  >
-                    {(selectedItem?.status || 'Available')
-                      .toString()
-                      .charAt(0)
-                      .toUpperCase()
-                      + (selectedItem?.status || 'available').toString().slice(1)}
-                  </span>
-                </div>
-
-                {/* Title, rating, description under the image to avoid empty space */}
-                <div className="modal-product-text">
-                  <div className="modal-product-header">
-                    <h2 className="modal-product-name">
-                      {selectedItem?.item_name || 'Product Name'}
-                    </h2>
-                    <div className="modal-product-price">
-                      ₱
-                      {Number(selectedItem?.price_per_day || 0).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                      {' '}
-                      <span>/ day</span>
-                    </div>
-                  </div>
-
-                  <div className="modal-rating-summary">
-                    <span className="modal-rating-score">0.0</span>
-                    <span className="modal-rating-count">(0 reviews)</span>
-                  </div>
-
-                  <p className="modal-product-description">
-                    {selectedItem?.description || 'Product description goes here.'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="modal-product-info">
-                {/* Upcoming Schedule (static placeholder, mirrors catalog modal) */}
-                <div className="modal-availability-section">
-                  <h4 className="modal-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                      <line x1="16" y1="2" x2="16" y2="6" />
-                      <line x1="8" y1="2" x2="8" y2="6" />
-                      <line x1="3" y1="10" x2="21" y2="10" />
-                    </svg>
-                    Upcoming Schedule
-                  </h4>
-                  <div className="modal-availability-list">
-                    <p className="availability-empty">No upcoming bookings. Available anytime!</p>
-                  </div>
-                </div>
-
-                {/* Customer Reviews section (static placeholder, mirrors catalog modal) */}
-                <div className="modal-reviews-section">
-                  <div className="modal-reviews-title">
-                    <div className="modal-reviews-heading">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      </svg>
-                      <span>Customer Reviews</span>
-                      <span className="modal-reviews-count">(0)</span>
-                    </div>
-                    <button
-                      type="button"
-                      className="reviews-toggle"
-                      aria-expanded="true"
-                    >
-                      Hide reviews
-                    </button>
-                  </div>
-
-                  <div className="modal-reviews-list">
-                    <div className="review-empty-state">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      </svg>
-                      <p>No reviews yet. Be the first to share your experience!</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="modal-actions">
-                  <button
-                    className="btn-modal-cart"
-                    type="button"
-                    onClick={() => {
-                      if (!selectedItem) return;
-                      const productId = selectedItem.item_id || selectedItem.id;
-                      if (!productId) return;
-                      handleMoveToCart(productId);
-                    }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      style={{ width: 20, height: 20 }}
-                    >
-                      <circle cx="9" cy="21" r="1" />
-                      <circle cx="20" cy="21" r="1" />
-                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
   );
 };

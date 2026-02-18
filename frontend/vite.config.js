@@ -12,6 +12,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      // Proxy static assets (images) so catalog/favorites/cart images load in dev
+      '/rent-it/assets': {
+        target: 'http://localhost',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

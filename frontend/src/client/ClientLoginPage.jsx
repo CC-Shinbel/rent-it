@@ -4,7 +4,7 @@ import MainLayout from '../layouts/MainLayout';
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
 
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 function ClientLoginPage() {
   const [activeTab, setActiveTab] = useState('login');

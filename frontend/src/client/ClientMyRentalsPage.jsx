@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import './css/ClientMyRentalsPage.css';
 
 // Follow the same API base convention as other client pages
@@ -43,9 +44,18 @@ function ClientMyRentalsPage() {
     fetch(`${API_BASE}/client/myrentals/get_myrentals.php`, {
       credentials: 'include',
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load rentals');
-        return res.json();
+      .then(async (res) => {
+        let data = {};
+        try {
+          const text = await res.text();
+          data = text ? JSON.parse(text) : {};
+        } catch (_) {
+          if (!res.ok) throw new Error('Server returned an invalid response. Try logging in again.');
+        }
+        if (!res.ok) {
+          throw new Error(data?.message || 'Failed to load rentals');
+        }
+        return data;
       })
       .then((data) => {
         if (!mounted) return;
@@ -57,6 +67,7 @@ function ClientMyRentalsPage() {
           return;
         }
 
+        setError('');
         setActiveRentals(Array.isArray(data.active) ? data.active : []);
         setHistory(Array.isArray(data.history) ? data.history : []);
         setLoading(false);
@@ -65,7 +76,9 @@ function ClientMyRentalsPage() {
         // eslint-disable-next-line no-console
         console.error('Failed to load rentals', err);
         if (!mounted) return;
-        setError('Failed to load rentals.');
+        setError(err?.message || 'Failed to load rentals.');
+        setActiveRentals([]);
+        setHistory([]);
         setLoading(false);
       });
 
@@ -173,7 +186,7 @@ function ClientMyRentalsPage() {
           {error && <p style={{ color: '#e11d48', marginTop: 8 }}>{error}</p>}
         </div>
         <div className="page-header-actions">
-          <a href="/client/catalog" className="btn-new">
+          <Link to="/client/catalog" className="btn-new">
             New Rental
             <svg
               width="14"
@@ -186,24 +199,21 @@ function ClientMyRentalsPage() {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
 
       <div className="myrentals-tabs">
+        <Link to="/client/pending" className="myrentals-tab-link">
+          Pending Orders
+        </Link>
         <Link to="/client/myrentals" className="myrentals-tab-link myrentals-tab-active">
           Active Rentals
         </Link>
-        <Link
-          to="/client/bookinghistory"
-          className="myrentals-tab-link"
-        >
+        <Link to="/client/bookinghistory" className="myrentals-tab-link">
           Booking History
         </Link>
-        <Link
-          to="/client/returns"
-          className="myrentals-tab-link"
-        >
+        <Link to="/client/returns" className="myrentals-tab-link">
           Returns &amp; Extensions
         </Link>
       </div>
@@ -227,9 +237,9 @@ function ClientMyRentalsPage() {
                 <p className="rental-empty-text">
                   Browse the catalog to book your first videoke set.
                 </p>
-                <a href="/client/catalog" className="rental-empty-link">
+                <Link to="/client/catalog" className="rental-empty-link">
                   Browse Catalog
-                </a>
+                </Link>
               </div>
             </div>
           ) : (
@@ -309,12 +319,12 @@ function ClientMyRentalsPage() {
       <section className="myrentals-history-section" id="booking-history">
         <div className="myrentals-section-header">
           <h2 className="myrentals-section-title">Booking History</h2>
-          <a
-            href="/rent-it/client/bookinghistory/bookinghistory.php"
+          <Link
+            to="/client/bookinghistory"
             className="myrentals-view-all-link"
           >
             View All
-          </a>
+          </Link>
         </div>
 
         <div className="myrentals-history-panel">

@@ -211,21 +211,15 @@ function ClientCheckoutPage() {
                 </div>
               </label>
 
-              <label className={`delivery-option${deliveryType === 'pickup' ? ' selected' : ''}`}>
-                <input
-                  type="radio"
-                  name="delivery"
-                  value="pickup"
-                  checked={deliveryType === 'pickup'}
-                  onChange={() => handleDeliveryChange('pickup', 0)}
-                />
+              <div className="delivery-option coming-soon" aria-disabled="true">
                 <div className="option-content">
                   <div className="option-info">
                     <span className="option-name">Store Pickup</span>
+                    <span className="option-coming-soon">Coming Soon</span>
                   </div>
-                  <span className="option-price">Free</span>
+                  <span className="option-price option-price-muted">Free</span>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
         </div>
@@ -327,31 +321,19 @@ function ClientCheckoutPage() {
                   </div>
                 </label>
 
-                <label className={`payment-option${paymentMethod === 'gcash' ? ' selected' : ''}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="gcash"
-                    checked={paymentMethod === 'gcash'}
-                    onChange={() => setPaymentMethod('gcash')}
-                  />
+                <div className="payment-option coming-soon" aria-disabled="true">
                   <div className="payment-content">
                     <span>GCash</span>
+                    <span className="option-coming-soon">Coming Soon</span>
                   </div>
-                </label>
+                </div>
 
-                <label className={`payment-option${paymentMethod === 'bt' ? ' selected' : ''}`}>
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="bt"
-                    checked={paymentMethod === 'bt'}
-                    onChange={() => setPaymentMethod('bt')}
-                  />
+                <div className="payment-option coming-soon" aria-disabled="true">
                   <div className="payment-content">
                     <span>Bank Transfer</span>
+                    <span className="option-coming-soon">Coming Soon</span>
                   </div>
-                </label>
+                </div>
               </div>
             </div>
 

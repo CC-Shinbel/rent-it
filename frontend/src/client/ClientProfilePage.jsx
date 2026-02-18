@@ -3,7 +3,7 @@ import { UserContext } from './ClientShellLayout';
 import './css/ClientProfilePage.css';
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 function ClientProfilePage() {
   const { setUser: setShellUser } = useContext(UserContext);
@@ -23,7 +23,7 @@ function ClientProfilePage() {
   useEffect(() => {
     let mounted = true;
 
-    fetch(`${API_BASE}/client/dashboard/dashboard.php`, {
+    fetch(`${API_BASE}/client/dashboard/dashboard.php?format=json`, {
       credentials: 'include',
     })
       .then((res) => (res.ok ? res.json() : null))

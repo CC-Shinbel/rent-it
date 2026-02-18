@@ -57,12 +57,18 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #eff6ff;
-    color: #f97316;
+    background: var(--accent-muted, #eff6ff);
+    color: var(--accent, #f97316);
     padding: 6px 14px;
     border-radius: 999px;
     font-weight: 700;
     font-size: 13px;
+}
+
+/* Dark theme: units badge */
+[data-theme="dark"] .myrentals-units-badge {
+    background: var(--accent-muted);
+    color: var(--accent);
 }
 
 .myrentals-cards-row {
@@ -88,9 +94,32 @@
     gap: 12px;
     padding: 18px 22px;
     border-radius: 18px;
-    background: #ffffff;
+    background: var(--bg-card, #ffffff);
     box-shadow: var(--shadow-card);
     min-height: 220px;
+    border: 1px solid var(--border-color, transparent);
+}
+
+/* Dark theme: rental card */
+[data-theme="dark"] .myrentals-page-root .rental-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+/* Dark theme: rental card text */
+[data-theme="dark"] .myrentals-page-root .rental-card .card-title,
+[data-theme="dark"] .myrentals-page-root .rental-card .card-meta,
+[data-theme="dark"] .myrentals-page-root .rental-card .rental-id,
+[data-theme="dark"] .myrentals-page-root .rental-card .badges-row {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .myrentals-page-root .rental-card .card-meta {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .myrentals-page-root .rental-card .rental-id {
+    color: var(--text-tertiary);
 }
 
 .myrentals-page-root .rental-card.card-expiring {
@@ -112,13 +141,18 @@
 .myrentals-page-root .card-image {
     width: 100%;
     height: 140px;
-    background: #f9fafb url('/rent-it/assets/images/default-item.png') center/contain no-repeat;
+    background: var(--bg-secondary, #f9fafb) url('/rent-it/assets/images/default-item.png') center/contain no-repeat;
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Dark theme: card image background */
+[data-theme="dark"] .myrentals-page-root .card-image {
+    background-color: var(--bg-secondary);
 }
 
 .myrentals-page-root .card-image img {
@@ -211,6 +245,31 @@
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
     font-size: 14px;
+    color: var(--text-primary);
+}
+
+/* Dark theme: table data text - override inline styles */
+[data-theme="dark"] .myrentals-history-table td {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .myrentals-history-table td .history-name,
+[data-theme="dark"] .myrentals-history-table td .history-info .history-name {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .myrentals-history-table td .history-id,
+[data-theme="dark"] .myrentals-history-table td .history-info .history-id {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .myrentals-history-table td .period-dates {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .myrentals-history-table td .amount-cell,
+[data-theme="dark"] .myrentals-history-table td[class*="amount"] {
+    color: var(--text-primary) !important;
 }
 
 .myrentals-history-table tbody tr:last-child td {
@@ -292,9 +351,27 @@
 }
 
 .myrentals-page-root .btn-return {
+    background: var(--bg-card, #ffffff);
+    border: 1.5px solid var(--border-medium, #CBD5E1);
+    color: var(--text-primary, #0F172A);
+}
+
+.myrentals-page-root .btn-return:hover {
+    background: var(--bg-secondary, #F1F5F9);
+    border-color: var(--text-secondary, #334155);
+    transform: translateY(-1px);
+}
+
+/* Dark theme: Return button */
+[data-theme="dark"] .myrentals-page-root .btn-return {
     background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .myrentals-page-root .btn-return:hover {
+    background: var(--bg-tertiary, #334155);
+    border-color: var(--border-medium);
 }
 
 .myrentals-page-root .rental-button {
@@ -622,10 +699,19 @@
 }
 
 .booking-history-page .bh-kpi-value {
-    color: #1a1a1a;
+    color: var(--text-primary, #1a1a1a);
     font-size: 1.5rem;
     font-weight: bold;
     opacity: 1 !important;
+}
+
+/* Dark theme: Booking History infobox values */
+[data-theme="dark"] .booking-history-page .bh-kpi-value {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .booking-history-page .bh-kpi-label {
+    color: var(--text-secondary);
 }
 
 /* Returns & Extensions React page (scoped by .returns-page) */

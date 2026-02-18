@@ -9,7 +9,20 @@ try {
         throw new Exception("Session expired. Please login again.");
     }
 
-    $user_id = $_SESSION['user_id'];
+    $user_id = (int) $_SESSION['user_id'];
+    if ($user_id <= 0) {
+        throw new Exception("Invalid session. Please log in again.");
+    }
+
+    // Ensure user exists in users table (avoids FK constraint failure)
+    $check_user = $conn->prepare("SELECT id FROM users WHERE id = ? LIMIT 1");
+    $check_user->bind_param("i", $user_id);
+    $check_user->execute();
+    if ($check_user->get_result()->num_rows === 0) {
+        session_destroy();
+        throw new Exception("Account not found. Please log in again.");
+    }
+
     $total_price = $_POST['grand_total'] ?? 0;
     $venue = $_POST['venue'] ?? 'Home Delivery';
 

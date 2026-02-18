@@ -84,11 +84,11 @@
 
 /* Ginagawa nating Card ang Order Summary */
 .cart-summary-bottom {
-    background: #ffffff;
+    background: var(--bg-card, #ffffff);
     padding: 24px;
-    border-radius: 16px; /* Rounded corners para mukhang card */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Soft shadow */
-    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.08));
+    border: 1px solid var(--border-color, #edf2f7);
     width: 100%;
 }
 
@@ -96,21 +96,46 @@
     font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 20px;
-    color: #1a202c;
+    color: var(--text-primary, #1a202c);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
-    color: #4a5568;
+    color: var(--text-secondary, #4a5568);
 }
 
 .summary-total {
     font-size: 1.5rem;
-    color: #2d3748;
+    color: var(--text-primary, #2d3748);
     margin-top: 15px;
     padding-top: 15px;
+}
+
+/* Dark theme: Order Summary card */
+[data-theme="dark"] .cart-summary-bottom {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .summary-title {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .cart-summary-bottom .summary-row {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .cart-summary-bottom .summary-total,
+[data-theme="dark"] .cart-summary-bottom .summary-total strong {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .cart-summary-bottom .summary-total span:last-child,
+[data-theme="dark"] .cart-summary-bottom .summary-row span:last-child {
+    color: var(--accent);
 }
 
 /* Pagbabalik ng design ng Checkout Button */

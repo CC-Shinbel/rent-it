@@ -4,7 +4,7 @@ import ClientShellLayout from './ClientShellLayout.jsx';
 import './css/ClientMyRentalsPage.css';
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 function formatDate(value) {
   if (!value) return '';
@@ -90,6 +90,9 @@ function ClientReturnsContent() {
       </div>
 
       <div className="myrentals-tabs">
+        <Link to="/client/pending" className="myrentals-tab-link">
+          Pending Orders
+        </Link>
         <Link to="/client/myrentals" className="myrentals-tab-link">
           Active Rentals
         </Link>

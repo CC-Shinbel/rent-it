@@ -119,6 +119,28 @@ $tags = [];
 if (!empty($item['tags'])) {
     $tags = array_map('trim', explode(',', $item['tags']));
 }
+
+// JSON API support
+if (isset($_GET['format']) && $_GET['format'] === 'json') {
+    header('Content-Type: application/json');
+    
+    // Merge rental and calendar bookings
+    $allBookings = array_merge($rentalBookingList, $calBookingList);
+    
+    $response = [
+        'success' => true,
+        'item' => $item,
+        'reviews' => $reviewList,
+        'bookings' => $allBookings,
+        'isFavorited' => $isFavorited,
+        'isInCart' => $isInCart,
+        'avgRating' => $avgRating,
+        'reviewCount' => $reviewCount
+    ];
+    
+    echo json_encode($response);
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

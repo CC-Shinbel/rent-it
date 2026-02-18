@@ -5,7 +5,7 @@ import './css/ClientCatalogPage.css';
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
 
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 const ClientCatalogPage = () => {
   const [items, setItems] = useState([]);
@@ -18,6 +18,8 @@ const ClientCatalogPage = () => {
 
   // Lightweight toast for modal cart success (bottom-right)
   const [toast, setToast] = useState({ visible: false, message: '' });
+  // Track which items are favorited in this React catalog view
+  const [favoriteItemIds, setFavoriteItemIds] = useState(new Set());
 
   // Client-side pagination: 10 when sidebar expanded, 12 when collapsed (more space)
   const { sidebarCollapsed } = useContext(SidebarContext);
@@ -77,6 +79,46 @@ const ClientCatalogPage = () => {
         console.error(err);
         setError('Unable to load catalog data.');
         setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Preload current user's favorites so the modal button reflects saved state
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch(`${API_BASE}/client/favorites/favorites.php?format=json`, {
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to load favorites for catalog');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (!isMounted) return;
+
+        const items = Array.isArray(data?.favorites)
+          ? data.favorites
+          : Array.isArray(data)
+            ? data
+            : [];
+
+        const ids = new Set(
+          items
+            .map((fav) => Number(fav.item_id || fav.id))
+            .filter((id) => Number.isFinite(id)),
+        );
+
+        setFavoriteItemIds(ids);
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error('Catalog favorites preload error:', err);
       });
 
     return () => {
@@ -403,20 +445,22 @@ const ClientCatalogPage = () => {
 
     const productId = selectedItem.id || selectedItem.item_id;
     if (!productId) return;
+    const numericId = Number(productId);
     const productName = selectedItem.item_name || 'Item';
 
-    const favBtn = document.getElementById('modalFavoriteBtn');
-    if (!favBtn) return;
+    const wasFavorited = favoriteItemIds.has(numericId);
+    const willBeFavorited = !wasFavorited;
 
-    const isActive = favBtn.classList.toggle('active');
-
-    // Update label + icon like legacy implementation
-    favBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="${isActive ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-      </svg>
-      ${isActive ? 'In Favorites' : 'Add to Favorites'}
-    `;
+    // Optimistically update local favorite state for this item only
+    setFavoriteItemIds((prev) => {
+      const next = new Set(prev);
+      if (willBeFavorited) {
+        next.add(numericId);
+      } else {
+        next.delete(numericId);
+      }
+      return next;
+    });
 
     try {
       const response = await fetch(`${API_BASE}/client/catalog/add_favorite.php`, {
@@ -424,7 +468,7 @@ const ClientCatalogPage = () => {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           item_id: String(productId),
-          action: isActive ? 'add' : 'remove',
+          action: willBeFavorited ? 'add' : 'remove',
         }),
       });
 
@@ -437,7 +481,7 @@ const ClientCatalogPage = () => {
 
       const ok = data && typeof data.success !== 'undefined' ? data.success : response.ok;
       const message = ok
-        ? isActive
+        ? willBeFavorited
           ? `${productName} added to favorites`
           : `${productName} removed from favorites`
         : 'Favorite action failed';
@@ -447,11 +491,40 @@ const ClientCatalogPage = () => {
       setTimeout(() => {
         setToast((current) => (current.visible ? { ...current, visible: false } : current));
       }, 3000);
+
+      // If the server rejected the change, revert local state
+      if (!ok) {
+        setFavoriteItemIds((prev) => {
+          const next = new Set(prev);
+          if (wasFavorited) {
+            next.add(numericId);
+          } else {
+            next.delete(numericId);
+          }
+          return next;
+        });
+      }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Modal favorite error:', err);
+      // Revert optimistic update on error
+      setFavoriteItemIds((prev) => {
+        const next = new Set(prev);
+        if (wasFavorited) {
+          next.add(numericId);
+        } else {
+          next.delete(numericId);
+        }
+        return next;
+      });
     }
   };
+
+  // For the modal favorite button: compute if current selected item is favorited
+  const modalProductId = selectedItem?.item_id || selectedItem?.id;
+  const modalIsFavorited = modalProductId != null
+    ? favoriteItemIds.has(Number(modalProductId))
+    : false;
 
   return (
     <div className="content-area fade-in-up catalog-page-inner">
@@ -1082,15 +1155,19 @@ const ClientCatalogPage = () => {
 
               <div className="modal-actions">
                 <button
-                  className="btn-modal-favorite"
-                  id="modalFavoriteBtn"
+                  className={`btn-modal-favorite${modalIsFavorited ? ' active' : ''}`}
                   type="button"
                   onClick={handleModalToggleFavorite}
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill={modalIsFavorited ? 'currentColor' : 'none'}
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
-                  Add to Favorites
+                  {modalIsFavorited ? 'In Favorites' : 'Add to Favorites'}
                 </button>
                 <button
                   className="btn-modal-cart"

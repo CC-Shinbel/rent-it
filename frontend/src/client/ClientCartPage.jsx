@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './css/ClientCartPage.css';
 
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
-const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
+const PUBLIC_BASE = '/rent-it';
 
 const DELIVERY_FEE = 150;
 const SERVICE_FEE = 50;

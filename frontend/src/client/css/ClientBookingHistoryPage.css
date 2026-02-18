@@ -152,10 +152,19 @@
 }
 
 .kpi-value {
-    color: #1a1a1a;
+    color: var(--text-primary, #1a1a1a);
     font-size: 1.5rem;
     font-weight: bold;
     opacity: 1 !important;
+}
+
+/* Dark theme: infobox values */
+[data-theme="dark"] .kpi-value {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .kpi-label {
+    color: var(--text-secondary);
 }
 
 /* Tabs Navigation */
