@@ -71,9 +71,7 @@ function renderItems(items) {
     bindActionButtons();
     
     // Update pagination
-    updatePagination(items.length
-    // Bind action buttons after rendering
-    bindActionButtons();
+    updatePagination(items.length);
 }
 
 function renderItemRow(item) {
@@ -395,6 +393,17 @@ function filterItems() {
     let filtered = itemsData;
 
     if (searchTerm) {
+        filtered = filtered.filter(item =>
+            (item.item_name || '').toLowerCase().includes(searchTerm) ||
+            (item.category || '').toLowerCase().includes(searchTerm) ||
+            (item.status || '').toLowerCase().includes(searchTerm)
+        );
+    }
+
+    if (statusValue !== 'all') {
+        filtered = filtered.filter(item => (item.status || '').toLowerCase() === statusValue.toLowerCase());
+    }
+
     filteredItemsData = filtered;
     currentPage = 1;
     renderItems(filteredItemsData);
@@ -483,18 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});           (item.item_name || '').toLowerCase().includes(searchTerm) ||
-            (item.category || '').toLowerCase().includes(searchTerm) ||
-            (item.status || '').toLowerCase().includes(searchTerm)
-        );
-    }
-
-    if (statusValue !== 'all') {
-        filtered = filtered.filter(item => (item.status || '').toLowerCase() === statusValue.toLowerCase());
-    }
-
-    renderItems(filtered);
-}
+});
 
 /**
  * Navigate to edit item page
