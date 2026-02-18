@@ -122,7 +122,7 @@ $result = $stmt->get_result();
                             <div class="pending-card">
                                 
                                 <div class="product-img-container">
-                                    <img src="<?= BASE_URL ?>/assets/images/<?php echo $order['image']; ?>" 
+                                    <img src="<?= BASE_URL ?>/assets/images/items/<?php echo $order['image']; ?>" 
                                          alt="Product" 
                                          class="item-img">
                                 </div>

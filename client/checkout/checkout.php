@@ -246,7 +246,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     ?>
     <div class="order-item checkout-order-item">
         <div class="checkout-item-thumb">
-            <img src="../../assets/images/<?php echo htmlspecialchars($imgName); ?>" 
+            <img src="../../assets/images/items/<?php echo htmlspecialchars($imgName); ?>" 
                  onerror="this.src='../../assets/images/catalog-fallback.svg'">
         </div>
         

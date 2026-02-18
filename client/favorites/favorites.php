@@ -116,7 +116,7 @@ $favoritesCount = $result->num_rows;
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
                                     <div class="favorite-image-wrap">
-                                        <img src="../../assets/images/<?php echo htmlspecialchars($row['image']); ?>" 
+                                        <img src="../../assets/images/items/<?php echo htmlspecialchars($row['image']); ?>" 
                                              alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
                                              class="favorite-image"
                                              onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">

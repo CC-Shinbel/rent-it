@@ -128,7 +128,7 @@ $result = mysqli_query($conn, $cart_query);
             // 2. Image Path Logic
             $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
             $imageSrc = !empty($imagePathFromDB) 
-                ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
+                ? "../../assets/images/items/" . htmlspecialchars($imagePathFromDB) 
                 : '../../assets/images/catalog-fallback.svg';
         ?>
             <div class="cart-item-card" id="card-<?php echo $row['cart_row_id']; ?>" 

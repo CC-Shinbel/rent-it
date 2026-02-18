@@ -310,7 +310,7 @@ $result = mysqli_query($conn, $query);
                 '../../assets/images/VStar.jpg'
             ];
             $imageFile = !empty($row['image'])
-                ? '../../assets/images/' . htmlspecialchars($row['image'])
+                ? '../../assets/images/items/' . htmlspecialchars($row['image'])
                 : $sampleImages[$row['item_id'] % count($sampleImages)];
         ?>
         <div class="product-image-wrap">

@@ -102,7 +102,7 @@ $isInCart = $cartStmt->get_result()->num_rows > 0;
 
 // Image path
 $imagePath = !empty($item['image']) 
-    ? '../../assets/images/' . htmlspecialchars($item['image']) 
+    ? '../../assets/images/items/' . htmlspecialchars($item['image']) 
     : '../../assets/images/catalog-fallback.svg';
 
 // Status class

@@ -205,7 +205,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
                                         <div class="return-item-image">
                                             <?php
                                                 $imageFile = !empty($row['image'])
-                                                    ? '/rent-it/assets/images/products/' . htmlspecialchars($row['image'])
+                                                    ? '/rent-it/assets/images/items/' . htmlspecialchars($row['image'])
                                                     : '/rent-it/assets/images/catalog-fallback.svg';
                                             ?>
                                             <a href="<?php echo $imageFile; ?>" target="_blank" rel="noopener noreferrer" class="return-image-link" title="View image">
