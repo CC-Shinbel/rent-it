@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 10, 2026 at 02:14 AM
+-- Generation Time: Feb 12, 2026 at 06:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `rental_system`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_accounts`
+--
+
+CREATE TABLE `admin_accounts` (
+  `admin_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) DEFAULT 'Admin',
+  `email` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_accounts`
+--
+
+INSERT INTO `admin_accounts` (`admin_id`, `username`, `password`, `full_name`, `email`, `created_at`, `updated_at`) VALUES
+(1, 'admin1', '$2y$10$Z3pWQIF/TSA4Hj5GvGuVeuyEYGhos4uEUKT7zgOKQKcKxJlWtRj1y', 'Admin User', 'admin@certicode.com', '2026-02-11 06:23:42', '2026-02-11 06:34:38');
 
 -- --------------------------------------------------------
 
@@ -120,16 +143,16 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`item_id`, `item_name`, `description`, `category`, `image`, `rating`, `reviews`, `price_per_day`, `deposit`, `condition`, `status`, `maintenance_notes`, `total_times_rented`, `total_units`, `available_units`, `is_visible`, `is_featured`, `tags`) VALUES
-(1, 'Karaoke King Pro v2', 'Professional dual-mic setup with 10k+ songs and built-in studio effects.', 'Premium', 'karaoke-king-v2.jpg', 4.5, 24, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(2, 'EchoStream Portable', 'Battery powered, Bluetooth ready. Perfect for small gatherings and picnics.', 'Portable', 'echostream-portable.jpg', 5.0, 18, 65.00, NULL, NULL, 'Booked', NULL, 0, 1, 0, 1, 0, NULL),
-(3, 'VocalStar 5000 Stage', 'Event-grade system with 4 microphones and integrated subwoofer.', 'Professional', 'vocalstar-5000.jpg', 4.2, 31, 250.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(4, 'HomeParty Ultra', 'Best seller. Features YouTube integration and scoring system.', 'Premium', 'homeparty-ultra.jpg', 4.8, 56, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(5, 'MiniSing Pocket', 'Ultra-portable. Fits in a backpack. Surprise your friends anywhere!', 'Portable', 'minising-pocket.jpg', 3.5, 12, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(6, 'Pro-Ject Rockbox', 'Heavy duty casing with high-fidelity sound output for outdoor events.', 'Professional', 'rockbox-pro.jpg', 4.7, 15, 180.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(1, 'Karaoke King Pro v2', 'Professional dual-mic setup with 10k+ songs and built-in studio effects.', 'premium', 'Karaoke-King.png', 4.5, 24, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(2, 'EchoStream Portable', 'Battery powered, Bluetooth ready. Perfect for small gatherings and picnics.', 'portable', 'EchoStream.png', 5.0, 18, 65.00, NULL, NULL, 'Booked', NULL, 0, 1, 0, 1, 0, NULL),
+(3, 'VocalStar 5000 Stage', 'Event-grade system with 4 microphones and integrated subwoofer.', 'professional', 'VStar.jpg', 4.2, 31, 250.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(4, 'HomeParty Ultra', 'Best seller. Features YouTube integration and scoring system.', 'premium', 'HomeParty.jpg', 4.8, 56, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(5, 'MiniSing Pocket', 'Ultra-portable. Fits in a backpack. Surprise your friends anywhere!', 'portable', 'MiniSing.jpg', 3.5, 12, 120.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(6, 'Pro-Ject Rockbox', 'Heavy duty casing with high-fidelity sound output for outdoor events.', 'professional', 'Karaoke-King.png', 4.7, 15, 180.00, NULL, NULL, 'Available', NULL, 0, 1, 1, 1, 0, NULL),
 (7, 'Longganisa Maker', 'qweqwe', 'portable', 'item_1770294426_69848c9ac4c86.jpg', NULL, 0, 100.00, 80.00, 'good', 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(8, 'macmac test', 'lakas neto', 'Portable', 'item_1770355768_69857c38382e9.jpg', NULL, 0, 300.00, 50.00, 'excellent', 'Available', NULL, 0, 1, 1, 1, 0, NULL),
-(9, 'macmac pogi', 'pogi ako', 'Professional', 'item_1770355915_69857ccb89fb5.png', NULL, 0, 500.00, 50.00, 'good', 'Repairing', NULL, 0, 1, 1, 1, 1, 'malakas'),
-(10, 'leander gwapings', 'gwapo magcode', 'Premium', 'item_1770363559_69859aa7d4266.png', NULL, 0, 250.00, 50.00, 'good', 'Available', NULL, 0, 1, 1, 1, 1, 'gwapings');
+(8, 'macmac test', 'lakas neto', 'portable', 'item_1770355768_69857c38382e9.jpg', NULL, 0, 300.00, 50.00, 'excellent', 'Available', NULL, 0, 1, 1, 1, 0, NULL),
+(9, 'macmac pogi', 'pogi ako', 'professional', 'item_1770355915_69857ccb89fb5.png', NULL, 0, 500.00, 50.00, 'good', 'Repairing', NULL, 0, 1, 1, 1, 1, 'malakas'),
+(10, 'leander gwapings', 'gwapo magcode', 'premium', 'item_1770363559_69859aa7d4266.png', NULL, 0, 250.00, 50.00, 'good', 'Available', NULL, 0, 1, 1, 1, 1, 'gwapings');
 
 -- --------------------------------------------------------
 
@@ -179,7 +202,7 @@ INSERT INTO `rental` (`order_id`, `user_id`, `rental_status`, `return_reason`, `
 (4, 8, 'Pending Return', NULL, 0, 700.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
 (5, 8, 'Returned', 'asd', 0, 450.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
 (6, 8, 'Active', NULL, 0, 500.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL),
-(7, 8, 'Active', NULL, 0, 300.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL);
+(7, 8, 'Late', NULL, 0, 300.00, 0.00, 'Home Delivery', NULL, '2026-02-09', '2026-02-10', NULL);
 
 -- --------------------------------------------------------
 
@@ -192,7 +215,9 @@ CREATE TABLE `rental_item` (
   `order_id` int(11) DEFAULT NULL,
   `item_id` int(11) DEFAULT NULL,
   `item_price` decimal(10,2) DEFAULT NULL,
-  `item_status` varchar(50) DEFAULT NULL
+  `item_status` varchar(50) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -207,7 +232,7 @@ INSERT INTO `rental_item` (`rental_item_id`, `order_id`, `item_id`, `item_price`
 (5, 4, 9, 500.00, 'Reserved'),
 (6, 5, 10, 250.00, 'Rented'),
 (7, 6, 8, 300.00, 'Rented'),
-(8, 7, 7, 100.00, 'Rented');
+(8, 7, 7, 100.00, 'Late');
 
 -- --------------------------------------------------------
 
@@ -232,7 +257,7 @@ CREATE TABLE `repair` (
 --
 
 INSERT INTO `repair` (`repair_id`, `item_id`, `issue_type`, `priority`, `status`, `created_date`, `eta_date`, `estimated_cost`, `notes`) VALUES
-(4, 9, 'Autodisassemble', 'medium', 'in-progress', '2026-02-09', '2026-02-20', 6000.00, '');
+(4, 9, 'Autodisassemble', 'medium', 'completed', '2026-02-09', '2026-02-20', 6000.00, '');
 
 -- --------------------------------------------------------
 
@@ -285,7 +310,8 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `phone`, `password`, `profile_p
 (5, 'try try', 'via@gmail.com', '09124567890', '$2y$10$Lx42t0tANSNowiJw2lk0cORb8BpuRfR1LRWNMovb5M1JzXYb0BHHy', NULL, NULL, NULL, NULL, 'customer', '2026-01-29 19:20:15', '2026-01-29 19:20:15', NULL, NULL, 'Bronze'),
 (6, 'via', 'viaa@gmail.com', '09124466897', '$2y$10$Fx8uDn7O52YpdLr5Zhq3F.i7gxoiti.LWSqOBvRxRXXF0Qd6xo1LW', NULL, NULL, NULL, NULL, 'customer', '2026-01-29 19:21:01', '2026-01-29 19:21:01', NULL, NULL, 'Bronze'),
 (7, 'lean', 'qwerty@gmail.com', '+63 032 216 1665', '$2y$10$Dwuyb8FLC1mwgK3ntLXJ9ev2LwAB9dVYi54XGp7SErANyOuaW8J6.', NULL, NULL, NULL, NULL, 'customer', '2026-02-05 12:33:06', '2026-02-05 12:33:06', NULL, NULL, 'Bronze'),
-(8, 'macmac', 'macmacpalo@gmail.com', '+63 092 222 3333', '$2y$10$pZqWSpV4PPg7qXiYDJJh.evrD4xYXsdeGkx3HfkOCsJt2n6UaOD3O', NULL, NULL, NULL, NULL, 'customer', '2026-02-09 01:02:30', '2026-02-09 05:35:27', NULL, NULL, 'Bronze');
+(8, 'macmac', 'macmacpalo@gmail.com', '+63 092 222 3333', '$2y$10$pZqWSpV4PPg7qXiYDJJh.evrD4xYXsdeGkx3HfkOCsJt2n6UaOD3O', NULL, NULL, NULL, NULL, 'customer', '2026-02-09 01:02:30', '2026-02-09 05:35:27', NULL, NULL, 'Bronze'),
+(9, 'Veeny Ree Mae Robles Bautista', 'vrmb.tech@gmail.comSSSSSSSSSSSSSSS', '+63 222 222 2222weww', '$2y$10$0chBEmg.5rJPRjmSjK65c.S/XUYQSgQL5XI49F5kKwTo9bUm2teKi', NULL, NULL, NULL, NULL, 'customer', '2026-02-10 03:24:02', '2026-02-11 01:04:56', NULL, NULL, 'Bronze');
 
 -- --------------------------------------------------------
 
@@ -304,6 +330,13 @@ CREATE TABLE `user_settings` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `admin_accounts`
+--
+ALTER TABLE `admin_accounts`
+  ADD PRIMARY KEY (`admin_id`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `calendar`
@@ -397,6 +430,12 @@ ALTER TABLE `user_settings`
 --
 
 --
+-- AUTO_INCREMENT for table `admin_accounts`
+--
+ALTER TABLE `admin_accounts`
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `calendar`
 --
 ALTER TABLE `calendar`
@@ -460,7 +499,7 @@ ALTER TABLE `review`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `user_settings`

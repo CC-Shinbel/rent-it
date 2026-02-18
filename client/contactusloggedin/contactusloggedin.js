@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const callBtn = document.getElementById('callUsBtn');
 
     callBtn?.addEventListener('click', () => {
-        window.location.href = 'tel:+639123456789';
+        window.location.href = 'tel:+639554216789';
     });
 
     form?.addEventListener('submit', (e) => {

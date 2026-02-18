@@ -126,9 +126,10 @@ function formatCurrency($amount) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <base href="/rent-it/">
+    <script src="admin/shared/js/admin-theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="RentIt Admin Dashboard - Manage your videoke rental business">
@@ -154,6 +155,68 @@ function formatCurrency($amount) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+    <div class="admin-skeleton-overlay" aria-hidden="true">
+        <div class="admin-skeleton-shell">
+            <aside class="admin-skeleton-sidebar">
+                <div class="admin-skeleton-logo"></div>
+                <div class="admin-skeleton-nav">
+                    <span class="admin-skeleton-pill w-70"></span>
+                    <span class="admin-skeleton-pill w-60"></span>
+                    <span class="admin-skeleton-pill w-80"></span>
+                    <span class="admin-skeleton-pill w-50"></span>
+                    <span class="admin-skeleton-pill w-70"></span>
+                </div>
+                <div class="admin-skeleton-user">
+                    <span class="admin-skeleton-circle"></span>
+                    <span class="admin-skeleton-line w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="admin-skeleton-main">
+                <div class="admin-skeleton-topbar">
+                    <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                    <span class="admin-skeleton-circle"></span>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row admin-skeleton-kpis">
+                        <span class="admin-skeleton-block w-60" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-50" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-70" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-40" style="height: 14px;"></span>
+                    </div>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                        <span class="admin-skeleton-pill w-20"></span>
+                    </div>
+                    <div class="admin-skeleton-table">
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-50" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-60" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-35" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-skeleton-loader">
+                    <span class="admin-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading admin content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="admin-wrapper">
         <!-- Sidebar Container -->
         <div id="sidebarContainer"></div>
@@ -197,8 +260,7 @@ function formatCurrency($amount) {
                     <div class="kpi-card animate-fadeInUp stagger-1">
                         <div class="kpi-icon accent" title="Total revenue this month">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="1" x2="12" y2="23"/>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                <text x="12" y="17" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor" stroke="none">₱</text>
                             </svg>
                         </div>
                         <div class="kpi-content">
@@ -407,7 +469,7 @@ function formatCurrency($amount) {
                                         <circle cx="12" cy="10" r="3"/>
                                         <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
                                     </svg>
-                                    View Route Map
+                                    View Dispatch Page
                                 </a>
                             </div>
                         </section>
@@ -490,8 +552,7 @@ function formatCurrency($amount) {
                                     </a>
                                     <a href="admin/latefees/latefees.php" class="quick-action-btn" title="Track late fees and penalties">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="12" y1="1" x2="12" y2="23"/>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                            <text x="12" y="17" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor" stroke="none">₱</text>
                                         </svg>
                                         <span>Late Fees</span>
                                     </a>

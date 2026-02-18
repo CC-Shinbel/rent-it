@@ -63,41 +63,6 @@
     }
 
     // ============================
-    // TAB SWITCHING
-    // ============================
-    function initTabs() {
-        const tabs = document.querySelectorAll('.tabs .tab');
-        
-        tabs.forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // You can add filtering logic here
-                const filterValue = this.textContent.trim().toLowerCase();
-                filterCards(filterValue);
-            });
-        });
-    }
-
-    // ============================
-    // CARD FILTERING (Mock)
-    // ============================
-    function filterCards(filter) {
-        const cards = document.querySelectorAll('.card');
-        
-        cards.forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, 100);
-        });
-    }
-
-    // ============================
     // SMOOTH SCROLL
     // ============================
     function initSmoothScroll() {
@@ -485,7 +450,6 @@
     // ============================
     function init() {
         initMobileNav();
-        initTabs();
         initSmoothScroll();
         initScrollAnimations();
         initDeliveryEstimator();

@@ -6,16 +6,32 @@
  * =====================================================
  */
 
-// ========== THEME PERSISTENCE (Runs Immediately) ==========
+// ========== THEME PERSISTENCE (Fallback) ==========
+// Primary theme + skeleton logic is in admin-theme.js (loaded in <head>)
+// This is a fallback in case admin-theme.js wasn't included
 (function() {
     const savedTheme = localStorage.getItem('admin-theme');
     if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-        // Default to dark for admin
+    } else if (!document.documentElement.getAttribute('data-theme')) {
         document.documentElement.setAttribute('data-theme', 'dark');
     }
 })();
+
+function initAdminPageSkeleton() {
+    // Skeleton is now managed by admin-theme.js in <head> for instant loading
+    // This serves as fallback if admin-theme.js wasn't loaded
+    const overlay = document.querySelector('.admin-skeleton-overlay');
+    if (!overlay) return;
+
+    // If overlay still exists, admin-theme.js didn't run — hide it now
+    if (!overlay.classList.contains('is-hidden')) {
+        overlay.classList.add('is-hidden');
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.remove();
+        }, 350);
+    }
+}
 
 const AdminComponents = {
     BASE_URL: '/rent-it',
@@ -23,6 +39,10 @@ const AdminComponents = {
     baseUrl(path = '') {
         const normalized = path.startsWith('/') ? path : `/${path}`;
         return `${this.BASE_URL}${normalized}`;
+    },
+
+    initPageSkeleton() {
+        initAdminPageSkeleton();
     },
 
     /**
@@ -130,15 +150,6 @@ const AdminComponents = {
                 <polyline points="12 6 12 12 16 14"/>
             </svg>`
         },
-        { 
-            id: 'settings', 
-            label: 'Settings', 
-            href: '/admin/settings/settings.php',
-            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-            </svg>`
-        },
     ],
 
     /**
@@ -178,7 +189,7 @@ const AdminComponents = {
 
         const navItems = this.navItems.map(item => `
             <a href="${this.baseUrl(item.href)}" 
-               class="sidebar-nav-item ${activePage === item.id ? 'active' : ''}" 
+               class="sidebar-nav-item${item.id === activePage ? ' active' : ''}" 
                title="${item.label}"
                data-page="${item.id}">
                 <span class="sidebar-nav-icon">${item.icon}</span>
@@ -356,66 +367,6 @@ const AdminComponents = {
                         </svg>
                     </button>
                     
-                    <div class="dropdown" id="notificationDropdown">
-                        <button class="header-btn" id="notificationBtn" title="View notifications">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                            </svg>
-                            <span class="notification-badge">3</span>
-                        </button>
-                        <div class="dropdown-menu notification-dropdown" id="notificationMenu">
-                            <div class="dropdown-header">
-                                <h4>Notifications</h4>
-                                <span class="mark-read" id="markAllReadBtn">Mark all read</span>
-                            </div>
-                            <div class="notification-list">
-                                <div class="notification-item unread">
-                                    <div class="notification-icon warning">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <polyline points="12 6 12 12 16 14"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">New Booking Request</div>
-                                        <div class="notification-text">Juan dela Cruz requested Karaoke System A for Feb 15-17</div>
-                                        <div class="notification-time">5 minutes ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon success">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                            <polyline points="22 4 12 14.01 9 11.01"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Item Returned</div>
-                                        <div class="notification-text">Speaker System B has been returned and needs inspection</div>
-                                        <div class="notification-time">2 hours ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon info">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="12" y1="1" x2="12" y2="23"/>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Late Fee Payment</div>
-                                        <div class="notification-text">₱1,500 late fee received from Maria Santos</div>
-                                        <div class="notification-time">Yesterday</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="notification-footer">
-                                <a href="${this.baseUrl('admin/notification/notification.php')}">View all notifications</a>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="dropdown" id="profileDropdown">
                         <button class="header-btn profile-btn" id="profileBtn" title="Profile menu">
                             <div class="profile-avatar">${initial}</div>
@@ -438,13 +389,7 @@ const AdminComponents = {
                                 </svg>
                                 Dashboard
                             </a>
-                            <a href="${this.baseUrl('admin/profile/profile.php')}" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                My Profile
-                            </a>
+
                             <a href="${this.baseUrl('admin/settings/settings.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
@@ -486,6 +431,9 @@ const AdminComponents = {
             themeToggle.addEventListener('click', () => this.toggleTheme());
         }
 
+        // Smart header: hide on scroll down, show on scroll up
+        this.initSmartHeader();
+
         // Dropdown toggles
         document.querySelectorAll('.dropdown').forEach(dropdown => {
             const btn = dropdown.querySelector('.header-btn, .profile-btn');
@@ -506,15 +454,6 @@ const AdminComponents = {
             document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
         });
 
-        // Mark all notifications as read
-        const markAllReadBtn = document.getElementById('markAllReadBtn');
-        if (markAllReadBtn) {
-            markAllReadBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.markAllNotificationsRead();
-            });
-        }
-
         // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
@@ -531,19 +470,40 @@ const AdminComponents = {
     },
 
     /**
-     * Mark all notifications as read
+     * Smart header: hide on scroll down, show on scroll up
      */
-    markAllNotificationsRead() {
-        const notifications = document.querySelectorAll('.notification-item.unread');
-        notifications.forEach(item => item.classList.remove('unread'));
-        
-        // Update badge
-        const badge = document.querySelector('.notification-badge');
-        if (badge) {
-            badge.style.display = 'none';
-        }
-        
-        this.showToast('All notifications marked as read', 'success');
+    initSmartHeader() {
+        const header = document.querySelector('.admin-header');
+        if (!header) return;
+
+        let lastScrollTop = 0;
+        const scrollThreshold = 10;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Don't hide header when near the top
+            if (currentScroll <= 0) {
+                header.classList.remove('header-hidden');
+                lastScrollTop = currentScroll;
+                return;
+            }
+
+            const scrollDiff = Math.abs(currentScroll - lastScrollTop);
+            if (scrollDiff < scrollThreshold) return;
+
+            if (currentScroll > lastScrollTop) {
+                // Scrolling down — hide header
+                header.classList.add('header-hidden');
+                // Close any open dropdowns
+                document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
+            } else {
+                // Scrolling up — show header
+                header.classList.remove('header-hidden');
+            }
+
+            lastScrollTop = currentScroll;
+        }, { passive: true });
     },
 
     /**
@@ -790,9 +750,7 @@ const AdminComponents = {
             customers: 'Customers',
             dispatch: 'Dispatch',
             settings: 'Settings',
-            newitem: 'New Item',
-            notification: 'Notifications',
-            profile: 'Profile'
+            newitem: 'New Item'
         };
         const pageTitle = pageTitles[activePage] || '';
 

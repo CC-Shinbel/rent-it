@@ -20,7 +20,8 @@
         initProductCards();
         initProductModal();
         initPagination();
-        initCartFavoriteButtons();
+        initCatalogEmptyState();
+        updateProductCount();
     }
 
 
@@ -78,7 +79,22 @@
                     priceSlider.value = priceSlider.max;
                     updatePriceDisplay(priceSlider.value);
                 }
+
+                const searchInput = document.getElementById('catalogSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
                 
+                filterProducts();
+            });
+        }
+    }
+
+    function initCatalogEmptyState() {
+        const resetBtn = document.getElementById('catalogResetBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                document.querySelector('.reset-filters')?.click();
                 filterProducts();
             });
         }
@@ -174,6 +190,26 @@
         if (countEl) {
             countEl.textContent = `(${visibleProducts} models found)`;
         }
+
+        const emptyState = document.getElementById('catalogEmptyState');
+        const grid = document.querySelector('.products-grid');
+        const pagination = document.querySelector('.pagination');
+        const isEmpty = visibleProducts === 0;
+
+        if (emptyState) {
+            emptyState.classList.toggle('hidden', !isEmpty);
+        }
+        if (grid) {
+            grid.classList.toggle('is-empty', isEmpty);
+        }
+        if (pagination) {
+            pagination.classList.toggle('is-hidden', isEmpty);
+        }
+
+        // Re-render pagination when product count changes
+        if (window._catalogPagination) {
+            window._catalogPagination.render();
+        }
     }
 
 
@@ -192,6 +228,9 @@
         let startDate = null;
         let endDate = null;
         let selectingStart = true; // Toggle between selecting start and end
+
+        // Expose selected dates globally so addToCart can read them
+        window.catalogSelectedDates = { start: null, end: null };
         
         // Month names for formatting
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -205,15 +244,23 @@
         return `${shortMonthNames[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')}, ${date.getFullYear()}`;
     }
     
-    // Update text inputs
+    // Update text inputs with active state indicators
     function updateInputs() {
         if (startDateInput) {
             startDateInput.value = formatDate(startDate);
-            startDateInput.classList.toggle('active', selectingStart && !startDate);
+            // Highlight when it's the next field to fill
+            const isStartActive = selectingStart || !startDate;
+            startDateInput.classList.toggle('active', isStartActive);
+            // Show filled state
+            startDateInput.classList.toggle('filled', !!startDate);
         }
         if (endDateInput) {
             endDateInput.value = formatDate(endDate);
-            endDateInput.classList.toggle('active', !selectingStart && startDate && !endDate);
+            // Highlight when start is set and we're picking end
+            const isEndActive = !selectingStart && !!startDate;
+            endDateInput.classList.toggle('active', isEndActive);
+            // Show filled state
+            endDateInput.classList.toggle('filled', !!endDate);
         }
     }
     
@@ -315,12 +362,19 @@
         updateInputs();
     }
     
+    function toISODate(d) {
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
     function handleDateClick(date) {
         if (selectingStart || !startDate) {
-            // Selecting start date
+            // Selecting start date (same-day booking allowed: start == end)
             startDate = date;
-            endDate = null;
+            endDate = date; // Default end = same day (1-day rental)
             selectingStart = false;
+
+            // Update global dates so addToCart can use them
+            window.catalogSelectedDates = { start: toISODate(startDate), end: toISODate(endDate) };
         } else {
             // Selecting end date
             if (date < startDate) {
@@ -331,6 +385,9 @@
                 endDate = date;
             }
             selectingStart = true;
+
+            // Update global dates
+            window.catalogSelectedDates = { start: toISODate(startDate), end: toISODate(endDate) };
             
             // Check for conflicts in range
             checkRangeConflicts();
@@ -390,6 +447,7 @@
         startDate = null;
         endDate = null;
         selectingStart = true;
+        window.catalogSelectedDates = { start: null, end: null };
         document.querySelectorAll('.product-card').forEach(card => {
             card.classList.remove('date-conflict');
         });
@@ -685,43 +743,109 @@ function initReviewButtons() {
 }
 
 function initPagination() {
-    const pageButtons = document.querySelectorAll('.page-btn:not(:disabled)');
-    
-    pageButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const page = btn.dataset.page;
-            
-            if (page === 'prev') {
-                // Go to previous page
-                const currentActive = document.querySelector('.page-btn.active');
-                const currentPage = parseInt(currentActive?.dataset.page || 1);
-                if (currentPage > 1) {
-                    goToPage(currentPage - 1);
-                }
-            } else if (page === 'next') {
-                // Go to next page
-                const currentActive = document.querySelector('.page-btn.active');
-                const currentPage = parseInt(currentActive?.dataset.page || 1);
-                const totalPages = document.querySelectorAll('.page-btn[data-page]:not([data-page="prev"]):not([data-page="next"])').length;
-                if (currentPage < totalPages) {
-                    goToPage(currentPage + 1);
-                }
+    const ITEMS_PER_PAGE = 6;
+    let currentPage = 1;
+
+    function getVisibleProducts() {
+        return Array.from(document.querySelectorAll('.product-card'))
+            .filter(p => p.style.display !== 'none');
+    }
+
+    function renderPagination() {
+        const paginationNav = document.getElementById('catalogPagination');
+        if (!paginationNav) return;
+
+        const visible = getVisibleProducts();
+        const totalPages = Math.max(1, Math.ceil(visible.length / ITEMS_PER_PAGE));
+
+        // Clamp current page
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        // Show/hide products for current page
+        visible.forEach((card, i) => {
+            const pageStart = (currentPage - 1) * ITEMS_PER_PAGE;
+            const pageEnd = pageStart + ITEMS_PER_PAGE;
+            card.style.visibility = (i >= pageStart && i < pageEnd) ? '' : 'hidden';
+            card.style.position = (i >= pageStart && i < pageEnd) ? '' : 'absolute';
+            card.style.pointerEvents = (i >= pageStart && i < pageEnd) ? '' : 'none';
+            card.style.height = (i >= pageStart && i < pageEnd) ? '' : '0';
+            card.style.overflow = (i >= pageStart && i < pageEnd) ? '' : 'hidden';
+            card.style.margin = (i >= pageStart && i < pageEnd) ? '' : '0';
+            card.style.padding = (i >= pageStart && i < pageEnd) ? '' : '0';
+            card.style.border = (i >= pageStart && i < pageEnd) ? '' : 'none';
+        });
+
+        // Hide pagination if 1 page or less
+        if (totalPages <= 1) {
+            paginationNav.classList.add('is-hidden');
+            return;
+        }
+        paginationNav.classList.remove('is-hidden');
+
+        // Build buttons
+        let html = '';
+
+        // Prev button
+        html += `<button class="page-btn${currentPage === 1 ? ' disabled' : ''}" data-page="prev" aria-label="Previous page" ${currentPage === 1 ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>`;
+
+        // Page numbers with ellipsis logic
+        const pages = buildPageNumbers(currentPage, totalPages);
+        pages.forEach(p => {
+            if (p === '...') {
+                html += `<span class="page-ellipsis">...</span>`;
             } else {
-                goToPage(parseInt(page));
+                html += `<button class="page-btn${p === currentPage ? ' active' : ''}" data-page="${p}">${p}</button>`;
             }
         });
-    });
-}
 
-function goToPage(pageNum) {
-    // Update active state
-    document.querySelectorAll('.page-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.dataset.page) === pageNum);
-    });
-    
-    // In a real app, this would fetch products for that page
-    // For now, just scroll to top of products
-    document.querySelector('.products-section')?.scrollIntoView({ behavior: 'smooth' });
+        // Next button
+        html += `<button class="page-btn${currentPage === totalPages ? ' disabled' : ''}" data-page="next" aria-label="Next page" ${currentPage === totalPages ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>`;
+
+        paginationNav.innerHTML = html;
+
+        // Attach click listeners
+        paginationNav.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const page = btn.dataset.page;
+                if (page === 'prev') {
+                    currentPage = Math.max(1, currentPage - 1);
+                } else if (page === 'next') {
+                    currentPage = Math.min(totalPages, currentPage + 1);
+                } else {
+                    currentPage = parseInt(page);
+                }
+                renderPagination();
+                document.querySelector('.products-section')?.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    }
+
+    function buildPageNumbers(current, total) {
+        // Always show first, last, current, and neighbors
+        const pages = [];
+        if (total <= 7) {
+            for (let i = 1; i <= total; i++) pages.push(i);
+            return pages;
+        }
+        pages.push(1);
+        if (current > 3) pages.push('...');
+        const start = Math.max(2, current - 1);
+        const end = Math.min(total - 1, current + 1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (current < total - 2) pages.push('...');
+        pages.push(total);
+        return pages;
+    }
+
+    // Expose so filterProducts/updateProductCount can re-trigger
+    window._catalogPagination = { render: () => { currentPage = 1; renderPagination(); }, rerender: renderPagination };
+
+    renderPagination();
 }
 
 function initProductModal() {
@@ -755,17 +879,7 @@ function initProductModal() {
     
     // Add click handlers to product cards (make whole card clickable)
     document.querySelectorAll('.product-card').forEach(card => {
-        // Make the card clickable for viewing details
         card.style.cursor = 'pointer';
-        const cardImg = card.querySelector('.product-image img');
-        if (cardImg) {
-            cardImg.style.cursor = 'zoom-in';
-            cardImg.title = 'Open image in new tab';
-            cardImg.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (cardImg.src) window.open(cardImg.src, '_blank');
-            });
-        }
         card.addEventListener('click', (e) => {
             // Don't open modal if clicking on action buttons
             if (e.target.closest('.product-actions') || e.target.closest('button')) {
@@ -815,8 +929,15 @@ function openProductModal(card) {
     // 1. Kunin ang Data mula sa Card
     const productId = card.dataset.id;
     const productName = card.querySelector('.product-name')?.textContent || 'Product';
-    const productImageElement = card.querySelector('.product-image');
-    const productImage = productImageElement ? productImageElement.src : '';
+    const fallbackImages = [
+        '../../assets/images/catalog-set-1.svg',
+        '../../assets/images/catalog-set-2.svg',
+        '../../assets/images/catalog-set-3.svg'
+    ];
+    const productImageRaw = card.querySelector('.product-image')?.src || '';
+    const productImage = productImageRaw && !productImageRaw.includes('placeholder')
+        ? productImageRaw
+        : fallbackImages[productId % fallbackImages.length];
     const productPrice = card.querySelector('.product-price')?.innerHTML || '₱0';
     const productDescription = card.querySelector('.product-description')?.textContent || '';
 
@@ -825,6 +946,13 @@ function openProductModal(card) {
     if (modalImage) {
         modalImage.src = productImage;
         modalImage.alt = productName;
+        modalImage.title = 'Open image in new tab';
+    }
+
+    const modalImageLink = document.getElementById('modalProductImageLink');
+    if (modalImageLink) {
+        modalImageLink.href = productImage;
+        modalImageLink.title = 'Open image in new tab';
     }
     document.getElementById('modalProductName').textContent = productName;
     document.getElementById('modalProductPrice').innerHTML = productPrice;
@@ -851,38 +979,58 @@ function openProductModal(card) {
         });
     }
 
-    // 4. FAVORITE LOGIC (Dapat nasa LOOB ng function)
+    // 4. FAVORITE LOGIC - Check server state then setup toggle
     const favBtn = document.getElementById('modalFavoriteBtn');
     if (favBtn) {
         const newFavBtn = favBtn.cloneNode(true);
         favBtn.parentNode.replaceChild(newFavBtn, favBtn);
-        newFavBtn.classList.remove('active');
+        newFavBtn.setAttribute('data-item-id', productId);
+
+        // Check if item is already favorited
+        fetch(`../catalog/check_favorite.php?item_id=${productId}`)
+            .then(res => res.json())
+            .then(data => {
+                const isFav = data.favorited === true;
+                newFavBtn.classList.toggle('active', isFav);
+                newFavBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    ${isFav ? 'In Favorites' : 'Add to Favorites'}
+                `;
+            })
+            .catch(() => {
+                // Default to not favorited on error
+                newFavBtn.classList.remove('active');
+            });
 
         newFavBtn.addEventListener('click', () => {
             const isActive = newFavBtn.classList.toggle('active');
+            const action = isActive ? 'add' : 'remove';
             
             fetch('../catalog/add_favorite.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `item_id=${productId}&action=${isActive ? 'add' : 'remove'}`
+                body: `item_id=${productId}&action=${action}`
             })
             .then(res => res.json())
             .then(data => {
                 if (data.success && typeof showToast === 'function') {
-                    showToast(isActive ? `${productName} added to favorites` : `${productName} removed`, 'success');
+                    showToast(isActive ? `${productName} added to favorites` : `${productName} removed from favorites`, 'success');
                 }
             })
             .catch(err => console.error('Favorite error:', err));
+
+            newFavBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="${isActive ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                ${isActive ? 'In Favorites' : 'Add to Favorites'}
+            `;
         });
     }
 
-    // 5. I-SHOW ANG MODAL
-    modal.classList.add('active');
-}
-
-    // ============================
-    // RENDER REVIEWS & STARS
-    // ============================
+    // 5. RENDER REVIEWS & STARS
     if (typeof renderStars === 'function') renderStars(card);
     if (typeof renderReviewsAndBookings === 'function') renderReviewsAndBookings(productId);
 
@@ -895,11 +1043,10 @@ function openProductModal(card) {
         toggleReviewsBtn.setAttribute('aria-expanded', 'true');
     }
 
-    // ============================
-    // OPEN MODAL
-    // ============================
+    // 6. I-SHOW ANG MODAL
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+}
 
 
 function renderStars(card) {
@@ -937,94 +1084,6 @@ function renderReviewsAndBookings(productId) {
 }
     
     
-    
-    document.getElementById('modalProductImage').src = productImage;
-    document.getElementById('modalProductImage').alt = productName;
-    document.getElementById('modalProductName').textContent = productName;
-    document.getElementById('modalProductPrice').innerHTML = productPrice;
-    document.getElementById('modalProductDescription').textContent = productDescription;
-    
-    const modalBadge = document.getElementById('modalProductBadge');
-    modalBadge.textContent = badgeText;
-    modalBadge.className = 'modal-product-badge ' + badgeClass;
-    
-    document.getElementById('modalRatingScore').textContent = ratingScore;
-    document.getElementById('modalRatingCount').textContent = ratingCount;
-    
-    const starsContainer = document.getElementById('modalRatingStars');
-    starsContainer.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-        const starClass = i <= filledStars ? 'filled' : 'empty';
-        starsContainer.innerHTML += `
-            <svg viewBox="0 0 24 24" class="${starClass}">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-        `;
-    }
-    
-    const tagsContainer = document.getElementById('modalProductTags');
-    tagsContainer.innerHTML = tags.map(tag => `<span class="product-tag">${tag}</span>`).join('');
-    
-    const availabilityList = document.getElementById('modalAvailabilityList');
-    const mockBookings = typeof getProductBookings === 'function' ? getProductBookings(productId) : [];
-    
-    if (mockBookings.length > 0) {
-        availabilityList.innerHTML = mockBookings.map(booking => `
-            <div class="availability-item">
-                <span class="availability-dates">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                    ${booking.start} → ${booking.end}
-                </span>
-                <span class="availability-status">Booked</span>
-            </div>
-        `).join('');
-    } else {
-        availabilityList.innerHTML = '<p class="availability-empty">No upcoming bookings. Available anytime!</p>';
-    }
-    
-    const reviewsList = document.getElementById('modalReviewsList');
-    const mockReviews = typeof getProductReviews === 'function' ? getProductReviews(productId) : [];
-    const reviewsCount = document.getElementById('modalReviewsCount');
-    if (reviewsCount) reviewsCount.textContent = `(${mockReviews.length})`;
-    
-    if (mockReviews.length > 0) {
-        reviewsList.innerHTML = mockReviews.map(review => `
-            <div class="review-item">
-                <div class="review-avatar">${review.author.charAt(0).toUpperCase()}</div>
-                <div class="review-content">
-                    <div class="review-header">
-                        <span class="review-author">${review.author}</span>
-                        <span class="review-date">${review.date}</span>
-                    </div>
-                    <div class="review-stars">
-                        ${Array(5).fill(0).map((_, i) => 
-                            `<svg viewBox="0 0 24 24" class="${i < review.rating ? 'filled' : 'empty'}">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>`
-                        ).join('')}
-                    </div>
-                    <p class="review-text">${review.text}</p>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        reviewsList.innerHTML = `
-            <div class="review-empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-                <p>No reviews yet. Be the first to share your experience!</p>
-            </div>
-        `;
-    }
-    
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
 
 function closeProductModal() {
     const modal = document.getElementById('productModal');
@@ -1039,19 +1098,27 @@ function addToCart(itemId) {
     const formData = new FormData();
     formData.append('item_id', itemId);
 
-
+    // Send selected calendar dates if available
+    const dates = window.catalogSelectedDates;
+    if (dates && dates.start && dates.end) {
+        formData.append('start_date', dates.start);
+        formData.append('end_date', dates.end);
+        console.log(`Adding to cart with dates: ${dates.start} → ${dates.end}`);
+    } else {
+        console.log('Adding to cart without dates (will use server default)');
+    }
     
-    fetch('../cart/add_to_cart.php', { // I-verify ang folder nito!
+    fetch('../cart/add_to_cart.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        if (data.trim() === "Success") {
-            // Huwag na tayong mag-alert, toast lang sapat na
+        console.log('add_to_cart response:', data);
+        if (data.success) {
             console.log("Success adding to cart");
         } else {
-            alert("Server Error: " + data);
+            alert("Server Error: " + (data.message || 'Unknown error'));
         }
     })
     .catch(err => {
@@ -1107,94 +1174,6 @@ function getProductReviews(productId) {
     };
     return reviews[productId] || [];
 }
-function initCartFavoriteButtons() {
-    // 1. Para sa buttons na nasa mismong Catalog Cards
-    document.querySelectorAll('.product-card .btn-favorite').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // ... (keep your existing toast logic here)
-        });
-    });
-
-    // 2. PARA SA MODAL FAVORITE BUTTON (Dito tayo focus)
-    const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
-    if (modalFavoriteBtn) {
-        // Clone para i-reset ang listeners at iwas double-click bug
-        const newBtn = modalFavoriteBtn.cloneNode(true);
-        modalFavoriteBtn.parentNode.replaceChild(newBtn, modalFavoriteBtn);
-        
-        newBtn.addEventListener('click', () => {
-            const itemId = newBtn.getAttribute('data-item-id'); 
-            const isActive = newBtn.classList.toggle('active');
-            const productName = document.getElementById('modalProductName')?.textContent || 'Item';
-            
-            if (!itemId) {
-                console.error("Missing Item ID!");
-                return;
-            }
-            fetch('/rent-it/client/catalog/add_favorite.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'item_id=' + productId
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Added to favorites!', 'success');
-                } else {
-                    showToast(data.message, 'error');
-                }
-            })
-            .catch(err => console.error('Favorite error:', err));
-            
-            
-            newBtn.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="${isActive ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-                ${isActive ? 'In Favorites' : 'Add to Favorites'}
-            `;
-        });
-    }
- const modalCartBtn = document.getElementById('modalCartBtn');
- if (modalCartBtn) {
-     const newBtn = modalCartBtn.cloneNode(true);
-     modalCartBtn.parentNode.replaceChild(newBtn, modalCartBtn);
-     
-     newBtn.addEventListener('click', (e) => {
-         e.preventDefault();
-         
-         if (productId) {
-             addToCart(productId);
-
-             const pName = document.getElementById('modalProductName')?.textContent || 'Item';
-             
-             newBtn.innerHTML = `
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
-                     <polyline points="20 6 9 17 4 12"/>
-                 </svg>
-                 Added to Cart
-             `;
-             
-             if (typeof showToast === 'function') {
-                 showToast(`${pName} added to cart`, 'success');
-             }
-             
-             setTimeout(() => {
-                 newBtn.innerHTML = `
-                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
-                         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                     </svg>
-                     Add to Cart
-                 `;
-             }, 2000);
-         } else {
-             console.error("Product ID not found!");
-         }
-     });
-     // ================= TOAST SYSTEM =================
 function showToast(message, type = 'info') {
     const existing = document.querySelector('.toast-notification');
     if (existing) existing.remove();
@@ -1225,7 +1204,4 @@ function showToast(message, type = 'info') {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
-}
-
- }
 }

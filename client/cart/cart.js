@@ -98,15 +98,16 @@ function initCartLogic() {
             return;
         }
     
-        const diffTime = Math.abs(end - start);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+     
+        const diffTime = end - start;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
     
         // UI Update
         daysDisplay.textContent = `${diffDays} day${diffDays > 1 ? 's' : ''}`;
         const total = pricePerDay * diffDays;
         subtotalDisplay.textContent = `₱${total.toLocaleString()}`;
     
-        // DATABASE UPDATE (DITO YUNG FIX)
+        // DATABASE UPDATE
         const formData = new FormData();
         formData.append('cart_id', id);
         formData.append('start_date', startInput.value);
@@ -126,13 +127,14 @@ function initCartLogic() {
     
         calculateTotal();
     };
+
+
     // --- Delete Logic (PHP Integration) ---
     async function deleteItems(ids) {
         try {
             const formData = new FormData();
             formData.append('delete_ids', JSON.stringify(ids));
 
-            // Siguraduhing may delete_cart_items.php ka sa folder
             const response = await fetch('delete_to_cart.php', {
                 method: 'POST',
                 body: formData
@@ -147,7 +149,6 @@ function initCartLogic() {
                 calculateTotal();
                 showToast('Items removed successfully', 'success');
                 
-                // Kung wala ng item, reload para ipakita ang "Empty Cart" div
                 if (document.querySelectorAll('.cart-item-card').length === 0) {
                     location.reload();
                 }
@@ -158,7 +159,6 @@ function initCartLogic() {
         }
     }
 
-    // --- Event Listeners ---
     if (selectAll) {
         selectAll.addEventListener('change', function() {
             itemCheckboxes.forEach(cb => {
@@ -188,15 +188,15 @@ function initCartLogic() {
 // --- Proceed to Checkout ---
 if (checkoutBtn) {
     checkoutBtn.onclick = (e) => {
-        e.preventDefault(); // Iwasan ang default browser behavior muna
+        e.preventDefault(); 
 
         const selectedIds = [];
         const selectedData = [];
         
-        // Siguraduhing kinukuha natin ang pinaka-updated na listahan ng checked items
+    
         const checkedBoxes = document.querySelectorAll('.item-checkbox:checked');
         
-        console.log("Checked boxes found:", checkedBoxes.length); // Debugger
+        console.log("Checked boxes found:", checkedBoxes.length);
 
         if (checkedBoxes.length === 0) {
             alert("Please select at least one item to checkout.");
@@ -205,14 +205,14 @@ if (checkoutBtn) {
 
         checkedBoxes.forEach(cb => {
             const id = cb.getAttribute('data-id') || cb.dataset.id;
-            console.log("Processing Item ID:", id); // Debugger
+            console.log("Processing Item ID:", id); 
 
             const card = document.getElementById(`card-${id}`);
             
             if (card) {
                 selectedIds.push(id);
 
-                // I-save ang details para sa localStorage (backup UI)
+            
                 const daysText = document.getElementById(`days-${id}`) ? document.getElementById(`days-${id}`).textContent : "1 day";
                 const startDate = document.getElementById(`start-${id}`) ? document.getElementById(`start-${id}`).value : "";
                 const endDate = document.getElementById(`end-${id}`) ? document.getElementById(`end-${id}`).value : "";
@@ -232,20 +232,19 @@ if (checkoutBtn) {
             const idsParam = selectedIds.join(',');
             const targetURL = `../checkout/checkout.php?items=${idsParam}`;
             
-            console.log("Final Target URL:", targetURL); // Debugger
+            console.log("Final Target URL:", targetURL);
 
-            // 1. I-save sa localStorage
+           
             localStorage.setItem(CONSTANTS.STORAGE_KEY, JSON.stringify(selectedData));
 
-            // 2. Redirect
+        
             window.location.href = targetURL;
         }
     };
 }
 
-calculateTotal(); // Run once on load
+calculateTotal(); 
 }
-// Toast Helper (Para sa visual feedback)
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type} show`;

@@ -198,10 +198,7 @@ function attachEventListeners() {
             const templateItem = e.target.closest('.template-item');
             const templateType = templateItem?.dataset.template;
             if (templateType) {
-                const templateSelect = document.getElementById('templateSelect');
-                if (templateSelect) templateSelect.value = templateType;
-                updateEmailTemplate(templateType);
-                AdminComponents.showToast?.(`"${templateType}" template loaded`, 'info');
+                useTemplate(templateType);
             }
         });
     });
@@ -212,17 +209,29 @@ function attachEventListeners() {
             const templateItem = e.target.closest('.template-item');
             const templateType = templateItem?.dataset.template;
             if (templateType) {
-                // Load template into modal for editing
-                const templateSelect = document.getElementById('templateSelect');
-                if (templateSelect) templateSelect.value = templateType;
-                updateEmailTemplate(templateType);
-                // Open modal so user can edit
-                const modal = document.getElementById('reminderModal');
-                if (modal) modal.classList.add('open');
-                AdminComponents.showToast?.(`Editing "${templateType}" template`, 'info');
+                openEditTemplateModal(templateType);
             }
         });
     });
+
+    // Add Template button
+    const addTemplateBtn = document.getElementById('addTemplateBtn');
+    if (addTemplateBtn) {
+        addTemplateBtn.addEventListener('click', () => {
+            openAddTemplateModal();
+        });
+    }
+
+    // Template Modal close/cancel/save
+    const closeTemplateBtn = document.getElementById('closeTemplateModal');
+    const cancelTemplateBtn = document.getElementById('cancelTemplateBtn');
+    const saveTemplateBtn = document.getElementById('saveTemplateBtn');
+    const templateOverlay = document.querySelector('#templateModal .modal-overlay');
+
+    if (closeTemplateBtn) closeTemplateBtn.addEventListener('click', closeTemplateModal);
+    if (cancelTemplateBtn) cancelTemplateBtn.addEventListener('click', closeTemplateModal);
+    if (templateOverlay) templateOverlay.addEventListener('click', closeTemplateModal);
+    if (saveTemplateBtn) saveTemplateBtn.addEventListener('click', saveTemplate);
 
     // Manage Templates button
     const manageTemplatesBtn = document.getElementById('manageTemplatesBtn');
@@ -270,6 +279,7 @@ function filterOverdueItems(filter) {
 // ─────────────────────────────────────────────────────
 
 let currentReminderId = null;
+let selectedTemplateKey = null; // set by "Use" button
 
 function openReminder(orderId) {
     const rental = overdueData.find(r => Number(r.order_id) === Number(orderId));
@@ -283,18 +293,28 @@ function openReminder(orderId) {
     if (recipientEl) recipientEl.textContent = rental.customer.name;
     if (emailEl) emailEl.textContent = rental.customer.email;
 
-    // Set default template
+    // Set template: use pre-selected if available, otherwise auto-detect by severity
     const templateSelect = document.getElementById('templateSelect');
     if (templateSelect) {
-        // Auto-select template based on severity
-        if (rental.days_overdue >= 7) {
-            templateSelect.value = 'final';
+        let templateKey;
+        if (selectedTemplateKey && editableTemplates[selectedTemplateKey]) {
+            templateKey = selectedTemplateKey;
+            // Ensure option exists in the dropdown
+            if (!templateSelect.querySelector(`option[value="${templateKey}"]`)) {
+                const opt = document.createElement('option');
+                opt.value = templateKey;
+                opt.textContent = editableTemplates[templateKey].name;
+                templateSelect.insertBefore(opt, templateSelect.querySelector('option[value="custom"]'));
+            }
+        } else if (rental.days_overdue >= 7) {
+            templateKey = 'final';
         } else if (rental.days_overdue >= 4) {
-            templateSelect.value = 'urgent';
+            templateKey = 'urgent';
         } else {
-            templateSelect.value = 'gentle';
+            templateKey = 'gentle';
         }
-        updateEmailTemplate(templateSelect.value, rental);
+        templateSelect.value = templateKey;
+        updateEmailTemplate(templateKey, rental);
     }
 
     // Show modal
@@ -319,34 +339,23 @@ function updateEmailTemplate(templateType, rental) {
     const lateFee = rental ? formatCurrency(rental.late_fee) : '₱[Amount]';
     const daysOverdue = rental?.days_overdue || '[X]';
 
-    const templates = {
-        gentle: {
-            subject: `Rental Return Reminder - ${itemNames}`,
-            body: `Hi ${customerName},\n\nThis is a friendly reminder that your rental of ${itemNames} was due on ${dueDate}.\n\nYour current late fee is: ${lateFee}\n\nPlease return the equipment at your earliest convenience to avoid additional charges. If you have already returned the item, please disregard this message.\n\nIf you need to extend your rental, please contact us at (02) 8123-4567.\n\nThank you for your understanding.\n\nBest regards,\nSound Rental Team`
-        },
-        urgent: {
-            subject: `URGENT: Rental ${daysOverdue} Days Overdue - ${itemNames}`,
-            body: `Dear ${customerName},\n\nURGENT: Your rental of ${itemNames} is now ${daysOverdue} days overdue.\n\nAccrued late fee: ${lateFee}\n\nPlease return the equipment immediately to prevent further charges. Late fees continue to accumulate daily.\n\nIf you are unable to return the items, please contact us immediately at (02) 8123-4567.\n\nRegards,\nSound Rental Team`
-        },
-        final: {
-            subject: `FINAL NOTICE: Immediate Return Required - ${itemNames}`,
-            body: `Dear ${customerName},\n\nFINAL NOTICE: Your rental of ${itemNames} is ${daysOverdue} days overdue with a total late fee of ${lateFee}.\n\nThis is our final notice before escalation. Please return all equipment within 24 hours or we will be forced to take further action, which may include additional penalties.\n\nContact us immediately at (02) 8123-4567.\n\nSound Rental Management`
-        },
-        payment: {
-            subject: `Payment Due: Late Fees of ${lateFee}`,
-            body: `Dear ${customerName},\n\nYou have an outstanding late fee of ${lateFee} for the rental of ${itemNames} (due: ${dueDate}).\n\nPlease settle the payment at your earliest convenience. You can pay via:\n- Bank transfer\n- GCash/Maya\n- In-person at our office\n\nFor questions, contact us at (02) 8123-4567.\n\nThank you,\nSound Rental Team`
-        },
-        custom: {
-            subject: `Regarding Your Rental - ${itemNames}`,
-            body: ''
-        }
+    // Use the editable templates store
+    const template = editableTemplates[templateType] || editableTemplates.gentle;
+
+    const replacePlaceholders = (str) => {
+        return str
+            .replace(/\[Customer Name\]/g, customerName)
+            .replace(/\[Equipment Name\]/g, itemNames)
+            .replace(/\[Due Date\]/g, dueDate)
+            .replace(/\[Late Fee Amount\]/g, lateFee)
+            .replace(/\[Amount\]/g, lateFee)
+            .replace(/\[X\]/g, daysOverdue);
     };
 
-    const template = templates[templateType] || templates.gentle;
     const subjectEl = document.getElementById('emailSubject');
     const bodyEl = document.getElementById('emailBody');
-    if (subjectEl) subjectEl.value = template.subject;
-    if (bodyEl) bodyEl.value = template.body;
+    if (subjectEl) subjectEl.value = replacePlaceholders(template.subject);
+    if (bodyEl) bodyEl.value = replacePlaceholders(template.body);
 }
 
 function sendReminder() {
@@ -444,6 +453,249 @@ function addActivity(type, text) {
     `;
 
     activityList.insertAdjacentHTML('afterbegin', activityHtml);
+}
+
+// ─────────────────────────────────────────────────────
+// TEMPLATE MANAGEMENT
+// ─────────────────────────────────────────────────────
+
+// Editable templates store (keyed by template type)
+const editableTemplates = {
+    gentle: {
+        name: 'Gentle Reminder',
+        subject: 'Rental Return Reminder - [Equipment Name]',
+        body: `Hi [Customer Name],\n\nThis is a friendly reminder that your rental of [Equipment Name] was due on [Due Date].\n\nYour current late fee is: ₱[Late Fee Amount]\n\nPlease return the equipment at your earliest convenience to avoid additional charges. If you have already returned the item, please disregard this message.\n\nIf you need to extend your rental, please contact us at (02) 8123-4567.\n\nThank you for your understanding.\n\nBest regards,\nSound Rental Team`
+    },
+    urgent: {
+        name: 'Urgent Notice',
+        subject: 'URGENT: Rental [X] Days Overdue - [Equipment Name]',
+        body: `Dear [Customer Name],\n\nURGENT: Your rental of [Equipment Name] is now [X] days overdue.\n\nAccrued late fee: ₱[Late Fee Amount]\n\nPlease return the equipment immediately to prevent further charges. Late fees continue to accumulate daily.\n\nIf you are unable to return the items, please contact us immediately at (02) 8123-4567.\n\nRegards,\nSound Rental Team`
+    },
+    final: {
+        name: 'Final Warning',
+        subject: 'FINAL NOTICE: Immediate Return Required - [Equipment Name]',
+        body: `Dear [Customer Name],\n\nFINAL NOTICE: Your rental of [Equipment Name] is [X] days overdue with a total late fee of ₱[Late Fee Amount].\n\nThis is our final notice before escalation. Please return all equipment within 24 hours or we will be forced to take further action, which may include additional penalties.\n\nContact us immediately at (02) 8123-4567.\n\nSound Rental Management`
+    },
+    payment: {
+        name: 'Payment Request',
+        subject: 'Payment Due: Late Fees of ₱[Late Fee Amount]',
+        body: `Dear [Customer Name],\n\nYou have an outstanding late fee of ₱[Late Fee Amount] for the rental of [Equipment Name] (due: [Due Date]).\n\nPlease settle the payment at your earliest convenience. You can pay via:\n- Bank transfer\n- GCash/Maya\n- In-person at our office\n\nFor questions, contact us at (02) 8123-4567.\n\nThank you,\nSound Rental Team`
+    },
+    custom: {
+        name: 'Custom Message',
+        subject: 'Regarding Your Rental - [Equipment Name]',
+        body: ''
+    }
+};
+
+let templateModalMode = null; // 'edit' or 'add'
+let templateEditingKey = null; // key being edited
+let templateCounter = 0; // for generating unique keys for new templates
+
+/**
+ * "Use" button - marks template as active (used next time reminder is opened)
+ */
+function useTemplate(templateType) {
+    const template = editableTemplates[templateType];
+    if (!template) return;
+
+    // Store the selected template key
+    selectedTemplateKey = templateType;
+
+    // Visually highlight the active template
+    document.querySelectorAll('.template-item').forEach(el => el.classList.remove('active'));
+    const activeItem = document.querySelector(`.template-item[data-template="${templateType}"]`);
+    if (activeItem) activeItem.classList.add('active');
+
+    AdminComponents.showToast?.(`"${template.name}" template selected`, 'info');
+}
+
+/**
+ * Replace placeholder tokens in subject & body with real rental data
+ */
+function fillTemplatePlaceholders(rental) {
+    const subjectEl = document.getElementById('emailSubject');
+    const bodyEl = document.getElementById('emailBody');
+    if (!rental) return;
+
+    const customerName = rental.customer?.name || '[Customer Name]';
+    const itemNames = rental.items?.map(i => i.item_name).join(', ') || '[Equipment Name]';
+    const dueDate = rental.end_date || '[Due Date]';
+    const lateFee = formatCurrency(rental.late_fee);
+    const daysOverdue = rental.days_overdue || '[X]';
+
+    const replacePlaceholders = (str) => {
+        return str
+            .replace(/\[Customer Name\]/g, customerName)
+            .replace(/\[Equipment Name\]/g, itemNames)
+            .replace(/\[Due Date\]/g, dueDate)
+            .replace(/\[Late Fee Amount\]/g, lateFee)
+            .replace(/\[Amount\]/g, lateFee)
+            .replace(/\[X\]/g, daysOverdue);
+    };
+
+    if (subjectEl) subjectEl.value = replacePlaceholders(subjectEl.value);
+    if (bodyEl) bodyEl.value = replacePlaceholders(bodyEl.value);
+}
+
+/**
+ * Open the template modal in "Edit" mode
+ */
+function openEditTemplateModal(templateType) {
+    const template = editableTemplates[templateType];
+    if (!template) return;
+
+    templateModalMode = 'edit';
+    templateEditingKey = templateType;
+
+    const titleEl = document.getElementById('templateModalTitle');
+    const nameInput = document.getElementById('templateNameInput');
+    const subjectInput = document.getElementById('templateSubjectInput');
+    const bodyInput = document.getElementById('templateBodyInput');
+
+    if (titleEl) titleEl.textContent = 'Edit Template';
+    if (nameInput) nameInput.value = template.name;
+    if (subjectInput) subjectInput.value = template.subject;
+    if (bodyInput) bodyInput.value = template.body;
+
+    const modal = document.getElementById('templateModal');
+    if (modal) modal.classList.add('open');
+}
+
+/**
+ * Open the template modal in "Add" mode
+ */
+function openAddTemplateModal() {
+    templateModalMode = 'add';
+    templateEditingKey = null;
+
+    const titleEl = document.getElementById('templateModalTitle');
+    const nameInput = document.getElementById('templateNameInput');
+    const subjectInput = document.getElementById('templateSubjectInput');
+    const bodyInput = document.getElementById('templateBodyInput');
+
+    if (titleEl) titleEl.textContent = 'Add New Template';
+    if (nameInput) nameInput.value = '';
+    if (subjectInput) subjectInput.value = '';
+    if (bodyInput) bodyInput.value = '';
+
+    const modal = document.getElementById('templateModal');
+    if (modal) modal.classList.add('open');
+}
+
+/**
+ * Close the template modal
+ */
+function closeTemplateModal() {
+    const modal = document.getElementById('templateModal');
+    if (modal) modal.classList.remove('open');
+    templateModalMode = null;
+    templateEditingKey = null;
+}
+
+/**
+ * Save the template (edit or add)
+ */
+function saveTemplate() {
+    const nameInput = document.getElementById('templateNameInput');
+    const subjectInput = document.getElementById('templateSubjectInput');
+    const bodyInput = document.getElementById('templateBodyInput');
+
+    const name = nameInput?.value.trim();
+    const subject = subjectInput?.value.trim();
+    const body = bodyInput?.value.trim();
+
+    if (!name) {
+        AdminComponents.showToast?.('Please enter a template name', 'error');
+        nameInput?.focus();
+        return;
+    }
+    if (!body) {
+        AdminComponents.showToast?.('Please enter a message body', 'error');
+        bodyInput?.focus();
+        return;
+    }
+
+    if (templateModalMode === 'edit' && templateEditingKey) {
+        // Update existing template
+        editableTemplates[templateEditingKey].name = name;
+        editableTemplates[templateEditingKey].subject = subject;
+        editableTemplates[templateEditingKey].body = body;
+
+        // Update the DOM preview
+        const templateItem = document.querySelector(`.template-item[data-template="${templateEditingKey}"]`);
+        if (templateItem) {
+            const nameEl = templateItem.querySelector('.template-name');
+            const previewEl = templateItem.querySelector('.template-preview');
+            if (nameEl) nameEl.textContent = name;
+            if (previewEl) previewEl.textContent = body.substring(0, 50) + (body.length > 50 ? '...' : '');
+        }
+
+        // Also update the reminder modal's template select option text
+        const templateSelect = document.getElementById('templateSelect');
+        if (templateSelect) {
+            const opt = templateSelect.querySelector(`option[value="${templateEditingKey}"]`);
+            if (opt) opt.textContent = name;
+        }
+
+        AdminComponents.showToast?.(`"${name}" template updated`, 'success');
+
+    } else if (templateModalMode === 'add') {
+        // Generate a unique key
+        templateCounter++;
+        const newKey = 'custom_' + templateCounter + '_' + Date.now();
+
+        // Store in editableTemplates
+        editableTemplates[newKey] = { name, subject, body };
+
+        // Add to the template list DOM
+        const templatesList = document.querySelector('.templates-list');
+        if (templatesList) {
+            const newItem = document.createElement('div');
+            newItem.className = 'template-item';
+            newItem.dataset.template = newKey;
+            newItem.innerHTML = `
+                <div class="template-info">
+                    <span class="template-name">${escapeHtml(name)}</span>
+                    <span class="template-preview">${escapeHtml(body.substring(0, 50))}${body.length > 50 ? '...' : ''}</span>
+                </div>
+                <div class="template-actions">
+                    <button class="template-btn use" title="Use this template">Use</button>
+                    <button class="template-btn edit" title="Edit template">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            // Attach event listeners to new buttons
+            newItem.querySelector('.template-btn.use').addEventListener('click', () => useTemplate(newKey));
+            newItem.querySelector('.template-btn.edit').addEventListener('click', () => openEditTemplateModal(newKey));
+
+            templatesList.appendChild(newItem);
+        }
+
+        // Also add to the reminder modal's template select dropdown
+        const templateSelect = document.getElementById('templateSelect');
+        if (templateSelect) {
+            const opt = document.createElement('option');
+            opt.value = newKey;
+            opt.textContent = name;
+            // Insert before "Custom Message" option
+            const customOpt = templateSelect.querySelector('option[value="custom"]');
+            if (customOpt) {
+                templateSelect.insertBefore(opt, customOpt);
+            } else {
+                templateSelect.appendChild(opt);
+            }
+        }
+
+        AdminComponents.showToast?.(`"${name}" template added`, 'success');
+    }
+
+    closeTemplateModal();
 }
 
 // ─────────────────────────────────────────────────────

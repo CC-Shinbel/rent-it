@@ -44,12 +44,12 @@
     display: block;
     font-size: 13px;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--admin-text-primary);
     margin-bottom: 6px;
 }
 
 .form-label .required {
-    color: var(--danger);
+    color: var(--admin-danger);
     margin-left: 2px;
 }
 
@@ -60,24 +60,24 @@
     padding: 10px 14px;
     font-size: 14px;
     font-family: inherit;
-    color: var(--text-primary);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    transition: var(--transition);
+    color: var(--admin-text-primary);
+    background: var(--admin-bg-input, var(--admin-bg-secondary));
+    border: 1.5px solid var(--admin-border-medium);
+    border-radius: var(--admin-radius-md, 8px);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-accent-muted);
 }
 
 .form-input::placeholder,
 .form-textarea::placeholder {
-    color: var(--text-muted);
+    color: var(--admin-text-muted);
 }
 
 .form-textarea {
@@ -94,10 +94,11 @@
     padding-right: 40px;
 }
 
+
 .form-hint {
     display: block;
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--admin-text-muted);
     margin-top: 4px;
 }
 
@@ -111,13 +112,13 @@
 /* Image Upload Area */
 .image-upload-area {
     position: relative;
-    border: 2px dashed var(--border-color);
-    border-radius: var(--radius-lg);
+    border: 2px dashed var(--admin-border-medium);
+    border-radius: var(--admin-radius-lg, 12px);
     padding: 40px 20px;
     text-align: center;
     cursor: pointer;
-    transition: var(--transition);
-    background: var(--bg-secondary);
+    transition: border-color 0.2s ease, background 0.2s ease;
+    background: var(--admin-bg-input, var(--admin-bg-secondary));
     min-height: 200px;
     display: flex;
     align-items: center;
@@ -125,13 +126,13 @@
 }
 
 .image-upload-area:hover {
-    border-color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.05);
+    border-color: var(--admin-accent);
+    background: var(--admin-accent-subtle);
 }
 
 .image-upload-area.dragover {
-    border-color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.1);
+    border-color: var(--admin-accent);
+    background: var(--admin-accent-muted);
 }
 
 .upload-placeholder {
@@ -142,20 +143,20 @@
 }
 
 .upload-placeholder svg {
-    color: var(--text-muted);
+    color: var(--admin-text-muted);
     opacity: 0.6;
 }
 
 .upload-placeholder p {
     font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--admin-text-secondary);
     margin: 0;
 }
 
 .upload-placeholder span {
     font-size: 12px;
-    color: var(--text-muted);
+    color: var(--admin-text-muted);
 }
 
 .file-input {
@@ -189,36 +190,58 @@
     position: relative;
     width: 44px;
     height: 24px;
-    background: var(--bg-tertiary);
+    background: var(--admin-border-medium);
+    border: 1.5px solid var(--admin-border-medium);
     border-radius: 12px;
-    transition: var(--transition);
+    transition: background 0.25s ease, border-color 0.25s ease;
     flex-shrink: 0;
+}
+
+/* Dark mode: brighter unchecked toggle track */
+:root .toggle-switch {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+[data-theme="light"] .toggle-switch {
+    background: #CBD5E1;
+    border-color: #94A3B8;
 }
 
 .toggle-switch::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 2px;
+    left: 2px;
     width: 18px;
     height: 18px;
-    background: var(--text-muted);
+    background: #FFFFFF;
     border-radius: 50%;
-    transition: var(--transition);
+    transition: left 0.25s ease, background 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* Dark mode unchecked knob */
+:root .toggle-switch::after {
+    background: #E2E8F0;
+}
+[data-theme="light"] .toggle-switch::after {
+    background: #FFFFFF;
+}
+
+/* Checked / Active state */
 .toggle-label input:checked + .toggle-switch {
-    background: var(--accent);
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
 }
 
 .toggle-label input:checked + .toggle-switch::after {
-    left: 23px;
-    background: white;
+    left: 22px;
+    background: #FFFFFF;
 }
 
 .toggle-text {
     font-size: 14px;
-    color: var(--text-primary);
+    color: var(--admin-text-primary);
 }
 
 /* Tags Preview */
@@ -235,8 +258,8 @@
     gap: 4px;
     padding: 4px 10px;
     font-size: 12px;
-    color: var(--accent);
-    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--admin-accent);
+    background: var(--admin-accent-muted);
     border-radius: 20px;
 }
 
@@ -286,6 +309,33 @@
     }
 }
 
+/* ============================
+   TABLET ADJUSTMENTS (768px)
+   ============================ */
+@media (max-width: 768px) {
+    .newitem-form {
+        gap: var(--admin-spacing-lg);
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-md);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-md);
+    }
+
+    .form-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        font-size: var(--admin-font-xs);
+    }
+}
+
 @media (max-width: 480px) {
     .image-upload-area {
         min-height: 120px;
@@ -294,6 +344,40 @@
 
     .upload-text {
         font-size: var(--admin-font-xs);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-sm);
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .image-upload-area {
+        min-height: 100px;
+        padding: 16px 10px;
+    }
+
+    .form-section {
+        padding: var(--admin-spacing-sm);
+    }
+
+    .form-section-title {
+        font-size: var(--admin-font-xs);
+    }
+
+    .newitem-form {
+        gap: var(--admin-spacing-md);
+    }
+
+    .upload-text {
+        font-size: 10px;
     }
 }
 

@@ -21,12 +21,15 @@ $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
 $member_status = $user_data['membership_level'] ?? 'Bronze';
 
-$history_query = "SELECT r.*, i.item_name, i.category, i.image 
+$history_query = "SELECT r.order_id, r.rental_status, r.total_price, r.venue,
+                         COALESCE(ri.start_date, r.start_date) AS start_date, 
+                         COALESCE(ri.end_date, r.end_date) AS end_date,
+                         i.item_name, i.category, i.image 
                   FROM rental r 
                   LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
                   LEFT JOIN item i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
-                  ORDER BY r.start_date DESC";
+                  ORDER BY COALESCE(ri.start_date, r.start_date) DESC";
 $history_result = mysqli_query($conn, $history_query);
 $total_records = mysqli_num_rows($history_result);
 ?>
@@ -42,49 +45,71 @@ $total_records = mysqli_num_rows($history_result);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <!-- Favicon -->
-    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.css">
-    <style>
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 10px 5px;
-    font-weight: 500;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.tab-link.active {
-    color: #f97316;
-}
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px 10px 0 0;
-}
-        </style>
 
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>
 <body>
+    <div class="page-skeleton-overlay" aria-hidden="true">
+        <div class="page-skeleton-shell">
+            <aside class="page-skeleton-sidebar">
+                <div class="page-skeleton-logo skeleton-shape"></div>
+                <div class="page-skeleton-nav">
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                </div>
+                <div class="page-skeleton-user">
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="page-skeleton-main">
+                <div class="page-skeleton-topbar">
+                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                </div>
+                <div class="page-skeleton-card">
+                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
+                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
+                    </div>
+                    <div class="page-skeleton-table">
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-skeleton-loader">
+                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="app-container">
         <div id="sidebarContainer"></div>
         
@@ -96,13 +121,14 @@ $total_records = mysqli_num_rows($history_result);
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
                      
-                        <p class="page-subtitle">Track all your past videoke rentals and manage receipts.</p>
+                        <h1 class="page-title">Track all your past videoke rentals and manage receipts.</h1>
                     </div>
                   
                 </div>
 
                 <!-- Tabs Navigation -->
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link">Active Rentals</a>
                     <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link active">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
@@ -194,13 +220,17 @@ $total_records = mysqli_num_rows($history_result);
                                             <span class="status-pill <?php echo $status_class; ?>"><?php echo htmlspecialchars($row['rental_status']); ?></span>
                                         </td>
                                         <td>
-                                           
+
                                     <?php endwhile; ?>
                                 <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" style="text-align: center; padding: 40px; opacity: 0.6;">
-                                            <p>No booking history found.</p>
-                                            <a href="../catalog/catalog.php" class="btn-new" style="margin-top: 15px; display: inline-block;">Browse Catalog</a>
+                                    <tr class="history-empty">
+                                        <td colspan="6">
+                                            <div class="empty-state">
+                                                <div class="empty-state-icon">🗂️</div>
+                                                <h3 class="empty-state-title">No booking history yet</h3>
+                                                <p class="empty-state-text">Your completed rentals will show up here.</p>
+                                                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

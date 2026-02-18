@@ -18,6 +18,7 @@ $user_id = $_SESSION['user_id'];
 $full_name = trim($_POST['full_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
+$address = trim($_POST['address'] ?? '');
 
 // SAFETY CHECK: Ito ang pipigil sa pagbura ng data sa database.
 // Kung blangko ang ipinadalang pangalan o email, hihinto ang script.
@@ -53,13 +54,13 @@ if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_
 // Prepare SQL (Dynamic depende kung may bagong picture)
 if ($profile_pic_name) {
     // Siguraduhin na 'profile_picture' ang column name sa database mo
-    $sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, profile_picture = ? WHERE id = ?";
+    $sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, address = ?, profile_picture = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $full_name, $email, $phone, $profile_pic_name, $user_id);
+    $stmt->bind_param("sssssi", $full_name, $email, $phone, $address, $profile_pic_name, $user_id);
 } else {
-    $sql = "UPDATE users SET full_name = ?, email = ?, phone = ? WHERE id = ?";
+    $sql = "UPDATE users SET full_name = ?, email = ?, phone = ?, address = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssi", $full_name, $email, $phone, $user_id);
+    $stmt->bind_param("ssssi", $full_name, $email, $phone, $address, $user_id);
 }
 if ($stmt->execute()) {
     // I-update ang session para mag-reflect agad ang bagong pangalan sa UI

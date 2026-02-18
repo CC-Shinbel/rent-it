@@ -23,13 +23,67 @@ $membership = $user_data['membership_level'] ?? 'Customer';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="../../assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <link rel="stylesheet" href="../../shared/css/theme.css">
     <link rel="stylesheet" href="../../shared/css/globals.css">
     <link rel="stylesheet" href="../dashboard/dashboard.css">
     <link rel="stylesheet" href="contactusloggedin.css">
 </head>
 <body>
+    <div class="page-skeleton-overlay" aria-hidden="true">
+        <div class="page-skeleton-shell">
+            <aside class="page-skeleton-sidebar">
+                <div class="page-skeleton-logo skeleton-shape"></div>
+                <div class="page-skeleton-nav">
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                </div>
+                <div class="page-skeleton-user">
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="page-skeleton-main">
+                <div class="page-skeleton-topbar">
+                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                </div>
+                <div class="page-skeleton-card">
+                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
+                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
+                    </div>
+                    <div class="page-skeleton-table">
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-skeleton-loader">
+                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="app-container">
         <div id="sidebarContainer"></div>
 
@@ -109,16 +163,8 @@ $membership = $user_data['membership_level'] ?? 'Customer';
                                 <div class="info-icon">📞</div>
                                 <div>
                                     <p class="info-title">Call hotline</p>
-                                    <a href="tel:+639123456789">+63 912 345 6789</a>
+                                    <a href="tel:+639554216789" class="phone-highlight">+63 955 421 6789</a>
                                     <p class="muted">Mon-Fri, 8:00 AM - 5:00 PM</p>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-icon">💬</div>
-                                <div>
-                                    <p class="info-title">Chat (beta)</p>
-                                    <a href="../../pages/wip.html">Open chat</a>
-                                    <p class="muted">For quick fixes and status checks.</p>
                                 </div>
                             </div>
                         </div>

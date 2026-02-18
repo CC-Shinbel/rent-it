@@ -4,7 +4,7 @@
     <base href="/rent-it/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Learn more about RentIt - Premium videoke rental service elevating events with professional sound since 2018.">
+    <meta name="description" content="Learn more about RentIt - Premium videoke rental service elevating events with professional sound since 2026.">
     <title>About Us - RentIt</title>
     
     <!-- Google Fonts -->
@@ -24,6 +24,37 @@
     <script src="shared/js/theme.js"></script>
 </head>
 <body>
+    <div class="page-skeleton-overlay" data-skeleton="marketing" aria-hidden="true">
+        <div class="page-skeleton-marketing">
+            <div class="marketing-topbar">
+                <span class="marketing-logo skeleton-shape"></span>
+                <div class="marketing-nav">
+                    <span class="marketing-pill skeleton-shape w-20"></span>
+                    <span class="marketing-pill skeleton-shape w-25"></span>
+                    <span class="marketing-pill skeleton-shape w-20"></span>
+                    <span class="marketing-pill skeleton-shape w-30"></span>
+                </div>
+                <span class="marketing-cta skeleton-shape w-25"></span>
+            </div>
+            <div class="marketing-hero">
+                <div class="marketing-hero-text">
+                    <span class="marketing-line skeleton-shape w-70"></span>
+                    <span class="marketing-line skeleton-shape w-80"></span>
+                    <span class="marketing-line skeleton-shape w-60"></span>
+                    <div class="marketing-actions">
+                        <span class="marketing-button skeleton-shape w-25"></span>
+                        <span class="marketing-button skeleton-shape w-20"></span>
+                    </div>
+                </div>
+                <span class="marketing-hero-media skeleton-shape"></span>
+            </div>
+            <div class="marketing-cards">
+                <span class="marketing-card skeleton-shape"></span>
+                <span class="marketing-card skeleton-shape"></span>
+                <span class="marketing-card skeleton-shape"></span>
+            </div>
+        </div>
+    </div>
     <!-- ============================
          SITE HEADER
          ============================ -->
@@ -93,10 +124,10 @@
             <div class="container">
                 <div class="about-hero-inner">
                     <div class="about-hero-content">
-                        <span class="since-badge animate-fade-up delay-1">Since 2018</span>
+                        <span class="since-badge animate-fade-up delay-1">Since 2026</span>
                         <h1 class="about-hero-title animate-fade-up delay-2">Elevating Events with Professional Sound</h1>
                         <p class="about-hero-desc animate-fade-up delay-3">
-                            What started as a small garage project in 2018 has grown into the city's premier videoke rental service. Our mission is to provide high-quality entertainment through professional-grade videoke systems. From intimate family gatherings to grand corporate events, we ensure your voice is heard in crystal clear quality.
+                            What started as a small garage project in 2026 has grown into the city's premier videoke rental service. Our mission is to provide high-quality entertainment through professional-grade videoke systems. From intimate family gatherings to grand corporate events, we ensure your voice is heard in crystal clear quality.
                         </p>
                         <p class="about-hero-desc animate-fade-up delay-4">
                             With years of experience and thousands of successful events, RentIt has become the trusted name for videoke rentals in Metro Manila and surrounding areas. Our commitment to quality equipment, professional service, and customer satisfaction sets us apart.
@@ -114,7 +145,9 @@
                         </div>
                     </div>
                     <div class="about-hero-image animate-fade-right delay-3">
-                        <img src="assets/images/rentitnobg.png" alt="RentIt brand mark" onerror="this.parentElement.innerHTML='<div style=&quot;font-size: 64px;&quot;>🎤</div>'">
+                        <a href="assets/images/team/RentIT.png" target="_blank" rel="noopener">
+                            <img src="assets/images/team/RentIT.png" alt="RentIt Team" onerror="this.closest('a').replaceWith(Object.assign(document.createElement('div'),{style:'font-size:64px',textContent:'🎤'}))">
+                        </a>
                     </div>
                 </div>
             </div>
@@ -188,39 +221,201 @@
                 </div>
 
                 <div class="team-grid">
+                    <!-- CEO -->
                     <article class="team-card animate-fade-up delay-1">
                         <div class="team-photo">👨‍💼</div>
                         <div class="team-info">
-                            <h3 class="team-name">Albert Santos</h3>
-                            <div class="team-role">Founder & CEO</div>
-                            <p class="team-bio">Started RentIt from his garage with a single karaoke machine. Now leads a team of 20+ professionals.</p>
+                            <h3 class="team-name">Tom Oliver</h3>
+                            <div class="team-role">Chief Executive Officer</div>
+                            <p class="team-bio">Visionary leader behind RentIt. Drives the company's strategic direction and ensures every decision aligns with delivering the best videoke rental experience in Metro Manila.</p>
                         </div>
                     </article>
 
+                    <!-- Project Manager -->
                     <article class="team-card animate-fade-up delay-2">
-                        <div class="team-photo">👩‍💼</div>
+                        <div class="team-photo">👨‍💼</div>
                         <div class="team-info">
-                            <h3 class="team-name">Maria Cruz</h3>
-                            <div class="team-role">Operations Manager</div>
-                            <p class="team-bio">Ensures every delivery runs smoothly. 8 years of logistics expertise in event management.</p>
+                            <h3 class="team-name">Aaron Raven Aramil</h3>
+                            <div class="team-role">Project Manager</div>
+                            <p class="team-bio">Keeps the team aligned and projects on track. Coordinates sprints, manages timelines, and bridges communication between all departments to ensure smooth delivery.</p>
                         </div>
                     </article>
 
+                    <!-- Lead Dev / Frontend -->
                     <article class="team-card animate-fade-up delay-3">
-                        <div class="team-photo">👨‍🔧</div>
+                        <div class="team-photo">👨‍💻</div>
                         <div class="team-info">
-                            <h3 class="team-name">Jose Reyes</h3>
-                            <div class="team-role">Technical Lead</div>
-                            <p class="team-bio">Audio engineer with 12 years experience. Keeps all equipment in peak condition.</p>
+                            <h3 class="team-name">Marc Steeven Parubrub</h3>
+                            <div class="team-role">Lead Developer / Frontend Developer</div>
+                            <p class="team-bio">Leads the frontend architecture and development workflow. Builds responsive, accessible interfaces and mentors the dev team to maintain high code quality standards.</p>
+                        </div>
+                    </article>
+
+                    <!-- Full Stack Devs -->
+                    <article class="team-card animate-fade-up delay-4">
+                        <div class="team-photo">👨‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Miguel Ansano Sta. Maria</h3>
+                            <div class="team-role">Full Stack Developer</div>
+                            <p class="team-bio">Works across the entire stack from database queries to pixel-perfect UI. Tackles complex features end-to-end and ensures seamless integration between frontend and backend.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-1">
+                        <div class="team-photo">👨‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Von Asley Malilos</h3>
+                            <div class="team-role">Full Stack Developer</div>
+                            <p class="team-bio">Versatile developer comfortable in both frontend and backend. Builds robust features, optimizes performance, and contributes to the platform's scalability.</p>
+                        </div>
+                    </article>
+
+                    <!-- Frontend Dev -->
+                    <article class="team-card animate-fade-up delay-2">
+                        <div class="team-photo">👨‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Jude Vincent</h3>
+                            <div class="team-role">Frontend Developer</div>
+                            <p class="team-bio">Crafts clean, interactive user interfaces with attention to detail. Focuses on responsive layouts, smooth animations, and cross-browser compatibility.</p>
+                        </div>
+                    </article>
+
+                    <!-- Backend Devs -->
+                    <article class="team-card animate-fade-up delay-3">
+                        <div class="team-photo">👨‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Leander Ochea</h3>
+                            <div class="team-role">Backend Developer</div>
+                            <p class="team-bio">Architects server-side logic, APIs, and database structures. Ensures data integrity, security, and reliable performance behind every feature on the platform.</p>
                         </div>
                     </article>
 
                     <article class="team-card animate-fade-up delay-4">
+                        <div class="team-photo">👨‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Sean Rey Beltran</h3>
+                            <div class="team-role">Backend Developer</div>
+                            <p class="team-bio">Builds and maintains server-side services and database operations. Focuses on API development, authentication flows, and backend optimization.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-1">
                         <div class="team-photo">👩‍💻</div>
                         <div class="team-info">
-                            <h3 class="team-name">Ana Garcia</h3>
-                            <div class="team-role">Customer Success</div>
-                            <p class="team-bio">Your first point of contact. Dedicated to making every booking experience exceptional.</p>
+                            <h3 class="team-name">Via Umali</h3>
+                            <div class="team-role">Backend Developer</div>
+                            <p class="team-bio">Develops backend services and data processing logic. Ensures smooth server operations and contributes to the platform's reliability and security.</p>
+                        </div>
+                    </article>
+
+                    <!-- UI/UX Designers -->
+                    <article class="team-card animate-fade-up delay-2">
+                        <div class="team-photo">
+                            <a href="assets/images/team/JOAQUIN GABRIEL CAMANGEG_UIUX.jpg" target="_blank" rel="noopener">
+                                <img src="assets/images/team/JOAQUIN GABRIEL CAMANGEG_UIUX.jpg" alt="Joaquin Gabriel Camangeg" onerror="this.closest('.team-photo').innerHTML='🎨'">
+                            </a>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Joaquin Gabriel Camangeg</h3>
+                            <div class="team-role">UI/UX Designer</div>
+                            <p class="team-bio">Designs intuitive user experiences and polished visual interfaces. Translates user needs into clean, functional designs that make the platform a joy to use.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-3">
+                        <div class="team-photo">
+                            <a href="assets/images/team/VEENY BAUTISTA_UI_UX.png" target="_blank" rel="noopener">
+                                <img src="assets/images/team/VEENY BAUTISTA_UI_UX.png" alt="Veeny Bautista" onerror="this.closest('.team-photo').innerHTML='🎨'">
+                            </a>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Veeny Bautista</h3>
+                            <div class="team-role">UI/UX Designer &amp; Support</div>
+                            <p class="team-bio">An all-around talent who designs user interfaces and provides support across teams. Bridges the gap between design vision and practical implementation.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-4">
+                        <div class="team-photo">👨‍🎨</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Andrei</h3>
+                            <div class="team-role">UI/UX Designer</div>
+                            <p class="team-bio">Creates user-centered designs with a focus on accessibility and visual consistency. Contributes to the design system and helps maintain brand cohesion.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-1">
+                        <div class="team-photo">👩‍🎨</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Pauline Jayme</h3>
+                            <div class="team-role">UI/UX Designer</div>
+                            <p class="team-bio">Focuses on user research and interaction design. Creates wireframes, prototypes, and high-fidelity mockups that guide the development of seamless user flows.</p>
+                        </div>
+                    </article>
+
+                    <!-- Multimedia -->
+                    <article class="team-card animate-fade-up delay-2">
+                        <div class="team-photo">
+                            <a href="assets/images/team/ROXANNE LAZO_MULTIMEDIA.jpg" target="_blank" rel="noopener">
+                                <img src="assets/images/team/ROXANNE LAZO_MULTIMEDIA.jpg" alt="Roxanne Lazo" onerror="this.closest('.team-photo').innerHTML='🎬'">
+                            </a>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Roxanne Lazo</h3>
+                            <div class="team-role">Multimedia Specialist</div>
+                            <p class="team-bio">Produces visual content, graphics, and media assets for the platform and marketing. Brings the RentIt brand to life through compelling visual storytelling.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-3">
+                        <div class="team-photo">👨‍🎬</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Franz Dela Cruz</h3>
+                            <div class="team-role">Multimedia Specialist</div>
+                            <p class="team-bio">Creates engaging multimedia content including graphics, videos, and promotional materials. Ensures all visual assets align with the brand's identity and message.</p>
+                        </div>
+                    </article>
+
+                    <!-- QA -->
+                    <article class="team-card animate-fade-up delay-4">
+                        <div class="team-photo">👨‍🔧</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Aaron Briones</h3>
+                            <div class="team-role">Quality Assurance</div>
+                            <p class="team-bio">Tests every feature rigorously before release. Identifies bugs, validates fixes, and ensures the platform delivers a smooth, error-free experience for all users.</p>
+                        </div>
+                    </article>
+
+                    <article class="team-card animate-fade-up delay-1">
+                        <div class="team-photo">👨‍🔧</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Prince Darrell Malunay Masa</h3>
+                            <div class="team-role">Quality Assurance</div>
+                            <p class="team-bio">Conducts thorough testing across all platform features. Documents test cases, performs regression testing, and helps maintain high reliability standards.</p>
+                        </div>
+                    </article>
+
+                    <!-- Data Analyst -->
+                    <article class="team-card animate-fade-up delay-2">
+                        <div class="team-photo">👩‍💻</div>
+                        <div class="team-info">
+                            <h3 class="team-name">Samantha Faith Tan</h3>
+                            <div class="team-role">Data Analyst</div>
+                            <p class="team-bio">Turns raw data into actionable insights. Analyzes booking trends, customer behavior, and platform metrics to drive informed business and product decisions.</p>
+                        </div>
+                    </article>
+
+                    <!-- IT Support -->
+                    <article class="team-card animate-fade-up delay-3">
+                        <div class="team-photo">
+                            <a href="assets/images/team/TAN HUMPBREY NEIL A.- IT SUPPORT.jpg" target="_blank" rel="noopener">
+                                <img src="assets/images/team/TAN HUMPBREY NEIL A.- IT SUPPORT.jpg" alt="Humpbrey Neil Tan" onerror="this.closest('.team-photo').innerHTML='🛠️'">
+                            </a>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Humpbrey Neil Tan</h3>
+                            <div class="team-role">IT Support</div>
+                            <p class="team-bio">Keeps infrastructure running and resolves technical issues swiftly. Manages deployments, server health, and provides hands-on support to keep the team productive.</p>
                         </div>
                     </article>
                 </div>
@@ -392,14 +587,14 @@
                 <!-- Brand Column -->
                 <div class="footer-brand">
                     <div class="logo-drawer">
-                        <img src="../assets/images/rIT_logo_tp.png" alt="RentIt Logo">
+                        <img src="assets/images/rIT_logo_tp.png" alt="RentIt Logo">
                     </div>
                     <div class="brand-text">
                         <h4 class="brand-title">RentIt</h4>
                         <p class="brand-sub">
-                            Making celebrations louder and more memorable with premium videoke rentals since 2018.
+                            Making celebrations louder and more memorable with premium videoke rentals since 2026.
                         </p>
-                        <p class="powered-by">Powered by <a href="https://certicode.com" target="_blank" rel="noopener">CertiCode</a></p>                        <div class="social-links">
+                        <p class="powered-by">Powered by <a href="https://www.certicode.tech/" target="_blank" rel="noopener">CertiCode</a></p>                        <div class="social-links">
                             <a href="https://www.facebook.com/CertiCode" class="social" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
@@ -430,17 +625,6 @@
                         <a href="pages/aboutus.html" class="footer-link">About Us</a>
                         <a href="pages/contactus.html" class="footer-link">Contact</a>
                         <a href="pages/terms.html" class="footer-link">Terms of Service</a>
-                    </nav>
-                </div>
-
-                <!-- Support Links -->
-                <div class="footer-col">
-                    <h5>Support</h5>
-                    <nav class="footer-nav">
-                        <a href="pages/wip.html" class="footer-link">How It Works</a>
-                        <a href="index.php#pricing" class="footer-link">Pricing Packages</a>
-                        <a href="pages/wip.html" class="footer-link">Safety Guidelines</a>
-                        <a href="pages/wip.html" class="footer-link">Delivery Areas</a>
                     </nav>
                 </div>
 

@@ -46,10 +46,40 @@
         });
     }
 
+    function initPageSkeleton() {
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', initPageSkeleton, { once: true });
+            return;
+        }
+
+        const overlay = document.querySelector('.page-skeleton-overlay');
+        if (!overlay) return;
+
+        const hideOverlay = () => {
+            overlay.classList.add('is-hidden');
+            setTimeout(() => overlay.remove(), 350);
+        };
+
+        window.addEventListener('load', hideOverlay, { once: true });
+        setTimeout(hideOverlay, 3500);
+    }
+
     // Initialize when DOM is ready
+    let skeletonStarted = false;
+    const startSkeleton = () => {
+        if (skeletonStarted) return;
+        skeletonStarted = true;
+        initPageSkeleton();
+    };
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initThemeToggle);
+        document.addEventListener('DOMContentLoaded', () => {
+            initThemeToggle();
+            startSkeleton();
+        }, { once: true });
+        startSkeleton();
     } else {
         initThemeToggle();
+        startSkeleton();
     }
 })();

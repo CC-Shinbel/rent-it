@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     header("Location: returns.php");
     exit();
 }
-// Kunin ang bilang ng mga items na binalik dahil may sira (Status: Returned)
+
 $res_count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM RENTAL WHERE user_id = $user_id AND rental_status = 'Returned'");
 $returned_count = mysqli_fetch_assoc($res_count)['total'] ?? 0;
 
@@ -94,46 +94,69 @@ $extensions_count = mysqli_num_rows($extensions_result);
     <link rel="stylesheet" href="../dashboard/dashboard.css">
     <link rel="stylesheet" href="../myrentals/myrentals.css">
     <link rel="stylesheet" href="returns.css">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     <style>
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-approved { background: #dcfce7; color: #166534; }
-        
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 10px 5px;
-    font-weight: 500;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.tab-link.active {
-    color: #f97316;
-}
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px 10px 0 0;
-}
-        
     </style>
 </head>
 <body>
+    <div class="page-skeleton-overlay" aria-hidden="true">
+        <div class="page-skeleton-shell">
+            <aside class="page-skeleton-sidebar">
+                <div class="page-skeleton-logo skeleton-shape"></div>
+                <div class="page-skeleton-nav">
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                </div>
+                <div class="page-skeleton-user">
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="page-skeleton-main">
+                <div class="page-skeleton-topbar">
+                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                </div>
+                <div class="page-skeleton-card">
+                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
+                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
+                    </div>
+                    <div class="page-skeleton-table">
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-skeleton-loader">
+                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="app-container">
         <div id="sidebarContainer"></div>
         <main class="main-content">
@@ -142,12 +165,12 @@ $extensions_count = mysqli_num_rows($extensions_result);
             <div class="content-area">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">Returns & Extensions</h1>
-                        <p class="page-subtitle">Manage your pending return and extension requests.</p>
+                        <h1 class="page-title">Manage your pending return and extension requests.</h1>
                     </div>
                 </div>
 
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
     <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
     <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
     <a href="returns.php" class="tab-link active">Returns & Extensions</a>
@@ -180,53 +203,45 @@ $extensions_count = mysqli_num_rows($extensions_result);
         <span class="units-badge"><?php echo $returns_count; ?> Items</span>
     </div>
 
-    <div class="returns-grid">
-        <?php if ($returns_count > 0): ?>
-            <?php while($row = mysqli_fetch_assoc($returns_result)): ?>
-            <article class="return-card">
-                <div class="return-header">
-                    <span class="return-id">#ORD-<?php echo $row['order_id']; ?></span>
-                    <span class="return-status <?php echo ($row['rental_status'] == 'Returned') ? 'status-returned' : 'status-pending'; ?>">
-                        <?php echo $row['rental_status']; ?>
-                    </span>
-                </div>
-                <div class="return-body">
-                    <div class="return-item">
-                        <div class="return-item-image">
-                            <img src="../../assets/images/<?php echo $row['image'] ?: 'default.png'; ?>" alt="Item">
-                        </div>
-                        <div class="return-item-info">
-                            <h3 class="return-item-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
-                            <p class="return-item-meta">Returned On: <?php echo date('M d, Y', strtotime($row['end_date'])); ?></p>
-                            
-                            <?php if (!empty($row['return_reason'])): ?>
-                                <div class="reason-box">
-                                    <strong>Issue reported:</strong>
-                                    <p><?php echo htmlspecialchars($row['return_reason']); ?></p>
+                    <div class="returns-grid">
+                        <?php if ($returns_count > 0): ?>
+                            <?php while($row = mysqli_fetch_assoc($returns_result)): ?>
+                            <article class="return-card">
+                                <div class="return-header">
+                                    <span class="return-id">#ORD-<?php echo $row['order_id']; ?></span>
+                                    <span class="return-status status-pending"><?php echo $row['rental_status']; ?></span>
                                 </div>
-                            <?php endif; ?>
-                        </div>
+                                <div class="return-body">
+                                    <div class="return-item">
+                                        <div class="return-item-image">
+                                            <?php
+                                                $imageFile = !empty($row['image'])
+                                                    ? '/rent-it/assets/images/products/' . htmlspecialchars($row['image'])
+                                                    : '/rent-it/assets/images/catalog-fallback.svg';
+                                            ?>
+                                            <a href="<?php echo $imageFile; ?>" target="_blank" rel="noopener noreferrer" class="return-image-link" title="View image">
+                                                <img src="<?php echo $imageFile; ?>" alt="Item" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                                            </a>
+                                        </div>
+                                        <div class="return-item-info">
+                                            <h3 class="return-item-name"><?php echo htmlspecialchars($row['item_name']); ?></h3>
+                                            <p class="return-item-meta">Due: <?php echo date('M d, Y', strtotime($row['end_date'])); ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                            </article>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📦</div>
+                                <h3>No active returns</h3>
+                                <p>Return requests will appear here once submitted.</p>
+                                <a href="../myrentals/myrentals.php" class="empty-state-link">View My Rentals</a>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                </div>
-                <div class="return-footer">
-                    <?php if ($row['rental_status'] !== 'Returned'): ?>
-                        <form method="POST">
-                            <input type="hidden" name="order_id" value="<?php echo $row['order_id']; ?>">
-                            <button type="submit" name="action" value="cancel_request" class="btn-cancel-return" onclick="return confirm('Cancel request?')">Cancel Request</button>
-                        </form>
-                    <?php else: ?>
-                        <span class="processed-label">Under Inspection / Maintenance</span>
-                    <?php endif; ?>
-                </div>
-            </article>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <div class="no-data-card">
-                <p>No return requests found.</p>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
+                </section>
 
 <section class="extensions-section" style="margin-top: 40px;">
     <div class="section-header">
@@ -234,34 +249,44 @@ $extensions_count = mysqli_num_rows($extensions_result);
         <span class="units-badge units-badge-blue"><?php echo $extensions_count; ?> Items</span>
     </div>
 
-    <div class="extensions-grid">
-        <?php if ($extensions_count > 0): 
-            mysqli_data_seek($extensions_result, 0); 
-            while($row = mysqli_fetch_assoc($extensions_result)): ?>
-            <article class="extension-card">
-                <div class="extension-header">
-                    <span class="extension-id">#ORD-<?php echo $row['order_id']; ?></span>
-                    <span class="extension-status status-pending"><?php echo $row['rental_status']; ?></span>
-                </div>
-                <div class="extension-body">
-                    <div class="extension-item-info">
-                        <h3 class="extension-item-name"><?= htmlspecialchars($row['item_name']) ?></h3>
-                        <p>New Due Date: <strong><?= date('M d, Y', strtotime($row['end_date'])) ?></strong></p>
+                    <div class="extensions-grid">
+                        <?php if ($extensions_count > 0): 
+                            mysqli_data_seek($extensions_result, 0); 
+                            while($row = mysqli_fetch_assoc($extensions_result)): ?>
+                            <article class="extension-card">
+                                <div class="extension-header">
+                                    <span class="extension-id">#ORD-<?php echo $row['order_id']; ?></span>
+                                    <span class="extension-status status-pending"><?php echo $row['rental_status']; ?></span>
+                                </div>
+                                <div class="extension-body">
+                                    <div class="extension-item-info">
+                                        <h3 class="extension-item-name"><?= htmlspecialchars($row['item_name']) ?></h3>
+                                        <p>New Due Date: <strong><?= date('M d, Y', strtotime($row['end_date'])) ?></strong></p>
+                                    </div>
+                                </div>
+                                <div class="extension-footer">
+                                    <form method="POST">
+                                        <input type="hidden" name="order_id" value="<?= $row['order_id'] ?>">
+                                        <button type="submit" name="action" value="cancel_request" class="btn-cancel-return">Cancel Request</button>
+                                    </form>
+                                </div>
+                            </article>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <h3>No active extensions</h3>
+                                <p>Extension requests will appear here once submitted.</p>
+                                <a href="../myrentals/myrentals.php" class="empty-state-link">View My Rentals</a>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                </div>
-                <div class="extension-footer">
-                    <form method="POST">
-                        <input type="hidden" name="order_id" value="<?= $row['order_id'] ?>">
-                        <button type="submit" name="action" value="cancel_extension" class="btn-cancel-return">Cancel Request</button>
-                    </form>
-                </div>
-            </article>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <div class="no-data-card">
-                <p>No active extensions.</p>
+                </section>
             </div>
-        <?php endif; ?>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
+        </main>
     </div>
 </section>
 
@@ -271,6 +296,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
             if (typeof Components !== 'undefined') {
                 Components.injectSidebar('sidebarContainer', 'returns', 'client');
                 Components.injectTopbar('topbarContainer', 'Returns & Extensions');
+                Components.injectFooter('footerContainer');
             }
         });
     </script>

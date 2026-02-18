@@ -1,4 +1,9 @@
 
+/* Ensure content-area fills remaining space so footer stays at the bottom */
+.content-area {
+    flex: 1 0 auto;
+}
+
 .page-header-dashboard {
     display: flex;
     align-items: center;
@@ -11,7 +16,7 @@
 .page-header-info .page-title {
     font-size: 28px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--heading-primary);
     margin-bottom: 4px;
 }
 
@@ -152,7 +157,7 @@
 }
 
 .kpi-value {
-    color: #1a1a1a;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: bold;
     opacity: 1 !important;
@@ -181,11 +186,11 @@
 }
 
 .tab-link:hover {
-    color: var(--text);
+    color: var(--accent);
 }
 
 .tab-link.active {
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .tab-link.active::after {
@@ -199,6 +204,7 @@
     border-radius: 3px;
 }
 
+
 /* History Section */
 .history-section {
     margin-top: 20px;
@@ -211,6 +217,17 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 768px) {
+    .history-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-panel .history-table {
+        min-width: 600px;
+    }
 }
 
 .history-table {
@@ -245,6 +262,47 @@
 
 .history-table tbody tr:hover {
     background: var(--bg-elevated);
+}
+
+.history-empty td {
+    padding: 24px 16px;
+    background: var(--bg-secondary);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.empty-state-icon {
+    font-size: 28px;
+}
+
+.empty-state-title {
+    margin: 0;
+    color: var(--heading-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.empty-state-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.empty-state-link {
+    color: var(--brand-primary-light, #F59E0B);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.empty-state-link:hover {
+    text-decoration: underline;
 }
 
 /* Item Cell */
@@ -418,24 +476,35 @@
 
 .pagination-btn {
     padding: 8px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text);
+    color: #1e293b;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .pagination-btn:hover {
-    background: var(--bg-elevated);
-    border-color: var(--text-tertiary);
+    background: #f8fafc;
+    border-color: #94a3b8;
 }
 
 .pagination-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+[data-theme="dark"] .pagination-btn {
+    background: var(--bg-elevated);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .pagination-btn:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-tertiary);
 }
 
 /* Promo Banner */
@@ -506,9 +575,38 @@
     }
     
     .rentals-tabs {
-        gap: 16px;
+        gap: 12px;
         overflow-x: auto;
-        padding-bottom: 16px;
+        flex-wrap: nowrap;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .rentals-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-link {
+        white-space: nowrap;
+        padding: 10px 16px;
+        border-radius: 999px;
+        scroll-snap-align: start;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        text-align: center;
+        min-width: fit-content;
+    }
+
+    .tab-link.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .tab-link.active::after {
+        display: none;
     }
     
     .history-table {
@@ -552,6 +650,11 @@
     
     .kpi-value {
         font-size: 20px;
+    }
+
+    .tab-link {
+        font-size: 13px;
+        padding: 8px 14px;
     }
     
     /* Hide more table columns on mobile */

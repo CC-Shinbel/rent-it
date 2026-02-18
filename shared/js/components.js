@@ -23,13 +23,12 @@ const Components = {
      * Navigation tabs for client dashboard
      */
     clientNavTabs: [
-        { id: 'dashboard', icon: '🏠', label: 'Dashboard', href: '/rent-it/client/dashboard/dashboard.php' },
-        { id: 'catalog', icon: '📦', label: 'Browse Catalog', href: '/rent-it/client/catalog/catalog.php' },
-        { id: 'favorites', icon: '❤️', label: 'Favorites', href: '/rent-it/client/favorites/favorites.php' },
-        { id: 'cart', icon: '🛒', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
-        { id: 'myrentals', icon: '🎤', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
-        { id: 'bookinghistory', icon: '📅', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
-        { id: 'contact', icon: '💬', label: 'Contact Us', href: '/rent-it/client/contactusloggedin/contactusloggedin.php' },
+        { id: 'dashboard', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', label: 'Dashboard', href: '/rent-it/client/dashboard/dashboard.php' },
+        { id: 'catalog', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>', label: 'Browse Catalog', href: '/rent-it/client/catalog/catalog.php' },
+        { id: 'favorites', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>', label: 'Favorites', href: '/rent-it/client/favorites/favorites.php' },
+        { id: 'cart', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>', label: 'My Cart', href: '/rent-it/client/cart/cart.php' },
+        { id: 'myrentals', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>', label: 'My Rentals', href: '/rent-it/client/myrentals/myrentals.php' },
+        { id: 'bookinghistory', icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', label: 'Booking History', href: '/rent-it/client/bookinghistory/bookinghistory.php' },
     ],
     /**
      * Get current user from localStorage
@@ -40,21 +39,56 @@ const Components = {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             try {
-                return JSON.parse(userStr);
+                const user = JSON.parse(userStr);
+                // Derive a display name: use full_name if set, otherwise email username
+                if (!user.displayName) {
+                    if (user.full_name && user.full_name.trim()) {
+                        user.displayName = user.full_name;
+                    } else if (user.email) {
+                        user.displayName = user.email.split('@')[0];
+                    } else {
+                        user.displayName = 'User';
+                    }
+                }
+                // Keep backward compat: also set .name
+                user.name = user.displayName;
+                return user;
             } catch (e) {
-                return { name: 'User', role: 'Customer' };
+                return { name: 'User', displayName: 'User', role: 'Customer' };
             }
         }
-        return { name: 'User', role: 'Customer' };
+        return { name: 'User', displayName: 'User', role: 'Customer' };
     },
 
     /**
      * Get user's initial for avatar
-     * @param {string} name - User's name
+     * Uses profile_picture if available, otherwise first letter of display name
+     * @param {string} name - User's display name
      * @returns {string} First character uppercase
      */
     getUserInitial(name) {
         return name?.charAt(0)?.toUpperCase() || 'U';
+    },
+
+    /**
+     * Show a lightweight page skeleton overlay while loading
+     */
+    initPageSkeleton() {
+        if (!document.body) {
+            document.addEventListener('DOMContentLoaded', () => this.initPageSkeleton(), { once: true });
+            return;
+        }
+
+        const overlay = document.querySelector('.page-skeleton-overlay');
+        if (!overlay) return;
+
+        const hideOverlay = () => {
+            overlay.classList.add('is-hidden');
+            setTimeout(() => overlay.remove(), 350);
+        };
+
+        window.addEventListener('load', hideOverlay, { once: true });
+        setTimeout(hideOverlay, 3500);
     },
 
     /**
@@ -74,12 +108,16 @@ const Components = {
         const isClient = context === 'client' || window.location.pathname.includes('/client/');
         const tabs = isClient ? this.clientNavTabs : this.navTabs;
 
+        // Determine active tab from URL for client nav
+        const currentPath = window.location.pathname;
+
         const navItems = tabs.map(tab => {
-            const isActive = activeTab === tab.id;
             if (tab.href) {
+                // Check if this tab matches the current page URL
+                const isActive = currentPath.includes(`/client/${tab.id}/`);
                 // Client nav uses links with tooltip data attribute
                 return `
-                    <a class="nav-item ${isActive ? 'active' : ''}" href="${tab.href}" data-tooltip="${tab.label}">
+                    <a class="nav-item${isActive ? ' active' : ''}" href="${tab.href}" data-tooltip="${tab.label}">
                         <span class="nav-icon">${tab.icon}</span>
                         <span class="nav-label">${tab.label}</span>
                     </a>
@@ -87,7 +125,7 @@ const Components = {
             } else {
                 // Admin nav uses buttons for SPA-style navigation
                 return `
-                    <button class="nav-item ${isActive ? 'active' : ''}" data-tab="${tab.id}" data-tooltip="${tab.label}">
+                    <button class="nav-item" data-tab="${tab.id}" data-tooltip="${tab.label}">
                         <span class="nav-icon">${tab.icon}</span>
                         <span class="nav-label">${tab.label}</span>
                     </button>
@@ -119,23 +157,15 @@ const Components = {
                 
                 <div class="sidebar-footer">
                     <div class="sidebar-user">
-                        <div class="sidebar-user-avatar">${initial}</div>
+                        <div class="sidebar-user-avatar">${user.profile_picture ? '<img src="/rent-it/assets/profile/' + user.profile_picture + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">' : initial}</div>
                         <div class="sidebar-user-info">
-                            <span class="sidebar-user-name">${user.name || 'User'}</span>
+                            <span class="sidebar-user-name">${user.displayName || 'User'}</span>
                             <span class="sidebar-user-role">${user.role || 'Customer'}</span>
                         </div>
                     </div>
                     
                     <!-- Mobile-only actions (shown on ultra-small screens) -->
                     <div class="mobile-only-actions">
-                        <a href="#" class="mobile-action-item" id="sidebarNotifications">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                            </svg>
-                            <span>Notifications</span>
-                            <span class="mobile-badge">3</span>
-                        </a>
                         <button class="mobile-action-item" id="sidebarThemeToggle">
                             <svg class="theme-icon-light" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="5"/>
@@ -181,11 +211,11 @@ const Components = {
      * Attach event listeners to sidebar elements
      */
     attachSidebarEvents() {
-        // Nav item clicks
-        document.querySelectorAll('.nav-item').forEach(item => {
+        // Nav item clicks (admin SPA buttons only, not client <a> links)
+        document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
             item.addEventListener('click', (e) => {
                 const tabId = e.currentTarget.dataset.tab;
-                this.handleTabChange(tabId);
+                if (tabId) this.handleTabChange(tabId);
             });
         });
 
@@ -232,8 +262,10 @@ const Components = {
      * @param {string} tabId - ID of the tab to switch to
      */
     handleTabChange(tabId) {
+        if (!tabId) return;
+
         // Update active state
-        document.querySelectorAll('.nav-item').forEach(item => {
+        document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
             item.classList.toggle('active', item.dataset.tab === tabId);
         });
 
@@ -276,6 +308,9 @@ const Components = {
                 ${this.generateTableContent(tabId)}
             </div>
         `;
+
+        const isLoading = contentArea.querySelector('.loader-state');
+        document.querySelector('.app-container')?.classList.toggle('sidebar-neutral', !!isLoading);
     },
 
     /**
@@ -352,10 +387,37 @@ const Components = {
     generateEmptyState() {
         return `
             <div class="empty-state loader-state" role="status" aria-live="polite">
-                <div class="loader-spinner" aria-hidden="true"></div>
-                <h3 class="empty-state-title">Loading content…</h3>
-                <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
-                <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
+                <div class="loader-skeleton" aria-hidden="true">
+                    <div class="skeleton-header">
+                        <span class="skeleton-line skeleton-title"></span>
+                        <span class="skeleton-pill"></span>
+                    </div>
+                    <div class="skeleton-table">
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-35"></span>
+                            <span class="skeleton-cell w-25"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-30"></span>
+                            <span class="skeleton-cell w-30"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                        <div class="skeleton-row">
+                            <span class="skeleton-cell w-40"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-20"></span>
+                            <span class="skeleton-cell w-15"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="loader-message">
+                    <h3 class="empty-state-title">Loading content…</h3>
+                    <p class="empty-state-text">If this takes too long, the page may be unavailable.</p>
+                    <button class="empty-state-link" type="button" onclick="window.location.reload()">Retry</button>
+                </div>
             </div>
         `;
     },
@@ -791,16 +853,16 @@ container.innerHTML = `
                         <div class="footer-col">
                             <h4 class="footer-heading">Support</h4>
                             <nav class="footer-nav">
-                                <a href="/pages/contactus.html">Contact Us</a>
-                                <a href="/pages/about.html">About</a>
-                                <a href="#">FAQs</a>
+                                <a href="/rent-it/client/contactusloggedin/contactusloggedin.php">Contact Us</a>
+                                <a href="/rent-it/pages/aboutus.html">About</a>
+                                <a href="/rent-it/pages/contactus.html#faq-section">FAQs</a>
                             </nav>
                         </div>
                         <div class="footer-col">
                             <h4 class="footer-heading">Legal</h4>
                             <nav class="footer-nav">
-                                <a href="/pages/terms.html">Terms of Service</a>
-                                <a href="/pages/privacy.html">Privacy Policy</a>
+                                <a href="/rent-it/pages/terms.html">Terms of Service</a>
+                                <a href="/rent-it/pages/privacy-policy.html">Privacy Policy</a>
                             </nav>
                         </div>
                     </div>
@@ -809,21 +871,23 @@ container.innerHTML = `
                 <div class="footer-bottom">
                     <p class="footer-copyright">&copy; ${currentYear} RentIT. All rights reserved.</p>
                     <div class="footer-socials">
-                        <a href="#" class="social-link" aria-label="Facebook">
+                        <a href="https://www.facebook.com/CertiCode" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
                             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
                                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                             </svg>
                         </a>
-                        <a href="#" class="social-link" aria-label="Instagram">
+                        <a href="https://www.certicode.tech/" class="social-link" aria-label="CertiCode Website" target="_blank" rel="noopener noreferrer">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                                <circle cx="12" cy="12" r="9"/>
+                                <line x1="3" y1="12" x2="21" y2="12"/>
+                                <path d="M12 3a12 12 0 0 0 0 18"/>
+                                <path d="M12 3a12 12 0 0 1 0 18"/>
                             </svg>
                         </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-                                <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                        <a href="/rent-it/client/contactusloggedin/contactusloggedin.php" class="social-link" aria-label="Contact Us">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
                             </svg>
                         </a>
                     </div>
@@ -1213,3 +1277,13 @@ if (typeof module !== 'undefined' && module.exports) {
 window.showToast = function(message, type = 'success') {
     Components.showToast(message, type);
 };
+
+if (typeof window !== 'undefined') {
+    // Auto-hide any existing per-page skeleton overlay
+    const _hideSkeleton = () => Components.initPageSkeleton();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _hideSkeleton, { once: true });
+    } else {
+        _hideSkeleton();
+    }
+}

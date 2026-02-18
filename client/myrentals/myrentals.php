@@ -22,48 +22,70 @@ if (!isset($_SESSION['user_id'])) {
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/images/rIT_logo_tp.png">
+    <link rel="icon" type="image/png" href="/rent-it/assets/images/rIT_logo_tp.png">
     
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/myrentals/myrentals.css">
-    <style>
-        .rentals-tabs {
-    display: flex;
-    gap: 20px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 10px 5px;
-    font-weight: 500;
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.tab-link.active {
-    color: #f97316; 
-}
-
-
-.tab-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background-color: #f97316;
-    border-radius: 10px 10px 0 0;
-}</style>
 
     <script src="<?= BASE_URL ?>/shared/js/theme.js"></script>
 </head>
 <body>
+    <div class="page-skeleton-overlay" aria-hidden="true">
+        <div class="page-skeleton-shell">
+            <aside class="page-skeleton-sidebar">
+                <div class="page-skeleton-logo skeleton-shape"></div>
+                <div class="page-skeleton-nav">
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-60"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-80"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-50"></span>
+                    <span class="page-skeleton-pill skeleton-shape w-70"></span>
+                </div>
+                <div class="page-skeleton-user">
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                    <span class="page-skeleton-line skeleton-shape w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="page-skeleton-main">
+                <div class="page-skeleton-topbar">
+                    <span class="page-skeleton-line skeleton-shape w-30" style="height: 14px;"></span>
+                    <span class="page-skeleton-circle skeleton-shape"></span>
+                </div>
+                <div class="page-skeleton-card">
+                    <div class="page-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="page-skeleton-line skeleton-shape w-40" style="height: 14px;"></span>
+                        <span class="page-skeleton-pill skeleton-shape w-20"></span>
+                    </div>
+                    <div class="page-skeleton-table">
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-35 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-40 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-30 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                        <div class="page-skeleton-row">
+                            <span class="page-skeleton-line skeleton-shape w-50 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-25 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-20 page-skeleton-block"></span>
+                            <span class="page-skeleton-line skeleton-shape w-15 page-skeleton-block"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-skeleton-loader">
+                    <span class="page-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="app-container">
         <div id="sidebarContainer"></div>
         
@@ -73,8 +95,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="content-area" id="contentArea">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
-                        <h1 class="page-title">My Rentals</h1>
-                        <p class="page-subtitle">Manage your active videoke equipment and view your rental history.</p>
+                        <h1 class="page-title">Manage your active videoke equipment and view your rental history.</h1>
                     </div>
                     <div class="page-header-actions">
                         <a href="<?= BASE_URL ?>/client/catalog/catalog.php" class="btn-new">
@@ -88,6 +109,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
 
                 <div class="rentals-tabs">
+                <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link active">Active Rentals</a>
                     <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
@@ -127,15 +149,17 @@ if (!isset($_SESSION['user_id'])) {
 
               
             </div>
+
+            <!-- Footer Container (Injected by JS) -->
+            <div id="footerContainer"></div>
         </main>
     </div>
 
     <div id="receiptModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-        <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:350px; border-radius:12px; position:relative;">
-            <span class="close-modal" onclick="closeModal('receiptModal')" style="position:absolute; right:15px; top:10px; cursor:pointer; font-size:24px;">&times;</span>
-            <div id="receiptDetails">
-                </div>
-            <button onclick="window.print()" style="width:100%; margin-top:15px; background:#f97316; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer;">Print Receipt</button>
+        <div class="modal-content receipt-modal-content">
+            <span class="close-modal" onclick="closeModal('receiptModal')">&times;</span>
+            <div id="receiptDetails"></div>
+            <button onclick="downloadReceiptPDF()" class="btn-download-receipt">Download Receipt</button>
         </div>
     </div>
 
@@ -201,7 +225,6 @@ if (!isset($_SESSION['user_id'])) {
             </form>
         </div>
     </div>
-    
     
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
     <script src="<?= BASE_URL ?>/client/myrentals/myrentals.js"></script>

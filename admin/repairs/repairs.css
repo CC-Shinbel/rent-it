@@ -31,7 +31,7 @@
 .stat-card:nth-child(4) { animation-delay: 0.2s; }
 
 .stat-card:hover {
-    border-color: var(--admin-orange-500);
+    border-color: var(--admin-border-medium);
     transform: translateY(-2px);
     box-shadow: var(--admin-shadow-lg);
 }
@@ -220,8 +220,14 @@
    ===================================================== */
 .repairs-table-container {
     padding: 0;
-    overflow: hidden;
     animation: fadeInUp 0.4s ease-out 0.3s backwards;
+}
+
+@media (max-width: 768px) {
+    .repairs-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 .repairs-table {
@@ -753,13 +759,30 @@
     }
     
     .stat-card {
-        padding: 1.25rem;
+        padding: var(--admin-spacing-lg);
+    }
+
+    .stat-card .stat-info h3 {
+        font-size: var(--admin-font-xl);
+    }
+
+    .stat-card .stat-info p {
+        font-size: var(--admin-font-xs);
     }
     
     .pagination {
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--admin-spacing-md);
         align-items: center;
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+    }
+
+    .controls-left input,
+    .controls-right select {
+        font-size: var(--admin-font-xs);
     }
 }
 
@@ -767,7 +790,7 @@
     .page-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: var(--admin-spacing-md);
     }
     
     .page-header-right {
@@ -778,6 +801,101 @@
     .page-header-right .btn {
         width: 100%;
         justify-content: center;
+        font-size: var(--admin-font-xs);
+    }
+
+    .stat-card {
+        padding: var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--admin-spacing-sm);
+    }
+
+    .stat-card .stat-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .stat-card .stat-info h3 {
+        font-size: var(--admin-font-lg);
+    }
+
+    .stat-card .stat-info p {
+        font-size: var(--admin-font-xs);
+    }
+
+    .controls-left input {
+        font-size: var(--admin-font-xs);
+    }
+
+    .controls-right select {
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-xs) var(--admin-spacing-md);
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+        text-align: center;
+    }
+
+    .page-btn,
+    .pagination-btn {
+        width: 32px;
+        height: 32px;
+        font-size: var(--admin-font-xs);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .repairs-stats {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .stat-card {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .stat-card .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .stat-card .stat-info h3 {
+        font-size: var(--admin-font-md);
+    }
+
+    .stat-card .stat-info p {
+        font-size: 10px;
+    }
+
+    .pagination {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .pagination .page-btn,
+    .pagination .pagination-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .modal-content {
+        padding: var(--admin-spacing-md);
+    }
+
+    .modal-footer {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .timeline-date {
+        font-size: 10px;
+    }
+
+    .timeline-text {
+        font-size: var(--admin-font-xs);
     }
 }
 

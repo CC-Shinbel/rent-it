@@ -38,43 +38,32 @@ if (empty($data->username) || empty($data->password)) {
 $username = mysqli_real_escape_string($conn, $data->username);
 $password = $data->password;
 
-// Demo admin account (admin1 / admin1) for testing
-if ($username === 'admin1' && $password === 'admin1') {
-    // Look up the actual admin user from DB for session data
-    $query = "SELECT id, full_name, email, role FROM users WHERE role = 'admin' LIMIT 1";
-    $result = mysqli_query($conn, $query);
-    if ($result && mysqli_num_rows($result) > 0) {
-        $admin = mysqli_fetch_assoc($result);
-    } else {
-        // Fallback if no admin exists in DB
-        $admin = ['id' => 0, 'full_name' => 'Admin', 'email' => 'admin@certicode.com', 'role' => 'admin'];
-    }
-} else {
-    // Find admin user by email (username can also be an email)
-    $query = "SELECT id, full_name, email, password, role FROM users WHERE email = '$username' AND role = 'admin' LIMIT 1";
-    $result = mysqli_query($conn, $query);
+// Look up admin account from admin_accounts table
+$query = "SELECT admin_id, username, password, full_name, email FROM admin_accounts WHERE username = '$username' LIMIT 1";
+$result = mysqli_query($conn, $query);
 
-    if (!$result || mysqli_num_rows($result) === 0) {
-        http_response_code(401);
-        echo json_encode(["success" => false, "message" => "Invalid username or password"]);
-        exit;
-    }
+if (!$result || mysqli_num_rows($result) === 0) {
+    http_response_code(401);
+    echo json_encode(["success" => false, "message" => "Invalid username or password"]);
+    mysqli_close($conn);
+    exit;
+}
 
-    $admin = mysqli_fetch_assoc($result);
+$admin = mysqli_fetch_assoc($result);
 
-    // Verify password using bcrypt
-    if (!password_verify($password, $admin['password'])) {
-        http_response_code(401);
-        echo json_encode(["success" => false, "message" => "Invalid username or password"]);
-        exit;
-    }
+// Verify password using bcrypt
+if (!password_verify($password, $admin['password'])) {
+    http_response_code(401);
+    echo json_encode(["success" => false, "message" => "Invalid username or password"]);
+    mysqli_close($conn);
+    exit;
 }
 
 // Set PHP session
-$_SESSION['admin_id'] = $admin['id'];
+$_SESSION['admin_id'] = $admin['admin_id'];
 $_SESSION['admin_email'] = $admin['email'];
 $_SESSION['admin_name'] = $admin['full_name'];
-$_SESSION['admin_role'] = $admin['role'];
+$_SESSION['admin_role'] = 'admin';
 $_SESSION['admin_logged_in'] = true;
 
 session_write_close();
@@ -85,10 +74,10 @@ echo json_encode([
     "success" => true,
     "message" => "Login successful",
     "admin" => [
-        "id" => $admin['id'],
+        "id" => $admin['admin_id'],
         "fullName" => $admin['full_name'],
         "email" => $admin['email'],
-        "role" => $admin['role']
+        "role" => "admin"
     ]
 ]);
 exit;

@@ -40,7 +40,7 @@
     border-radius: var(--admin-radius-lg);
     padding: var(--admin-spacing-sm) var(--admin-spacing-lg);
     flex: 1;
-    min-width: 250px;
+    min-width: 0;
     max-width: 400px;
     transition: all var(--admin-transition-fast);
 }
@@ -83,6 +83,10 @@
         max-width: none;
     }
 
+    .history-search input {
+        font-size: var(--admin-font-xs);
+    }
+
     .history-filters {
         flex-wrap: wrap;
     }
@@ -90,6 +94,11 @@
     .history-filters .filter-select {
         flex: 1;
         min-width: 120px;
+        font-size: var(--admin-font-xs);
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
     }
 }
 
@@ -100,7 +109,8 @@
     background: var(--admin-bg-card);
     border: 1px solid var(--admin-border-color);
     border-radius: var(--admin-radius-xl);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     margin-bottom: var(--admin-spacing-lg);
 }
 
@@ -164,10 +174,6 @@
    RESPONSIVE TABLE
    ============================ */
 @media (max-width: 1024px) {
-    .history-table-container {
-        overflow-x: auto;
-    }
-
     .history-table {
         min-width: 800px;
     }
@@ -471,13 +477,74 @@
         gap: var(--admin-spacing-sm);
     }
 
+    .history-search {
+        padding: var(--admin-spacing-xs) var(--admin-spacing-md);
+    }
+
+    .history-search input {
+        font-size: var(--admin-font-xs);
+    }
+
+    .history-search svg {
+        width: 16px;
+        height: 16px;
+    }
+
     .history-filters .filter-select {
         min-width: unset;
         width: 100%;
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-xs) var(--admin-spacing-md);
     }
 
     .history-filters {
         flex-direction: column;
+    }
+
+    .history-pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+        text-align: center;
+        width: 100%;
+    }
+
+    .page-btn,
+    .pagination-btn {
+        width: 32px;
+        height: 32px;
+        font-size: var(--admin-font-xs);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .history-kpi-grid {
+        gap: var(--admin-spacing-sm);
+    }
+
+    .history-toolbar {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .history-search {
+        padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
+    }
+
+    .history-pagination {
+        gap: var(--admin-spacing-xs);
+    }
+
+    .history-pagination .page-btn,
+    .history-pagination .pagination-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: 10px;
     }
 }
 

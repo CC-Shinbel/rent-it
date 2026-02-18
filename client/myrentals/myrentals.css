@@ -16,7 +16,7 @@
 .page-header-info .page-title {
     font-size: 28px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--heading-primary);
     margin-bottom: 4px;
 }
 
@@ -48,11 +48,11 @@
 }
 
 .tab-link:hover {
-    color: var(--text);
+    color: var(--accent);
 }
 
 .tab-link.active {
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .tab-link.active::after {
@@ -65,6 +65,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-hover));
     border-radius: 3px;
 }
+
 
 /* Section Header */
 .section-header {
@@ -100,7 +101,50 @@
     margin-bottom: 32px;
 }
 
-/* 2. Style ng bawat Rental Card */
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.empty-state-card {
+    grid-column: 1 / -1;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.empty-state-icon {
+    font-size: 28px;
+}
+
+.empty-state-title {
+    margin: 0;
+    color: var(--heading-primary);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.empty-state-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.empty-state-link {
+    color: var(--brand-primary-light, #F59E0B);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.empty-state-link:hover {
+    text-decoration: underline;
+}
+
 .rental-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -235,9 +279,13 @@
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.card-image-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
 }
 
 .card-image img {
@@ -320,6 +368,17 @@
     box-shadow: var(--shadow-card);
 }
 
+@media (max-width: 768px) {
+    .history-panel {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .history-panel .history-table {
+        min-width: 600px;
+    }
+}
+
 .history-table {
     width: 100%;
     border-collapse: collapse;
@@ -352,6 +411,11 @@
 
 .history-table tbody tr:hover {
     background: var(--bg-elevated);
+}
+
+.history-empty td {
+    padding: 24px 16px;
+    background: var(--bg-secondary);
 }
 
 /* History Item Cell */
@@ -393,6 +457,10 @@
     font-size: 12px;
     color: var(--success);
     font-weight: 500;
+}
+
+.period-status.status-inactive {
+    color: var(--text-tertiary);
 }
 
 .amount-cell {
@@ -457,6 +525,15 @@
 
 .action-btn.action-muted:hover {
     background: var(--bg-elevated);
+}
+
+.action-btn.receipt-btn {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.action-btn.receipt-btn:hover {
+    background: var(--accent-hover);
 }
 
 /* Promo Banner */
@@ -541,9 +618,38 @@
     }
     
     .rentals-tabs {
-        gap: 16px;
+        gap: 12px;
         overflow-x: auto;
-        padding-bottom: 16px;
+        flex-wrap: nowrap;
+        padding-bottom: 12px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .rentals-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-link {
+        white-space: nowrap;
+        padding: 10px 16px;
+        border-radius: 999px;
+        scroll-snap-align: start;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        text-align: center;
+        min-width: fit-content;
+    }
+
+    .tab-link.active {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    .tab-link.active::after {
+        display: none;
     }
     
     .history-table {
@@ -586,4 +692,123 @@
     .history-table td:nth-child(2) {
         display: none;
     }
+}
+
+/* ===== RECEIPT MODAL ===== */
+.receipt-modal-content {
+    background: var(--card-bg, #fff);
+    margin: 10% auto;
+    padding: 20px;
+    width: 350px;
+    border-radius: 12px;
+    position: relative;
+    color: var(--text-primary);
+}
+
+.receipt-modal-content .close-modal {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    line-height: 1;
+}
+
+.receipt-modal-content .close-modal:hover {
+    color: var(--text-primary);
+}
+
+.receipt-canvas {
+    padding: 10px;
+    font-family: 'Inter', sans-serif;
+}
+
+.receipt-top {
+    text-align: center;
+    border-bottom: 2px dashed var(--border-color, #e2e8f0);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.receipt-brand {
+    margin: 0;
+    color: #f97316;
+}
+
+.receipt-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary, #64748b);
+    margin: 5px 0 0 0;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.receipt-block {
+    margin-bottom: 10px;
+}
+
+.receipt-label-text {
+    color: var(--text-secondary, #64748b);
+}
+
+.receipt-block .receipt-label-text,
+.receipt-block .receipt-value {
+    display: block;
+}
+
+.receipt-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.receipt-period {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.receipt-total-row {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color, #eee);
+}
+
+.receipt-total-label {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.receipt-total-amount {
+    font-weight: 800;
+    color: #f97316;
+}
+
+.receipt-footer-text {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-secondary, #94a3b8);
+    margin-top: 20px;
+}
+
+.btn-download-receipt {
+    width: 100%;
+    margin-top: 15px;
+    background: #f97316;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.btn-download-receipt:hover {
+    background: #ea580c;
 }

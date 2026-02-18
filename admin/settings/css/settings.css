@@ -12,32 +12,32 @@
 
 /* Settings Card */
 .settings-card {
-    background: var(--card-bg, #1e1e1e);
-    border: 1px solid var(--border-color, #333);
-    border-radius: var(--radius-lg, 12px);
+    background: var(--admin-bg-card);
+    border: 1px solid var(--admin-border-color);
+    border-radius: var(--admin-radius-lg, 12px);
     overflow: hidden;
 }
 
 .settings-card-header {
-    padding: var(--spacing-lg, 1.5rem);
-    border-bottom: 1px solid var(--border-color, #333);
+    padding: var(--admin-spacing-xl, 1.5rem);
+    border-bottom: 1px solid var(--admin-border-color);
 }
 
 .settings-card-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--text-primary, #fff);
+    color: var(--admin-text-primary);
     margin: 0 0 0.25rem 0;
 }
 
 .settings-card-subtitle {
     font-size: 0.875rem;
-    color: var(--text-secondary, #999);
+    color: var(--admin-text-secondary);
     margin: 0;
 }
 
 .settings-card-body {
-    padding: var(--spacing-lg, 1.5rem);
+    padding: var(--admin-spacing-xl, 1.5rem);
 }
 
 /* Password Card Specific */
@@ -63,7 +63,7 @@
 }
 
 .setting-item:not(:last-child) {
-    border-bottom: 1px solid var(--border-color, #333);
+    border-bottom: 1px solid var(--admin-border-color);
 }
 
 .setting-info {
@@ -78,15 +78,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-tertiary, #2a2a2a);
-    border-radius: var(--radius-md, 8px);
+    background: var(--admin-bg-elevated);
+    border-radius: var(--admin-radius-md, 8px);
     flex-shrink: 0;
 }
 
 .setting-icon svg {
     width: 20px;
     height: 20px;
-    color: var(--primary-color, #FF6B35);
+    color: var(--admin-accent);
 }
 
 .setting-text {
@@ -98,13 +98,13 @@
 .setting-label {
     font-size: 0.9375rem;
     font-weight: 500;
-    color: var(--text-primary, #fff);
+    color: var(--admin-text-primary);
     margin: 0;
 }
 
 .setting-description {
     font-size: 0.8125rem;
-    color: var(--text-secondary, #999);
+    color: var(--admin-text-secondary);
     margin: 0;
 }
 
@@ -131,7 +131,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--bg-tertiary, #3a3a3a);
+    background-color: var(--admin-bg-elevated);
     transition: 0.3s ease;
     border-radius: 28px;
 }
@@ -143,13 +143,13 @@
     width: 22px;
     left: 3px;
     bottom: 3px;
-    background-color: var(--text-secondary, #999);
+    background-color: var(--admin-text-muted);
     transition: 0.3s ease;
     border-radius: 50%;
 }
 
 .toggle-input:checked + .toggle-slider {
-    background-color: var(--primary-color, #FF6B35);
+    background-color: var(--admin-accent);
 }
 
 .toggle-input:checked + .toggle-slider:before {
@@ -158,7 +158,7 @@
 }
 
 .toggle-input:focus + .toggle-slider {
-    box-shadow: 0 0 0 2px var(--primary-color, #FF6B35);
+    box-shadow: 0 0 0 2px var(--admin-accent);
 }
 
 /* Password Form */
@@ -177,33 +177,33 @@
 .form-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-primary, #fff);
+    color: var(--admin-text-primary);
 }
 
 .form-input {
     width: 100%;
     padding: 0.75rem 1rem;
     font-size: 0.9375rem;
-    color: var(--text-primary, #fff);
-    background: var(--bg-secondary, #252525);
-    border: 1px solid var(--border-color, #333);
-    border-radius: var(--radius-md, 8px);
+    color: var(--admin-text-primary);
+    background: var(--admin-bg-input);
+    border: 1px solid var(--admin-border-color);
+    border-radius: var(--admin-radius-md, 8px);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-input::placeholder {
-    color: var(--text-muted, #666);
+    color: var(--admin-text-muted);
 }
 
 .form-input:focus {
     outline: none;
-    border-color: var(--primary-color, #FF6B35);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-accent-muted);
 }
 
 .form-hint {
     font-size: 0.75rem;
-    color: var(--text-muted, #666);
+    color: var(--admin-text-muted);
 }
 
 /* Password Input Wrapper */
@@ -227,12 +227,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary, #999);
+    color: var(--admin-text-secondary);
     transition: color 0.2s ease;
 }
 
 .password-toggle:hover {
-    color: var(--text-primary, #fff);
+    color: var(--admin-text-primary);
 }
 
 .password-toggle svg {
@@ -257,9 +257,21 @@
         align-items: flex-start;
         gap: var(--spacing-sm, 0.5rem);
     }
+
+    .setting-label {
+        font-size: var(--admin-font-sm);
+    }
+
+    .setting-description {
+        font-size: var(--admin-font-xs);
+    }
     
     .toggle-switch-wrapper {
         align-self: flex-end;
+    }
+
+    .settings-card .admin-card-title {
+        font-size: var(--admin-font-md);
     }
 }
 
@@ -269,10 +281,44 @@
     }
 
     .setting-label {
-        font-size: var(--admin-font-sm);
+        font-size: var(--admin-font-xs);
     }
 
     .setting-description {
+        font-size: 10px;
+    }
+
+    .settings-card .admin-card-title {
+        font-size: var(--admin-font-sm);
+    }
+}
+
+/* ============================
+   EXTRA SMALL SCREEN (375px)
+   ============================ */
+@media (max-width: 375px) {
+    .setting-item {
+        gap: var(--admin-spacing-xs);
+        padding: var(--admin-spacing-sm) 0;
+    }
+
+    .settings-grid {
+        gap: var(--admin-spacing-md);
+    }
+
+    .setting-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .setting-description {
+        font-size: 10px;
+    }
+
+    .toggle-switch-wrapper {
+        align-self: flex-start;
+    }
+
+    .settings-card .admin-card-title {
         font-size: var(--admin-font-xs);
     }
 }

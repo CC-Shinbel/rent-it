@@ -19,6 +19,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -131,10 +132,13 @@ textarea:focus-visible {
     min-height: 100vh;
     margin-left: var(--admin-sidebar-width);
     transition: margin-left var(--admin-transition-normal);
+    overflow-x: hidden;
+    max-width: calc(100vw - var(--admin-sidebar-width));
 }
 
 .admin-wrapper.sidebar-collapsed .admin-main {
     margin-left: var(--admin-sidebar-collapsed);
+    max-width: calc(100vw - var(--admin-sidebar-collapsed));
 }
 
 .admin-content {
@@ -143,6 +147,7 @@ textarea:focus-visible {
     max-width: var(--admin-container-max);
     width: 100%;
     margin: 0 auto;
+    overflow-x: hidden;
 }
 
 /* ============================
@@ -376,16 +381,18 @@ textarea:focus-visible {
 @media (max-width: 1024px) {
     .admin-main {
         margin-left: 0;
+        max-width: 100vw;
     }
     
     .admin-wrapper.sidebar-collapsed .admin-main {
         margin-left: 0;
+        max-width: 100vw;
     }
 }
 
 @media (max-width: 768px) {
     .admin-content {
-        padding: var(--admin-spacing-md);
+        padding: var(--admin-spacing-lg);
     }
     
     .admin-page-header {
@@ -397,15 +404,17 @@ textarea:focus-visible {
         width: 100%;
         justify-content: flex-start;
     }
+
+    /* Typography scaling - tablet */
+    h1 { font-size: var(--admin-font-2xl); }
+    h2 { font-size: var(--admin-font-xl); }
+    h3 { font-size: var(--admin-font-lg); }
+    h4 { font-size: var(--admin-font-md); }
 }
 
 @media (max-width: 480px) {
-    html {
-        font-size: 14px;
-    }
-    
     .admin-content {
-        padding: var(--admin-spacing-sm);
+        padding: var(--admin-spacing-md);
     }
 
     .admin-page-title {
@@ -424,9 +433,23 @@ textarea:focus-visible {
         font-size: var(--admin-font-xs);
         padding: var(--admin-spacing-sm) var(--admin-spacing-md);
     }
+
+    /* Typography scaling - mobile */
+    h1 { font-size: var(--admin-font-xl); }
+    h2 { font-size: var(--admin-font-lg); }
+    h3 { font-size: var(--admin-font-md); }
+    h4 { font-size: var(--admin-font-sm); }
+
+    body {
+        font-size: var(--admin-font-sm);
+    }
 }
 
 @media (max-width: 375px) {
+    .admin-content {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
     .admin-page-title {
         font-size: var(--admin-font-lg);
     }
@@ -440,6 +463,12 @@ textarea:focus-visible {
         width: 100%;
         justify-content: center;
     }
+
+    /* Typography scaling - ultra mobile */
+    h1 { font-size: var(--admin-font-lg); }
+    h2 { font-size: var(--admin-font-md); }
+    h3 { font-size: var(--admin-font-sm); }
+    h4 { font-size: var(--admin-font-xs); }
 }
 
 /* ============================

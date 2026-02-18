@@ -19,6 +19,177 @@
 }
 
 /* ============================
+   ADMIN SKELETON OVERLAY
+   ============================ */
+.admin-skeleton-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--admin-bg-primary);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.admin-skeleton-overlay.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.admin-skeleton-shell {
+    width: min(1200px, 100%);
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1fr;
+    gap: 18px;
+}
+
+.admin-skeleton-sidebar {
+    background: var(--admin-bg-sidebar);
+    border-radius: var(--admin-radius-xl);
+    border: 1px solid var(--admin-border-color);
+    box-shadow: var(--admin-shadow-md);
+    padding: 20px 18px;
+    display: grid;
+    gap: 16px;
+    min-height: 420px;
+}
+
+.admin-skeleton-main {
+    display: grid;
+    gap: 16px;
+}
+
+.admin-skeleton-topbar,
+.admin-skeleton-card {
+    background: var(--admin-bg-card);
+    border-radius: var(--admin-radius-xl);
+    border: 1px solid var(--admin-border-color);
+    box-shadow: var(--admin-shadow-sm);
+    padding: 18px 20px;
+    display: grid;
+    gap: 12px;
+}
+
+.admin-skeleton-topbar {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+
+.admin-skeleton-logo {
+    height: 18px;
+    width: 120px;
+}
+
+.admin-skeleton-nav {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-skeleton-user {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-skeleton-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.admin-skeleton-row {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-skeleton-row.admin-skeleton-kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.admin-skeleton-table {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-skeleton-block {
+    height: 12px;
+    border-radius: 999px;
+}
+
+.admin-skeleton-loader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--admin-text-muted);
+    font-size: var(--admin-font-xs);
+    padding-left: 6px;
+}
+
+.admin-skeleton-spinner {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(248, 250, 252, 0.2);
+    border-top-color: var(--admin-accent);
+    animation: spin 0.8s linear infinite;
+}
+
+[data-theme="light"] .admin-skeleton-spinner {
+    border-color: rgba(15, 23, 42, 0.2);
+}
+
+.admin-skeleton-line,
+.admin-skeleton-pill,
+.admin-skeleton-circle,
+.admin-skeleton-block,
+.admin-skeleton-logo {
+    background: linear-gradient(90deg, rgba(248, 250, 252, 0.08), rgba(248, 250, 252, 0.18), rgba(248, 250, 252, 0.08));
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+    border-radius: 999px;
+}
+
+[data-theme="light"] .admin-skeleton-line,
+[data-theme="light"] .admin-skeleton-pill,
+[data-theme="light"] .admin-skeleton-circle,
+[data-theme="light"] .admin-skeleton-block,
+[data-theme="light"] .admin-skeleton-logo {
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.16), rgba(15, 23, 42, 0.08));
+}
+
+.admin-skeleton-pill {
+    height: 12px;
+}
+
+.w-20 { width: 20%; }
+.w-25 { width: 25%; }
+.w-30 { width: 30%; }
+.w-35 { width: 35%; }
+.w-40 { width: 40%; }
+.w-50 { width: 50%; }
+.w-60 { width: 60%; }
+.w-70 { width: 70%; }
+.w-80 { width: 80%; }
+
+@media (max-width: 960px) {
+    .admin-skeleton-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-skeleton-sidebar {
+        display: none;
+    }
+
+    .admin-skeleton-row.admin-skeleton-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ============================
    SIDEBAR
    ============================ */
 .admin-sidebar {
@@ -27,12 +198,21 @@
     left: 0;
     width: var(--admin-sidebar-width);
     height: 100vh;
+    height: 100dvh;
     background: var(--admin-bg-sidebar);
     border-right: 1px solid var(--admin-border-color);
     display: flex;
     flex-direction: column;
     z-index: var(--admin-z-fixed);
     transition: width var(--admin-transition-normal), transform var(--admin-transition-normal);
+    overflow: visible;
+}
+
+.sidebar-logo-link {
+    display: flex;
+    align-items: center;
+    gap: var(--admin-spacing-md);
+    text-decoration: none;
 }
 
 .admin-sidebar.collapsed {
@@ -66,9 +246,16 @@
 }
 
 .admin-sidebar.collapsed .sidebar-logo-text {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+    display: none;
+}
+
+.admin-sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+    padding: var(--admin-spacing-lg) var(--admin-spacing-md);
+}
+
+.admin-sidebar.collapsed .sidebar-logo-link {
+    justify-content: center;
 }
 
 /* Sidebar Navigation */
@@ -76,6 +263,7 @@
     flex: 1;
     padding: var(--admin-spacing-lg) var(--admin-spacing-md);
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     gap: var(--admin-spacing-xs);
@@ -137,6 +325,17 @@
     overflow: hidden;
 }
 
+/* Collapsed sidebar: center nav items and icons */
+.admin-sidebar.collapsed .sidebar-nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.admin-sidebar.collapsed .sidebar-nav-icon {
+    margin: 0 auto;
+}
+
 /* Sidebar collapse toggle */
 .sidebar-collapse-btn {
     position: absolute;
@@ -152,16 +351,11 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 100;
+    z-index: calc(var(--admin-z-sticky) + 10);
     transition: all var(--admin-transition-fast);
     opacity: 1;
     color: var(--admin-text-secondary);
     box-shadow: var(--admin-shadow-md);
-}
-    z-index: 100;
-    transition: all var(--admin-transition-fast);
-    opacity: 1;
-    box-shadow: var(--admin-shadow-sm);
 }
 
 .sidebar-collapse-btn:hover {
@@ -249,6 +443,11 @@
     justify-content: space-between;
     padding: 0 var(--admin-spacing-xl);
     z-index: var(--admin-z-sticky);
+    transition: transform 0.3s ease;
+}
+
+.admin-header.header-hidden {
+    transform: translateY(-100%);
 }
 
 .header-left {
@@ -260,6 +459,7 @@
 .header-search {
     position: relative;
     width: 320px;
+    max-width: 100%;
 }
 
 .header-page-title {
@@ -957,6 +1157,15 @@
     background: var(--admin-danger-bg);
 }
 
+/* Button variant of dropdown-item (e.g. Sign Out) */
+button.dropdown-item {
+    border: none;
+    background: none;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+}
+
 .dropdown-divider {
     height: 1px;
     background: var(--admin-border-color);
@@ -1021,8 +1230,8 @@
    NOTIFICATION DROPDOWN (Admin-specific)
    ============================ */
 .notification-dropdown {
-    min-width: 340px;
-    max-width: 400px;
+    min-width: min(340px, calc(100vw - 2rem));
+    max-width: min(400px, calc(100vw - 1rem));
     background: var(--admin-bg-card);
     z-index: 9999;
 }
@@ -1307,7 +1516,7 @@
     border: 1px solid var(--admin-border-color);
     border-radius: var(--admin-radius-lg);
     box-shadow: var(--admin-shadow-lg);
-    min-width: 300px;
+    min-width: 0;
     max-width: 400px;
     animation: slideInRight 0.3s ease;
 }
@@ -1451,69 +1660,259 @@
 [data-theme="light"] .mobile-action-item .theme-icon-dark { display: block; }
 
 /* ============================
-   MOBILE MENU BUTTON
+   SHARED RESPONSIVE - Tables (1024px)
    ============================ */
-.mobile-menu-btn {
-    display: none !important;
-}
-
-/* Only show on mobile/tablet breakpoints */
 @media (max-width: 1024px) {
-    .mobile-menu-btn {
-        display: flex !important;
+    .admin-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table-wrapper .admin-table {
+        min-width: 800px;
     }
 }
 
 /* ============================
-   RESPONSIVE DESIGN - Tablet (768px)
+   SHARED RESPONSIVE - Cards & KPIs (768px)
    ============================ */
 @media (max-width: 768px) {
-    /* Show mobile menu button */
-    .mobile-menu-btn {
-        display: flex;
+    .admin-card-header {
+        padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+        flex-wrap: wrap;
+        gap: var(--admin-spacing-sm);
     }
-    
-    /* Sidebar transforms to mobile overlay */
+
+    .admin-card-body {
+        padding: var(--admin-spacing-lg);
+    }
+
+    .admin-card-footer {
+        padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+    }
+
+    .admin-card-title {
+        font-size: var(--admin-font-md);
+    }
+
+    .kpi-card {
+        padding: var(--admin-spacing-lg);
+        gap: var(--admin-spacing-md);
+    }
+
+    .kpi-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .kpi-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .kpi-value {
+        font-size: var(--admin-font-xl);
+    }
+
+    .kpi-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    /* Pagination stacks on tablet */
+    .pagination {
+        flex-wrap: wrap;
+    }
+
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+    }
+
+    /* Form row stacking */
+    .form-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Status badges slightly smaller */
+    .status-badge {
+        font-size: var(--admin-font-xs);
+        padding: 2px 10px;
+    }
+}
+
+/* ============================
+   SHARED RESPONSIVE - Mobile (480px)
+   ============================ */
+@media (max-width: 480px) {
+    .admin-card-header {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-card-body {
+        padding: var(--admin-spacing-md);
+    }
+
+    .admin-card-footer {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .admin-card-title {
+        font-size: var(--admin-font-sm);
+    }
+
+    /* KPI cards: compact vertical layout */
+    .kpi-card {
+        padding: var(--admin-spacing-md);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--admin-spacing-sm);
+    }
+
+    .kpi-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .kpi-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .kpi-value {
+        font-size: var(--admin-font-lg);
+    }
+
+    .kpi-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    .kpi-change {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+
+    /* Table compact */
+    .admin-table th,
+    .admin-table td {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+        font-size: var(--admin-font-xs);
+    }
+
+    /* Buttons compact */
+    .btn {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+        font-size: var(--admin-font-xs);
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Status badges compact */
+    .status-badge {
+        padding: 2px 8px;
+        font-size: 10px;
+    }
+
+    /* Forms compact */
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+        font-size: var(--admin-font-xs);
+    }
+
+    .form-label {
+        font-size: var(--admin-font-xs);
+    }
+
+    /* Dropdown compact */
+    .dropdown-menu {
+        min-width: 160px;
+    }
+
+    /* Pagination compact */
+    .pagination-info {
+        font-size: var(--admin-font-xs);
+        text-align: center;
+    }
+
+    .pagination-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* ================================
+   MOBILE MENU BUTTON
+   ================================ */
+.mobile-menu-btn {
+    display: none !important;
+}
+
+/* ============================
+   RESPONSIVE DESIGN - Tablet (1024px)
+   Sidebar becomes overlay, hamburger menu shows
+   ============================ */
+@media (max-width: 1024px) {
+    /* Show hamburger menu */
+    .mobile-menu-btn {
+        display: flex !important;
+    }
+
+    /* Sidebar transforms to overlay drawer */
     .admin-sidebar {
         transform: translateX(-100%);
         width: 280px;
     }
-    
+
     .admin-sidebar.open {
         transform: translateX(0);
     }
-    
-    /* Hide collapse button on mobile */
+
+    /* Hide sidebar logo text in drawer (always show icon only until opened) */
+    .admin-sidebar.collapsed .sidebar-logo-text {
+        display: none;
+    }
+
+    /* Hide collapse button on tablet/mobile */
     .sidebar-collapse-btn {
         display: none;
     }
-    
+
     /* Main content full width */
     .admin-main {
         margin-left: 0 !important;
     }
-    
+
     .admin-wrapper.sidebar-collapsed .admin-main {
         margin-left: 0 !important;
     }
-    
+
     /* Show mobile-only actions */
     .mobile-only-actions {
         display: flex;
     }
-    
+}
+
+/* ============================
+   RESPONSIVE DESIGN - Tablet Small (768px)
+   ============================ */
+@media (max-width: 768px) {
     /* Header adjustments */
     .header-page-title {
         font-size: 1.1rem;
     }
-    
+
     /* Toast adjustments */
     .toast-container {
         left: var(--admin-spacing-md);
         right: var(--admin-spacing-md);
         bottom: var(--admin-spacing-md);
     }
-    
+
     .toast {
         min-width: auto;
         max-width: none;
@@ -1530,7 +1929,7 @@
     }
     
     .header-page-title {
-        font-size: 1rem;
+        font-size: var(--admin-font-sm);
     }
     
     .header-right {
@@ -1541,15 +1940,16 @@
         width: 36px;
         height: 36px;
     }
-    
-    /* Sidebar full width on mobile */
-    .admin-sidebar {
-        width: 100%;
+
+    .header-btn svg {
+        width: 18px;
+        height: 18px;
     }
     
-    /* Content padding */
-    .admin-content {
-        padding: var(--admin-spacing-md);
+    /* Sidebar almost full width on mobile */
+    .admin-sidebar {
+        width: 85%;
+        max-width: 320px;
     }
     
     /* Modal full width */
@@ -1561,6 +1961,15 @@
     .dropdown-menu {
         min-width: 160px;
     }
+
+    /* Notification dropdown compact */
+    .notification-dropdown {
+        min-width: min(300px, calc(100vw - 2rem));
+    }
+
+    .notification-item {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
 }
 
 /* ============================
@@ -1570,6 +1979,12 @@
     .admin-header {
         padding: 0 var(--admin-spacing-sm);
         height: 56px;
+    }
+
+    /* Sidebar full width on very small screens */
+    .admin-sidebar {
+        width: 100%;
+        max-width: none;
     }
     
     .sidebar-logo {
@@ -1597,11 +2012,45 @@
         padding: var(--admin-spacing-md);
     }
 
+    /* KPI cards: even more compact */
+    .kpi-card {
+        padding: var(--admin-spacing-sm) var(--admin-spacing-md);
+    }
+
+    .kpi-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .kpi-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .kpi-value {
+        font-size: var(--admin-font-md);
+    }
+
+    .kpi-label {
+        font-size: 10px;
+    }
+
+    /* Header ultra compact */
+    .header-page-title {
+        font-size: var(--admin-font-xs);
+    }
+
     /* Table compact for ultra-mobile */
     .admin-table th,
     .admin-table td {
         padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
         font-size: var(--admin-font-xs);
+    }
+
+    /* Buttons stacked full width */
+    .btn {
+        font-size: var(--admin-font-xs);
+        padding: var(--admin-spacing-xs) var(--admin-spacing-sm);
     }
 }
 

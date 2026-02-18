@@ -6,9 +6,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <base href="/rent-it/">
+    <script src="admin/shared/js/admin-theme.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="RentIt Admin - Add New Rental Item">
@@ -30,6 +31,68 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <link rel="stylesheet" href="admin/newitem/css/newitem.css">
 </head>
 <body>
+    <div class="admin-skeleton-overlay" aria-hidden="true">
+        <div class="admin-skeleton-shell">
+            <aside class="admin-skeleton-sidebar">
+                <div class="admin-skeleton-logo"></div>
+                <div class="admin-skeleton-nav">
+                    <span class="admin-skeleton-pill w-70"></span>
+                    <span class="admin-skeleton-pill w-60"></span>
+                    <span class="admin-skeleton-pill w-80"></span>
+                    <span class="admin-skeleton-pill w-50"></span>
+                    <span class="admin-skeleton-pill w-70"></span>
+                </div>
+                <div class="admin-skeleton-user">
+                    <span class="admin-skeleton-circle"></span>
+                    <span class="admin-skeleton-line w-60" style="height: 12px;"></span>
+                </div>
+            </aside>
+            <section class="admin-skeleton-main">
+                <div class="admin-skeleton-topbar">
+                    <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                    <span class="admin-skeleton-circle"></span>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row admin-skeleton-kpis">
+                        <span class="admin-skeleton-block w-60" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-50" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-70" style="height: 14px;"></span>
+                        <span class="admin-skeleton-block w-40" style="height: 14px;"></span>
+                    </div>
+                </div>
+                <div class="admin-skeleton-card">
+                    <div class="admin-skeleton-row" style="grid-template-columns: 1fr auto;">
+                        <span class="admin-skeleton-line w-40" style="height: 14px;"></span>
+                        <span class="admin-skeleton-pill w-20"></span>
+                    </div>
+                    <div class="admin-skeleton-table">
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-50" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-60" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-20" style="height: 12px;"></span>
+                        </div>
+                        <div class="admin-skeleton-row">
+                            <span class="admin-skeleton-block w-40" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-35" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-25" style="height: 12px;"></span>
+                            <span class="admin-skeleton-block w-30" style="height: 12px;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-skeleton-loader">
+                    <span class="admin-skeleton-spinner" aria-hidden="true"></span>
+                    <span>Loading admin content...</span>
+                </div>
+            </section>
+        </div>
+    </div>
     <div class="admin-wrapper">
         <!-- Sidebar Container -->
         <div id="sidebarContainer"></div>
@@ -112,8 +175,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="admin-card-header">
                                     <h2 class="admin-card-title">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
-                                            <line x1="12" y1="1" x2="12" y2="23"/>
-                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                            <text x="12" y="17" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor" stroke="none">₱</text>
                                         </svg>
                                         Pricing
                                     </h2>
@@ -198,7 +260,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                             <p>Drag & drop image here</p>
                                             <span>or click to browse</span>
                                         </div>
-                                        <img id="imagePreview" class="image-preview" alt="Item preview" style="display: none;">
+                                        <img id="imagePreview" class="image-preview" alt="Item preview" style="display: none;" onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
                                         <input type="file" id="itemImage" name="itemImage" accept="image/*" class="file-input">
                                     </div>
                                     <span class="form-hint">Recommended: 800x600px, JPG or PNG</span>

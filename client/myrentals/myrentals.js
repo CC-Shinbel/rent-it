@@ -43,7 +43,14 @@ function renderActiveRentals(rentals) {
     if (!container) return;
 
     if (rentals.length === 0) {
-        container.innerHTML = `<div class="empty-state">No active rentals found.</div>`;
+        container.innerHTML = `
+            <div class="empty-state empty-state-card">
+                <div class="empty-state-icon">🎤</div>
+                <h3 class="empty-state-title">No active rentals yet</h3>
+                <p class="empty-state-text">Browse the catalog to book your first videoke set.</p>
+                <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+            </div>
+        `;
         badge.textContent = "0 Units Active";
         return;
     }
@@ -55,6 +62,9 @@ function renderActiveRentals(rentals) {
         const statusClass = r.days_left <= 1 ? 'status-expiring' : 'status-rented';
         const daysClass = r.days_left <= 1 ? 'days-danger' : '';
         const cardExpiring = r.days_left <= 1 ? 'card-expiring' : '';
+        const imageSrc = r.image
+            ? `/rent-it/assets/images/${r.image}`
+            : '/rent-it/assets/images/catalog-fallback.svg';
         
         const orderId = r.order_id;
         const rate = parseFloat(r.daily_rate) || 0;
@@ -80,9 +90,11 @@ function renderActiveRentals(rentals) {
                 </div>
             </div>
             <div class="card-image">
-                <img src="../../assets/images/${r.image}" 
-                     alt="${r.name}" 
-                     onerror="this.onerror=null; this.src='../../assets/images/default-item.png';">
+                <a class="card-image-link" href="${imageSrc}" target="_blank" rel="noopener" title="Open image in new tab">
+                    <img src="${imageSrc}" 
+                         alt="${r.name}" 
+                         onerror="this.onerror=null; this.src='/rent-it/assets/images/catalog-fallback.svg';">
+                </a>
             </div>
             <div class="card-actions">
                 <button class="btn-extend" onclick="handleExtend('${orderId}', ${rate})">Extend</button>
@@ -164,7 +176,18 @@ function renderBookingHistory(history) {
     tbody.innerHTML = '';
 
     if (history.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No history found.</td></tr>';
+        tbody.innerHTML = `
+            <tr class="history-empty">
+                <td colspan="4">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🗂️</div>
+                        <h3 class="empty-state-title">No bookings yet</h3>
+                        <p class="empty-state-text">Your completed rentals will show up here.</p>
+                        <a href="../catalog/catalog.php" class="empty-state-link">Browse Catalog</a>
+                    </div>
+                </td>
+            </tr>
+        `;
         return;
     }
 
@@ -178,22 +201,19 @@ function renderBookingHistory(history) {
                 <div class="history-item">
                     <div class="history-thumb">🎤</div>
                     <div class="history-info">
-                        <div class="history-name" style="color: #1e293b; font-weight: 600;">${itemName}</div>
-                        <div class="history-id" style="color: #64748b; font-size: 0.85rem;">#${h.rental_code}</div>
+                        <div class="history-name">${itemName}</div>
+                        <div class="history-id">#${h.rental_code}</div>
                     </div>
                 </div>
             </td>
             <td>
-                <div class="period-dates" style="color: #475569;">${formatDate(h.start_date)} - ${formatDate(h.end_date)}</div>
-                <div class="period-status" style="font-weight: 500; color: ${h.rental_status === 'Active' ? '#10b981' : '#64748b'};">
-                    ${capitalize(h.rental_status)}
-                </div>
+                <div class="period-dates">${formatDate(h.start_date)} - ${formatDate(h.end_date)}</div>
+                <div class="period-status ${h.rental_status === 'Active' ? 'status-active' : 'status-inactive'}">${capitalize(h.rental_status)}</div>
             </td>
-            <td class="amount-cell" style="font-weight: 700; color: #1e293b;">₱${parseFloat(h.total_amount).toFixed(2)}</td>
+            <td class="amount-cell">₱${parseFloat(h.total_amount).toFixed(2)}</td>
             <td>
                 <button class="action-btn receipt-btn" 
-                        onclick='showReceipt(${rentalData})'
-                        style="background: #f97316; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                        onclick='showReceipt(${rentalData})'>
                     Receipt
                 </button>
             </td>
@@ -209,33 +229,33 @@ function showReceipt(data) {
     if (!modal || !receiptDetails) return;
 
     receiptDetails.innerHTML = `
-        <div id="receipt-canvas" style="padding: 10px; font-family: 'Inter', sans-serif;">
-            <div style="text-align:center; border-bottom:2px dashed #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
-                <h2 style="margin:0; color:#f97316;">RentIt</h2>
-                <p style="font-size:12px; color:#64748b; margin:5px 0 0 0;">OFFICIAL RENTAL RECEIPT</p>
+        <div id="receipt-canvas" class="receipt-canvas">
+            <div class="receipt-top">
+                <h2 class="receipt-brand">RentIt</h2>
+                <p class="receipt-subtitle">OFFICIAL RENTAL RECEIPT</p>
             </div>
 
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span style="color:#64748b;">Order Ref:</span>
-                <span style="font-weight:600;">#${data.rental_code}</span>
+            <div class="receipt-row">
+                <span class="receipt-label-text">Order Ref:</span>
+                <span class="receipt-value">#${data.rental_code}</span>
             </div>
 
-            <div style="margin-bottom:10px;">
-                <span style="color:#64748b; display:block;">Item:</span>
-                <span style="font-weight:600; display:block;">${data.name || 'Rental Unit'}</span>
+            <div class="receipt-block">
+                <span class="receipt-label-text">Item:</span>
+                <span class="receipt-value">${data.name || 'Rental Unit'}</span>
             </div>
 
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span style="color:#64748b;">Period:</span>
-                <span style="font-size: 13px;">${formatDate(data.start_date)} - ${formatDate(data.end_date)}</span>
+            <div class="receipt-row">
+                <span class="receipt-label-text">Period:</span>
+                <span class="receipt-period">${formatDate(data.start_date)} - ${formatDate(data.end_date)}</span>
             </div>
 
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding-top:10px; border-top:1px solid #eee;">
-                <span style="font-weight:700;">Total Paid:</span>
-                <span style="font-weight:800; color:#f97316;">₱${parseFloat(data.total_amount).toFixed(2)}</span>
+            <div class="receipt-row receipt-total-row">
+                <span class="receipt-total-label">Total Paid:</span>
+                <span class="receipt-total-amount">₱${parseFloat(data.total_amount).toFixed(2)}</span>
             </div>
             
-            <p style="text-align:center; font-size:10px; color:#94a3b8; margin-top:20px;">Thank you for renting with RentIt!</p>
+            <p class="receipt-footer-text">Thank you for renting with RentIt!</p>
         </div>
     `;
 
@@ -252,4 +272,52 @@ function formatDate(dateStr) {
 function capitalize(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+function downloadReceiptPDF() {
+    const element = document.getElementById('receipt-canvas');
+    if (!element) return;
+
+    // Clone and force light colors for PDF output
+    const clone = element.cloneNode(true);
+    clone.style.background = '#fff';
+    clone.style.color = '#1e293b';
+    clone.style.padding = '20px';
+    clone.style.fontFamily = "'Inter', sans-serif";
+    clone.style.width = '320px';
+
+    // Force all text colors for the PDF
+    clone.querySelectorAll('.receipt-top').forEach(el => { el.style.borderBottomColor = '#e2e8f0'; });
+    clone.querySelectorAll('.receipt-brand').forEach(el => { el.style.color = '#f97316'; el.style.margin = '0'; });
+    clone.querySelectorAll('.receipt-subtitle').forEach(el => el.style.color = '#64748b');
+    clone.querySelectorAll('.receipt-label-text').forEach(el => el.style.color = '#64748b');
+    clone.querySelectorAll('.receipt-value').forEach(el => { el.style.color = '#1e293b'; el.style.fontWeight = '600'; });
+    clone.querySelectorAll('.receipt-period').forEach(el => el.style.color = '#1e293b');
+    clone.querySelectorAll('.receipt-total-label').forEach(el => { el.style.color = '#1e293b'; el.style.fontWeight = '700'; });
+    clone.querySelectorAll('.receipt-total-amount').forEach(el => { el.style.color = '#f97316'; el.style.fontWeight = '800'; });
+    clone.querySelectorAll('.receipt-total-row').forEach(el => { el.style.borderTopColor = '#e2e8f0'; });
+    clone.querySelectorAll('.receipt-footer-text').forEach(el => el.style.color = '#94a3b8');
+
+    // Place off-screen but still renderable by html2canvas (must not be fixed or display:none)
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '-9999px';
+    wrapper.style.top = '0';
+    wrapper.style.background = '#fff';
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    const orderRef = clone.querySelector('.receipt-value')?.textContent || 'receipt';
+
+    const opt = {
+        margin:       0.35,
+        filename:     `RentIt-Receipt-${orderRef.replace('#','')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+        jsPDF:        { unit: 'in', format: [4.5, 6], orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(clone).save().then(() => {
+        document.body.removeChild(wrapper);
+    });
 }
