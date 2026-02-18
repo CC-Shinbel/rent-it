@@ -213,6 +213,17 @@
     align-items: center;
     gap: var(--admin-spacing-md);
     text-decoration: none;
+    padding: var(--admin-spacing-sm);
+    border-radius: var(--admin-radius-lg);
+    transition: all var(--admin-transition-fast);
+}
+
+.sidebar-logo-link:hover {
+    background: var(--admin-accent-subtle);
+}
+
+.sidebar-logo-link:hover .sidebar-logo-text {
+    color: var(--admin-accent);
 }
 
 .admin-sidebar.collapsed {
@@ -281,6 +292,10 @@
     font-weight: var(--admin-font-medium);
     transition: all var(--admin-transition-fast);
     position: relative;
+}
+
+.admin-sidebar.collapsed .sidebar-nav-item {
+    gap: 0;
 }
 
 .sidebar-nav-item:hover {

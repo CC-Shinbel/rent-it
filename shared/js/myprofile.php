@@ -449,10 +449,6 @@ $member_since = $user['created_at'] ? date('F Y', strtotime($user['created_at'])
                                         <label for="phone">Phone Number</label>
                                         <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="e.g. 09171234567">
                                     </div>
-                                    <div class="profile-form-group">
-                                        <label for="address">Address</label>
-                                        <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>" placeholder="Your delivery address">
-                                    </div>
                                 </div>
 
                                 <div class="profile-form-actions">

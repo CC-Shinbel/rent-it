@@ -13,18 +13,18 @@ $pending_query = "SELECT
                     r.order_id, 
                     r.total_price, 
                     r.rental_status,    
-                    r.start_date, 
-                    r.end_date, 
+                    COALESCE(ri.start_date, r.start_date) AS start_date, 
+                    COALESCE(ri.end_date, r.end_date) AS end_date, 
                     i.image,
                     i.item_name,
-                    (DATEDIFF(r.end_date, r.start_date) + 1) AS rental_days, -- Dinagdagan ng +1
+                    (DATEDIFF(COALESCE(ri.end_date, r.end_date), COALESCE(ri.start_date, r.start_date)) + 1) AS rental_days,
                     (SELECT COUNT(*) FROM rental_item WHERE order_id = r.order_id) as item_count 
                   FROM rental r
                   JOIN rental_item ri ON r.order_id = ri.order_id
                   JOIN item i ON ri.item_id = i.item_id
                   WHERE r.user_id = ? AND r.rental_status = 'Pending'
                   GROUP BY r.order_id 
-                  ORDER BY r.start_date DESC";
+                  ORDER BY COALESCE(ri.start_date, r.start_date) DESC";
 
 $stmt = $conn->prepare($pending_query);
 $stmt->bind_param("i", $user_id);

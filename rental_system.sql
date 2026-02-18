@@ -215,7 +215,9 @@ CREATE TABLE `rental_item` (
   `order_id` int(11) DEFAULT NULL,
   `item_id` int(11) DEFAULT NULL,
   `item_price` decimal(10,2) DEFAULT NULL,
-  `item_status` varchar(50) DEFAULT NULL
+  `item_status` varchar(50) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

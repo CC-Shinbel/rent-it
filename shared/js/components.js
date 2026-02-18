@@ -108,11 +108,16 @@ const Components = {
         const isClient = context === 'client' || window.location.pathname.includes('/client/');
         const tabs = isClient ? this.clientNavTabs : this.navTabs;
 
+        // Determine active tab from URL for client nav
+        const currentPath = window.location.pathname;
+
         const navItems = tabs.map(tab => {
             if (tab.href) {
+                // Check if this tab matches the current page URL
+                const isActive = currentPath.includes(`/client/${tab.id}/`);
                 // Client nav uses links with tooltip data attribute
                 return `
-                    <a class="nav-item" href="${tab.href}" data-tooltip="${tab.label}">
+                    <a class="nav-item${isActive ? ' active' : ''}" href="${tab.href}" data-tooltip="${tab.label}">
                         <span class="nav-icon">${tab.icon}</span>
                         <span class="nav-label">${tab.label}</span>
                     </a>
@@ -134,7 +139,7 @@ const Components = {
         container.innerHTML = `
             <aside class="sidebar${isCollapsed ? ' collapsed' : ''}" id="sidebar">
                                 <div class="sidebar-header">
-                                        <a class="sidebar-logo" href="/rent-it/assets/images/rIT_logo_tp.png" target="_blank" rel="noopener noreferrer" title="View RentIT logo">
+                                        <a class="sidebar-logo" href="/rent-it/client/dashboard/dashboard.php" title="Go to Dashboard">
                                             <img src="/rent-it/assets/images/rIT_logo_tp.png" alt="RentIT Logo" class="sidebar-logo-icon">
                                                 <span class="sidebar-logo-text">RentIT</span>
                                         </a>

@@ -558,6 +558,8 @@
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: all 0.2s ease;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .payment-option:hover {
@@ -768,4 +770,107 @@
     .option-price {
         align-self: flex-end;
     }
+}
+
+@media (max-width: 375px) {
+    .checkout-card {
+        padding: 0.75rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1rem;
+    }
+    
+    .detail-label,
+    .detail-value {
+        font-size: 0.8rem;
+    }
+    
+    .checkout-item-thumb {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .summary-total {
+        font-size: 0.95rem;
+    }
+    
+    .btn-place-order {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== CHECKOUT ORDER ITEM (inline-style replacement) ===== */
+.checkout-order-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.checkout-item-thumb {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.checkout-item-thumb img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.checkout-item-dates {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 4px 0;
+}
+
+.checkout-rental-duration {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .checkout-rental-duration {
+    color: #818cf8;
+}
+
+/* ===== DARK MODE: Summary text ===== */
+[data-theme="dark"] .summary-total span:last-child {
+    color: var(--accent, #FB7012);
+    font-weight: 700;
+}
+
+/* ===== DISABLED OPTIONS ===== */
+.delivery-option.disabled,
+.payment-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.delivery-option.disabled:hover,
+.payment-option.disabled:hover {
+    border-color: var(--border-color);
+    background: transparent;
+}
+
+.option-unavailable {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.5rem;
 }

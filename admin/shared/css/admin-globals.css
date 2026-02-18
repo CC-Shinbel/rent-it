@@ -19,6 +19,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -29,6 +30,7 @@ body {
     color: var(--admin-text-primary);
     background-color: var(--admin-bg-primary);
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* ============================
@@ -130,7 +132,7 @@ textarea:focus-visible {
     min-height: 100vh;
     margin-left: var(--admin-sidebar-width);
     transition: margin-left var(--admin-transition-normal);
-    overflow-x: clip;
+    overflow-x: hidden;
     max-width: calc(100vw - var(--admin-sidebar-width));
 }
 

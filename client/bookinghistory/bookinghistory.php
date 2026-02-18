@@ -21,12 +21,15 @@ $total_spent = mysqli_fetch_assoc($res_spent)['total'] ?? 0;
 
 $member_status = $user_data['membership_level'] ?? 'Bronze';
 
-$history_query = "SELECT r.*, i.item_name, i.category, i.image 
+$history_query = "SELECT r.order_id, r.rental_status, r.total_price, r.venue,
+                         COALESCE(ri.start_date, r.start_date) AS start_date, 
+                         COALESCE(ri.end_date, r.end_date) AS end_date,
+                         i.item_name, i.category, i.image 
                   FROM rental r 
                   LEFT JOIN rental_item ri ON r.order_id = ri.order_id 
                   LEFT JOIN item i ON ri.item_id = i.item_id 
                   WHERE r.user_id = $user_id 
-                  ORDER BY r.start_date DESC";
+                  ORDER BY COALESCE(ri.start_date, r.start_date) DESC";
 $history_result = mysqli_query($conn, $history_query);
 $total_records = mysqli_num_rows($history_result);
 ?>

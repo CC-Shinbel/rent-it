@@ -220,14 +220,10 @@
    ===================================================== */
 .repairs-table-container {
     padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     animation: fadeInUp 0.4s ease-out 0.3s backwards;
-}
-
-@media (max-width: 768px) {
-    .repairs-table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
 }
 
 .repairs-table {
@@ -738,10 +734,6 @@
     
     .controls-right {
         flex-wrap: wrap;
-    }
-    
-    .repairs-table-container {
-        overflow-x: auto;
     }
     
     .repairs-table {

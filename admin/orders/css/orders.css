@@ -231,7 +231,8 @@
     background: var(--admin-bg-card);
     border: 1px solid var(--admin-border-color);
     border-radius: var(--admin-radius-xl);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     margin-bottom: var(--admin-spacing-lg);
 }
 
@@ -562,10 +563,6 @@
    RESPONSIVE TABLE
    ============================ */
 @media (max-width: 1024px) {
-    .orders-table-container {
-        overflow-x: auto;
-    }
-
     .orders-table {
         min-width: 800px;
     }
