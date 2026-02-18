@@ -11,6 +11,11 @@ function buildUrl(path) {
 }
 
 let itemsData = [];
+let filteredItemsData = [];
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchItems();
@@ -27,7 +32,9 @@ async function fetchItems() {
         const result = await response.json();
         if (result.success) {
             itemsData = result.data || [];
-            renderItems(itemsData);
+            filteredItemsData = itemsData;
+            currentPage = 1;
+            renderItems(filteredItemsData);
         } else {
             renderError(result.message || 'Failed to load items');
         }
@@ -39,8 +46,7 @@ async function fetchItems() {
 
 function renderError(message) {
     const tbody = document.getElementById('itemsTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem; color:var(--admin-text-muted);">${message}</td></tr>`;
+    updatePagination(0);
 }
 
 function renderItems(items) {
@@ -52,8 +58,20 @@ function renderItems(items) {
         return;
     }
 
-    tbody.innerHTML = items.map(renderItemRow).join('');
+    // Paginate
+    const totalPages = Math.ceil(items.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
 
+    tbody.innerHTML = pageItems.map(renderItemRow).join('');
+
+    // Bind action buttons after rendering
+    bindActionButtons();
+    
+    // Update pagination
+    updatePagination(items.length
     // Bind action buttons after rendering
     bindActionButtons();
 }
@@ -377,8 +395,95 @@ function filterItems() {
     let filtered = itemsData;
 
     if (searchTerm) {
-        filtered = filtered.filter(item =>
-            (item.item_name || '').toLowerCase().includes(searchTerm) ||
+    filteredItemsData = filtered;
+    currentPage = 1;
+    renderItems(filteredItemsData);
+}
+
+/**
+ * Update pagination controls
+ */
+function updatePagination(totalItems) {
+    const paginationContainer = document.querySelector('.items-pagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    // Update info text
+    const info = paginationContainer.querySelector('.pagination-info');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} items`;
+
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Build page buttons
+    const pagesSpan = paginationContainer.querySelector('.pagination-pages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToPage(page) {
+    currentPage = page;
+    renderItems(filteredItemsData);
+}
+
+/**
+ * Initialize pagination event listeners
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderItems(filteredItemsData);
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredItemsData.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderItems(filteredItemsData);
+            }
+        });
+    }
+});           (item.item_name || '').toLowerCase().includes(searchTerm) ||
             (item.category || '').toLowerCase().includes(searchTerm) ||
             (item.status || '').toLowerCase().includes(searchTerm)
         );
