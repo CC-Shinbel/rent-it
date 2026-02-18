@@ -1,10 +1,7 @@
 <?php
 session_start();
 include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
