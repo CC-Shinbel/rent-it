@@ -214,6 +214,24 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     <h3>No dispatches scheduled</h3>
                     <p>There are no deliveries or pickups for the selected period.</p>
                 </div>
+
+                <!-- Pagination -->
+                <div class="dispatch-pagination" id="dispatchPagination" style="display: none;">
+                    <span class="pagination-info" id="paginationInfo">Showing 0 dispatches</span>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevPageBtn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
+                        <span class="pagination-pages" id="paginationPages"></span>
+                        <button class="pagination-btn" id="nextPageBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Footer Container -->

@@ -7,6 +7,11 @@
 
 // Store dispatches data from API
 let dispatchesData = [];
+let filteredDispatchesData = [];
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 /**
  * Get initial for avatar
@@ -138,15 +143,28 @@ function renderDispatches(dispatches) {
     
     if (!grid) return;
 
+    filteredDispatchesData = dispatches;
+
     if (dispatches.length === 0) {
         grid.style.display = 'none';
         empty.style.display = 'flex';
+        updatePagination(0);
         return;
     }
 
+    // Paginate
+    const totalPages = Math.ceil(dispatches.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageDispatches = dispatches.slice(start, start + PAGE_SIZE);
+
     grid.style.display = 'grid';
     empty.style.display = 'none';
-    grid.innerHTML = dispatches.map(d => renderDispatchCard(d)).join('');
+    grid.innerHTML = pageDispatches.map(d => renderDispatchCard(d)).join('');
+    
+    // Update pagination
+    updatePagination(dispatches.length);
 }
 
 /**
@@ -185,9 +203,71 @@ function filterDispatches() {
         );
     }
 
+    currentPage = 1;
     renderDispatches(filtered);
 }
 
+/**
+ * Update pagination controls
+ */
+function updatePagination(totalItems) {
+    const paginationContainer = document.getElementById('dispatchPagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    // Update info text
+    const info = document.getElementById('paginationInfo');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} dispatches`;
+
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Build page buttons
+    const pagesSpan = document.getElementById('paginationPages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToPage(page) {
+    currentPage = page;
+    renderDispatches(filteredDispatchesData);
+}
+
+/**
+ * View order detail
+ */
 /**
  * View order detail
  */
@@ -312,6 +392,29 @@ async function fetchDispatches(range = 'week') {
     try {
         // Show loading state
         if (grid) {
+
+    // Pagination buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderDispatches(filteredDispatchesData);
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredDispatchesData.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderDispatches(filteredDispatchesData);
+            }
+        });
+    }
             grid.innerHTML = '<div class="dispatch-loading">Loading dispatches...</div>';
             grid.style.display = 'block';
         }
