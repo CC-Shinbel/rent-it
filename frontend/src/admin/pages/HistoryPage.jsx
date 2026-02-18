@@ -8,208 +8,59 @@ const HistoryPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ completed: 0, revenue: 0 });
   const PAGE_SIZE = 10;
 
-  // Mock history data
+  // Fetch history from API
   useEffect(() => {
-    const mockData = [
-      {
-        order_id: 101,
-        id: 'ORD-2026-00101',
-        customer: {
-          name: 'John Dela Cruz',
-          email: 'john.dela@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Karaoke System Pro', quantity: 1 },
-          { name: 'Wireless Mics (2x)', quantity: 2 }
-        ],
-        dates: {
-          start: '2026-01-15',
-          end: '2026-01-20',
-          duration: 5
-        },
-        total: 2500,
-        status: 'returned'
-      },
-      {
-        order_id: 102,
-        id: 'ORD-2026-00102',
-        customer: {
-          name: 'Maria Santos',
-          email: 'maria.santos@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'DJ Speaker System', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-01-18',
-          end: '2026-01-23',
-          duration: 5
-        },
-        total: 1800,
-        status: 'completed'
-      },
-      {
-        order_id: 103,
-        id: 'ORD-2026-00103',
-        customer: {
-          name: 'Robert Tanaka',
-          email: 'robert.tanaka@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'LED Lighting Kit', quantity: 1 },
-          { name: 'Light Stand (3x)', quantity: 3 }
-        ],
-        dates: {
-          start: '2026-01-20',
-          end: '2026-01-25',
-          duration: 5
-        },
-        total: 3200,
-        status: 'returned'
-      },
-      {
-        order_id: 104,
-        id: 'ORD-2026-00104',
-        customer: {
-          name: 'Sophie Miller',
-          email: 'sophie.m@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Portable Monitor Speaker', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-02-01',
-          end: '2026-02-05',
-          duration: 4
-        },
-        total: 1200,
-        status: 'returned'
-      },
-      {
-        order_id: 105,
-        id: 'ORD-2026-00105',
-        customer: {
-          name: 'Michael Chen',
-          email: 'michael.chen@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Karaoke System Pro', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-02-03',
-          end: '2026-02-08',
-          duration: 5
-        },
-        total: 2200,
-        status: 'returned'
-      },
-      {
-        order_id: 106,
-        id: 'ORD-2026-00106',
-        customer: {
-          name: 'Elena Rodriguez',
-          email: 'elena.r@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'DJ Mixer Console', quantity: 1 },
-          { name: 'Turntable Set (2x)', quantity: 2 }
-        ],
-        dates: {
-          start: '2026-02-05',
-          end: '2026-02-10',
-          duration: 5
-        },
-        total: 4500,
-        status: 'completed'
-      },
-      {
-        order_id: 107,
-        id: 'ORD-2026-00107',
-        customer: {
-          name: 'James Wilson',
-          email: 'james.w@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Wireless Microphone System', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-02-08',
-          end: '2026-02-12',
-          duration: 4
-        },
-        total: 950,
-        status: 'returned'
-      },
-      {
-        order_id: 108,
-        id: 'ORD-2026-00108',
-        customer: {
-          name: 'Lisa Park',
-          email: 'lisa.park@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Stage Lighting Rig', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-02-09',
-          end: '2026-02-13',
-          duration: 4
-        },
-        total: 3400,
-        status: 'returned'
-      },
-      {
-        order_id: 109,
-        id: 'ORD-2026-00109',
-        customer: {
-          name: 'David Brown',
-          email: 'david.b@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Professional Amplifier', quantity: 2 }
-        ],
-        dates: {
-          start: '2026-02-10',
-          end: '2026-02-13',
-          duration: 3
-        },
-        total: 2100,
-        status: 'completed'
-      },
-      {
-        order_id: 110,
-        id: 'ORD-2026-00110',
-        customer: {
-          name: 'Nina Martinez',
-          email: 'nina.m@email.com',
-          avatar: null
-        },
-        items: [
-          { name: 'Audio Console', quantity: 1 }
-        ],
-        dates: {
-          start: '2026-02-11',
-          end: '2026-02-13',
-          duration: 2
-        },
-        total: 1650,
-        status: 'returned'
-      }
-    ];
-
-    setHistoryData(mockData);
+    fetchHistory();
   }, []);
+
+  const fetchHistory = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_history.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch history");
+      const result = await response.json();
+      if (result.success) {
+        const historyDataMapped = (result.data || []).map((order) => ({
+          order_id: order.order_id,
+          id: order.id || order.order_id_formatted || `ORD-${String(order.order_id).padStart(5, "0")}`,
+          customer: {
+            name: order.customer_name || order.customer?.name || "Unknown",
+            email: order.customer_email || order.customer?.email || "",
+            avatar: order.customer_avatar || order.customer?.avatar || null,
+          },
+          items: (order.items || []).map((item) => ({
+            name: typeof item === "string" ? item : item.name || item.item_name || "",
+            quantity: item.quantity || 1,
+          })),
+          dates: {
+            start: order.start_date || order.dates?.start || "",
+            end: order.end_date || order.dates?.end || "",
+            duration: order.duration || order.dates?.duration || 0,
+          },
+          total: order.total || order.amount || 0,
+          status: (order.status || "completed").toLowerCase(),
+        }));
+        setHistoryData(historyDataMapped);
+        setStats({
+          completed: result.summary?.completed || historyDataMapped.filter(o => o.status === 'returned' || o.status === 'completed').length,
+          revenue: result.summary?.revenue || historyDataMapped.reduce((sum, o) => sum + o.total, 0),
+        });
+      } else {
+        alert(result.message || "Failed to load history");
+      }
+    } catch (err) {
+      console.error("Error fetching history:", err);
+      alert("Failed to load history");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter history based on search and filters
   useEffect(() => {
@@ -260,14 +111,7 @@ const HistoryPage = () => {
     setCurrentPage(1);
   }, [historyData, searchTerm, statusFilter, dateFilter]);
 
-  // Get KPI stats
-  const getStats = () => {
-    const completed = historyData.filter(o => o.status === 'returned' || o.status === 'completed').length;
-    const revenue = historyData.reduce((sum, o) => sum + o.total, 0);
-    return { completed, revenue };
-  };
 
-  const stats = getStats();
 
   // Pagination
   const totalPages = Math.ceil(filteredHistoryData.length / PAGE_SIZE);
@@ -429,7 +273,15 @@ const HistoryPage = () => {
             </tr>
           </thead>
           <tbody>
-            {pageData.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="7">
+                  <div className="history-empty">
+                    <p style={{ color: 'var(--admin-text-muted)' }}>Loading history...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : pageData.length === 0 ? (
               <tr>
                 <td colSpan="7">
                   <div className="history-empty">
