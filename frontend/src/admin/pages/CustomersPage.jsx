@@ -13,105 +13,60 @@ export default function CustomersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortFilter, setSortFilter] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ activeBookings: 0, monthlyRevenue: "0", totalCustomers: 0, overdueReturns: 0 });
   const itemsPerPage = 10;
 
-  // Mock data - replace with API call
+  // Fetch customers from API
   useEffect(() => {
-    const mockCustomers = [
-      {
-        id: "CUST-001",
-        name: "Juan Dela Cruz",
-        email: "juan.delacruz@email.com",
-        avatar: "JD",
-        bookings: [
-          { id: "BK-001", items: "Karaoke Pro System", itemCount: 1, rentalStart: "2025-02-01", rentalEnd: "2025-02-15", duration: "14 days", status: "active", payment: "paid" },
-          { id: "BK-005", items: "LED Projector", itemCount: 1, rentalStart: "2025-02-16", rentalEnd: "2025-03-01", duration: "13 days", status: "pending", payment: "pending" }
-        ]
-      },
-      {
-        id: "CUST-002",
-        name: "Maria Santos",
-        email: "maria.santos@email.com",
-        avatar: "MS",
-        bookings: [
-          { id: "BK-002", items: "LED Projector, Bluetooth Speaker", itemCount: 2, rentalStart: "2025-02-05", rentalEnd: "2025-02-20", duration: "15 days", status: "active", payment: "paid" }
-        ]
-      },
-      {
-        id: "CUST-003",
-        name: "Carlos Reyes",
-        email: "carlos.reyes@email.com",
-        avatar: "CR",
-        bookings: [
-          { id: "BK-003", items: "Microphone Stand Pro", itemCount: 1, rentalStart: "2025-01-20", rentalEnd: "2025-02-10", duration: "21 days", status: "overdue", payment: "overdue" }
-        ]
-      },
-      {
-        id: "CUST-004",
-        name: "Ana Garcia",
-        email: "ana.garcia@email.com",
-        avatar: "AG",
-        bookings: [
-          { id: "BK-004", items: "Portable Speaker", itemCount: 1, rentalStart: "2025-01-15", rentalEnd: "2025-01-31", duration: "16 days", status: "completed", payment: "paid" }
-        ]
-      },
-      {
-        id: "CUST-005",
-        name: "Roberto Lopez",
-        email: "roberto.lopez@email.com",
-        avatar: "RL",
-        bookings: [
-          { id: "BK-006", items: "4K Projector", itemCount: 1, rentalStart: "2025-02-10", rentalEnd: "2025-02-28", duration: "18 days", status: "active", payment: "partial" }
-        ]
-      },
-      {
-        id: "CUST-006",
-        name: "Sofia Martinez",
-        email: "sofia.martinez@email.com",
-        avatar: "SM",
-        bookings: [
-          { id: "BK-007", items: "Audio Setup, Microphone", itemCount: 2, rentalStart: "2025-02-08", rentalEnd: "2025-02-25", duration: "17 days", status: "active", payment: "paid" }
-        ]
-      },
-      {
-        id: "CUST-007",
-        name: "Miguel Torres",
-        email: "miguel.torres@email.com",
-        avatar: "MT",
-        bookings: [
-          { id: "BK-008", items: "Karaoke System", itemCount: 1, rentalStart: "2025-01-25", rentalEnd: "2025-02-12", duration: "18 days", status: "completed", payment: "paid" }
-        ]
-      },
-      {
-        id: "CUST-008",
-        name: "Lucia Fernandez",
-        email: "lucia.fernandez@email.com",
-        avatar: "LF",
-        bookings: [
-          { id: "BK-009", items: "Portable Speaker", itemCount: 1, rentalStart: "2025-02-12", rentalEnd: "2025-02-22", duration: "10 days", status: "active", payment: "pending" }
-        ]
-      },
-      {
-        id: "CUST-009",
-        name: "Patricia Aquino",
-        email: "patricia.aquino@email.com",
-        avatar: "PA",
-        bookings: [
-          { id: "BK-010", items: "LED Projector", itemCount: 1, rentalStart: "2025-02-03", rentalEnd: "2025-02-18", duration: "15 days", status: "active", payment: "paid" }
-        ]
-      },
-      {
-        id: "CUST-010",
-        name: "Joseph Gonzales",
-        email: "joseph.gonzales@email.com",
-        avatar: "JG",
-        bookings: [
-          { id: "BK-011", items: "Microphone, Audio Cable", itemCount: 2, rentalStart: "2025-02-14", rentalEnd: "2025-03-05", duration: "19 days", status: "active", payment: "paid" }
-        ]
-      }
-    ];
-    setCustomers(mockCustomers);
+    fetchCustomers();
   }, []);
+
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_customers.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch customers");
+      const result = await response.json();
+      if (result.success) {
+        const customersData = (result.customers || []).map((customer) => ({
+          id: customer.id || customer.customer_id,
+          name: customer.name || customer.fullname || "",
+          email: customer.email || "",
+          avatar: customer.avatar || (customer.name || "").substring(0, 2).toUpperCase(),
+          bookings: (customer.bookings || [customer.booking]).filter(Boolean).map((booking) => ({
+            id: booking.id || booking.order_id,
+            orderId: booking.order_id || booking.id || "",
+            items: typeof booking.items === "string" ? booking.items : (booking.items || []).join(", "),
+            itemCount: booking.totalItems || (Array.isArray(booking.items) ? booking.items.length : 1),
+            rentalStart: booking.startDate || booking.start_date || "",
+            rentalEnd: booking.endDate || booking.end_date || "",
+            duration: booking.duration ? `${booking.duration} days` : "0 days",
+            status: booking.status || "pending",
+            payment: booking.payment || "pending",
+          })),
+        }));
+        setCustomers(customersData);
+        setStats({
+          activeBookings: result.stats?.activeBookings || 0,
+          monthlyRevenue: (result.stats?.monthlyRevenue || 0).toLocaleString(),
+          totalCustomers: result.stats?.totalCustomers || customersData.length,
+          overdueReturns: result.stats?.overdueReturns || 0,
+        });
+      } else {
+        alert(result.message || "Failed to load customers");
+      }
+    } catch (err) {
+      console.error("Error fetching customers:", err);
+      alert("Failed to load customers");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   // Filter and search
   useEffect(() => {
@@ -157,28 +112,7 @@ export default function CustomersPage() {
     setCurrentPage(1);
   }, [customers, statusFilter, searchTerm, sortFilter]);
 
-  const getKPIStats = () => {
-    const activeBookings = customers.reduce(
-      (sum, c) => sum + c.bookings.filter((b) => b.status === "active").length,
-      0
-    );
-    const overdueReturns = customers.reduce(
-      (sum, c) => sum + c.bookings.filter((b) => b.status === "overdue").length,
-      0
-    );
-    const monthlyRevenue = customers.reduce((sum, c) => {
-      return sum + c.bookings.reduce((bsum, b) => bsum + (parseInt(b.duration) * 100), 0);
-    }, 0);
-
-    return {
-      activeBookings,
-      monthlyRevenue: monthlyRevenue.toLocaleString(),
-      totalCustomers: customers.length,
-      overdueReturns
-    };
-  };
-
-  const kpi = getKPIStats();
+  const kpi = stats;
   const paginatedCustomers = filteredCustomers.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -335,7 +269,11 @@ export default function CustomersPage() {
 
       {/* Customers Table */}
       <div className="customers-table-container">
-        {paginatedCustomers.length > 0 ? (
+        {loading ? (
+          <div className="customers-empty">
+            <p>Loading customers...</p>
+          </div>
+        ) : paginatedCustomers.length > 0 ? (
           <table className="admin-table customers-table">
             <thead>
               <tr>
