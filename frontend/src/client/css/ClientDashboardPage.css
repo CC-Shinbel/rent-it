@@ -1,0 +1,421 @@
+.section-titledashboard {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--heading-primary);
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    transition: margin-left 0.3s ease;
+}
+
+.content-area {
+    flex: 0 0 auto;
+    min-height: auto;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--bg-primary);
+    padding-top: calc(var(--topbar-height) + -19px);
+}
+
+.content-area > * + * {
+    margin-top: clamp(18px, 2vw, 28px);
+}
+
+@media (max-width: 768px) {
+    .content-area {
+        padding: clamp(16px, 4vw, 22px);
+    }
+
+    .content-area > * + * {
+        margin-top: clamp(14px, 3vw, 20px);
+    }
+
+    .page-header-dashboard {
+        margin-bottom: clamp(18px, 4vw, 26px);
+    }
+}
+
+/* Page Header (Dashboard) */
+.page-header-dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--heading-primary);
+    margin-bottom: 4px;
+}
+
+.page-subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+.btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-new:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* KPI Cards */
+.kpi-panel {
+    margin-bottom: 32px;
+}
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.kpi-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .kpi-row {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .kpi-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.kpi-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.kpi-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--section-title);
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.kpi-sub {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.kpi-sub.positive {
+    color: #10B981;
+}
+
+/* Active Rentals Section */
+.active-rentals-section {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--heading-primary);
+}
+
+.units-badge {
+    background: var(--accent-muted);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.rental-cards-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.rental-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.rental-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Empty state for active rentals */
+.rental-empty-card {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 75px 37px; 
+    display: grid;
+    justify-items: center;
+    gap: 16px; 
+    color: var(--gray-500);
+    background: var(--bg-secondary);
+}
+
+.rental-empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.rental-empty-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--heading-primary);
+}
+
+.rental-empty-text {
+    margin: 0;
+}
+
+.rental-empty-link {
+    color: var(--brand-primary-light);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.rental-empty-link:hover {
+    text-decoration: underline;
+}
+
+.history-empty-card {
+    padding: 92px 52px;                   
+    display: grid;
+    justify-items: center;
+    gap: 14px;                    
+    background: var(--bg-secondary);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-top: 1px solid var(--border-color);
+    color: var(--gray-500);
+}
+
+.history-empty-icon {
+    font-size: 72px;
+    margin-bottom: 8px;
+}
+
+.history-empty-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-sm);
+}
+
+.history-empty-text {
+    font-size: var(--font-size-md);
+    color: var(--gray-500);
+    gap: 0;
+}
+
+.history-empty-link {
+    color: var(--brand-primary-light);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.history-empty-link:hover {
+    text-decoration: underline;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 16px;
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-rented {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3B82F6;
+}
+
+.status-pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--card-title);
+    margin-bottom: 4px;
+}
+
+.card-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* History Section */
+.history-section {
+    margin-bottom: 32px;
+}
+
+.history-panel {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-color);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+    padding: 16px 20px;
+    text-align: left;
+}
+
+.history-table th {
+    background: var(--bg-tertiary);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table td {
+    font-size: 14px;
+    color: var(--card-text);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+.status-pill {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-completed {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.status-cancelled {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.status-pending {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.status-refunded {
+    background: rgba(107, 114, 128, 0.15);
+    color: #6B7280;
+}
+
+.view-all-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    transition: var(--transition);
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
