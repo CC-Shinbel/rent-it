@@ -398,6 +398,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Footer Container (injected via JS) -->
+    <div id="footerContainer"></div>
+    </main>
+    </div>
     
     <!-- Send Reminder Modal -->
     <div class="modal" id="reminderModal">
@@ -506,15 +512,6 @@ Sound Rental Team</textarea>
         </div>
     </div>
 
-    <!-- Footer Container (injected via JS) -->
-    <div id="footerContainer"></div>
-    </main>
-    </div>
-    
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-    
-    <!-- Scripts -->
     <script src="admin/shared/js/admin-components.js"></script>
     <script src="admin/latefees/latefees.js"></script>
 </body>
