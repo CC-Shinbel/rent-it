@@ -362,10 +362,10 @@ async function updateItemStatus(payload) {
 
 function getStatusClass(status) {
     const normalized = (status || '').toLowerCase();
+    if (normalized.includes('unavailable')) return 'status-danger';
     if (normalized.includes('available')) return 'status-success';
     if (normalized.includes('booked') || normalized.includes('reserved')) return 'status-warning';
     if (normalized.includes('maintenance') || normalized.includes('repair')) return 'status-info';
-    if (normalized.includes('unavailable')) return 'status-danger';
     return 'status-default';
 }
 
