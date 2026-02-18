@@ -15,6 +15,8 @@
 });
 
 let currentDailyRate = 0; 
+let activeRentalsPagination = null;
+let myRentalsHistoryPagination = null;
 
 
 async function loadMyRentals() {
@@ -31,6 +33,25 @@ async function loadMyRentals() {
 
         renderActiveRentals(data.active);
         renderBookingHistory(data.history);
+
+        // Initialize pagination after data is rendered
+        if (typeof createPagination === 'function') {
+            activeRentalsPagination = createPagination({
+                containerSelector: '#activeRentalsPagination',
+                getItems: () => Array.from(document.querySelectorAll('#activeRentalsCards .rental-card')),
+                itemsPerPage: 6,
+                scrollTarget: '.active-section'
+            });
+            activeRentalsPagination.render();
+
+            myRentalsHistoryPagination = createPagination({
+                containerSelector: '#myRentalsHistoryPagination',
+                getItems: () => Array.from(document.querySelectorAll('#historyTableBody tr:not(.history-empty)')),
+                itemsPerPage: 10,
+                scrollTarget: '.history-section'
+            });
+            myRentalsHistoryPagination.render();
+        }
     } catch (err) {
         console.error('Failed to load rentals:', err);
     }
