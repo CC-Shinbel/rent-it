@@ -109,11 +109,6 @@ function renderDispatchCard(dispatch) {
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
                     </button>
-                    <button class="dispatch-action-btn" title="Get directions" onclick="getDirections('${dispatch.address}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-                        </svg>
-                    </button>
                     ${dispatch.type === 'returning' ? `
                         <button class="dispatch-action-btn" title="Mark Available" onclick="markAvailable('${dispatch.orderId}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -309,14 +304,6 @@ async function markAvailable(orderId) {
         console.error('Error:', error);
         AdminComponents.showToast('Error updating order status', 'error');
     }
-}
-
-/**
- * Get directions to address
- */
-function getDirections(address) {
-    const encoded = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encoded}`, '_blank');
 }
 
 /**

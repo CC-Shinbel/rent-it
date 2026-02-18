@@ -272,6 +272,7 @@
 .sidebar-nav-item {
     display: flex;
     align-items: center;
+    gap: var(--admin-spacing-md);
     padding: var(--admin-spacing-md) var(--admin-spacing-lg);
     border-radius: var(--admin-radius-lg);
     color: var(--admin-text-secondary);
@@ -280,6 +281,10 @@
     font-weight: var(--admin-font-medium);
     transition: all var(--admin-transition-fast);
     position: relative;
+}
+
+.admin-sidebar.collapsed .sidebar-nav-item {
+    gap: 0;
 }
 
 .sidebar-nav-item:hover {
