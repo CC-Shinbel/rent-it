@@ -214,10 +214,27 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <!-- Populated dynamically by latefees.js -->
                             <div class="overdue-empty" id="overdueEmpty" style="display:none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="opacity:0.3;margin-bottom:1rem;">
-                                    <polyline points="20 6 9 17 4 12"/>
+                    <polyline points="20 6 9 17 4 12"/>
                                 </svg>
                                 <h3 style="margin:0 0 0.5rem;color:var(--admin-text-primary);">No Overdue Rentals</h3>
                                 <p style="margin:0;color:var(--admin-text-secondary);font-size:0.875rem;">All rentals are on schedule. Great job!</p>
+                            </div>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="overdue-pagination" id="overduePagination" style="display: none;">
+                            <span class="pagination-info" id="paginationInfo">Showing 0 items</span>
+                            <div class="pagination-controls">
+                                <button class="pagination-btn" id="prevPageBtn" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                        <polyline points="15 18 9 12 15 6"/>
+                                    </svg>
+                                </button>
+                                <span class="pagination-pages" id="paginationPages"></span>
+                                <button class="pagination-btn" id="nextPageBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
