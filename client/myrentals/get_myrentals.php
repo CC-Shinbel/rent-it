@@ -22,11 +22,11 @@ try {
         r.order_id AS rental_code, 
         i.item_name AS name,
         i.price_per_day AS daily_rate,
-        r.start_date,
-        r.end_date,
+        COALESCE(ri.start_date, r.start_date) AS start_date,
+        COALESCE(ri.end_date, r.end_date) AS end_date,
         r.rental_status AS status,
         i.image AS image,
-        (DATEDIFF(r.end_date, CURDATE()) + 1) AS days_left
+        (DATEDIFF(COALESCE(ri.end_date, r.end_date), CURDATE()) + 1) AS days_left
     FROM rental r
     LEFT JOIN rental_item ri ON r.order_id = ri.order_id
     LEFT JOIN item i ON ri.item_id = i.item_id 
@@ -45,8 +45,8 @@ try {
         r.order_id,
         r.order_id AS rental_code,
         GROUP_CONCAT(i.item_name SEPARATOR ', ') AS name,
-        r.start_date,
-        r.end_date,
+        MIN(COALESCE(ri.start_date, r.start_date)) AS start_date,
+        MAX(COALESCE(ri.end_date, r.end_date)) AS end_date,
         r.rental_status AS rental_status,
         r.total_price AS total_amount
     FROM rental r

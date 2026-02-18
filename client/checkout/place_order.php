@@ -38,13 +38,20 @@ try {
         throw new Exception("Selected items not found in your cart.");
     }
 
-    // Kunin ang dates mula sa unang item para sa main rental table summary
-    $first_item = $cart_result->fetch_assoc();
-    $s_date = $first_item['start_date'];
-    $e_date = $first_item['end_date'];
-    
-    // I-reset ang pointer para sa loop ng rental_item mamaya
-    $cart_result->data_seek(0);
+    // Collect all cart items into an array so we can find earliest/latest dates
+    $cart_items = [];
+    while ($item = $cart_result->fetch_assoc()) {
+        $cart_items[] = $item;
+    }
+
+    // Determine the overall date range for the rental summary
+    // Use earliest start_date and latest end_date across all items
+    $s_date = $cart_items[0]['start_date'];
+    $e_date = $cart_items[0]['end_date'];
+    foreach ($cart_items as $ci) {
+        if ($ci['start_date'] < $s_date) $s_date = $ci['start_date'];
+        if ($ci['end_date'] > $e_date) $e_date = $ci['end_date'];
+    }
 
     // 2. Insert sa main Rental table
     $query = "INSERT INTO rental (user_id, rental_status, total_price, venue, start_date, end_date) 
@@ -59,13 +66,15 @@ try {
     
     $order_id = $conn->insert_id;
 
-    // 3. Insert bawat item sa rental_item table
-    $stmt_ri = $conn->prepare("INSERT INTO rental_item (order_id, item_id, item_price, item_status) VALUES (?, ?, ?, 'Rented')");
+    // 3. Insert bawat item sa rental_item table WITH per-item dates
+    $stmt_ri = $conn->prepare("INSERT INTO rental_item (order_id, item_id, item_price, item_status, start_date, end_date) VALUES (?, ?, ?, 'Rented', ?, ?)");
     
-    while ($item = $cart_result->fetch_assoc()) {
+    foreach ($cart_items as $item) {
         $item_id = $item['item_id'];
         $price = $item['price_per_day'];
-        $stmt_ri->bind_param("iid", $order_id, $item_id, $price);
+        $item_start = $item['start_date'];
+        $item_end = $item['end_date'];
+        $stmt_ri->bind_param("iidss", $order_id, $item_id, $price, $item_start, $item_end);
         $stmt_ri->execute();
     }
 
