@@ -1,12 +1,7 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
-
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/client/auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -238,13 +233,7 @@ $total_records = mysqli_num_rows($history_result);
                         </table>
 
                         <!-- Pagination -->
-                        <div class="pagination">
-                            <div class="pagination-info">Showing <?php echo $total_records; ?> results</div>
-                            <div class="pagination-buttons">
-                                <button class="pagination-btn" disabled>Previous</button>
-                                <button class="pagination-btn" disabled>Next</button>
-                            </div>
-                        </div>
+                        <nav class="pagination-controls is-hidden" id="historyPagination" aria-label="Booking history pagination"></nav>
                     </div>
                 </section>
 
@@ -258,6 +247,7 @@ $total_records = mysqli_num_rows($history_result);
     
     <!-- Scripts -->
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
+    <script src="<?= BASE_URL ?>/shared/js/pagination.js"></script>
     <script src="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.js"></script>
 </body>
 </html>

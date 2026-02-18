@@ -453,10 +453,18 @@ const Components = {
      * Confirm logout action
      */
     confirmLogout() {
+        // Clear client-side storage
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('activeTab');
-        window.location.href = '/rent-it/client/auth/login.php';
+
+        // Destroy server-side PHP session
+        fetch('/rent-it/api/auth/logout.php', { method: 'POST' })
+            .finally(() => {
+                // Replace history so back button won't return to protected pages
+                window.history.replaceState(null, '', '/rent-it/client/auth/login.php');
+                window.location.replace('/rent-it/client/auth/login.php');
+            });
     },
 
     /**

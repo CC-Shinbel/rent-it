@@ -1,10 +1,7 @@
 <?php
 session_start();
 include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -249,7 +246,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     ?>
     <div class="order-item checkout-order-item">
         <div class="checkout-item-thumb">
-            <img src="../../assets/images/<?php echo htmlspecialchars($imgName); ?>" 
+            <img src="../../assets/images/items/<?php echo htmlspecialchars($imgName); ?>" 
                  onerror="this.src='../../assets/images/catalog-fallback.svg'">
         </div>
         

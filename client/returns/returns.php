@@ -2,11 +2,7 @@
 
 session_start();
 include '../../shared/php/db_connection.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -209,7 +205,7 @@ $extensions_count = mysqli_num_rows($extensions_result);
                                         <div class="return-item-image">
                                             <?php
                                                 $imageFile = !empty($row['image'])
-                                                    ? '/rent-it/assets/images/products/' . htmlspecialchars($row['image'])
+                                                    ? '/rent-it/assets/images/items/' . htmlspecialchars($row['image'])
                                                     : '/rent-it/assets/images/catalog-fallback.svg';
                                             ?>
                                             <a href="<?php echo $imageFile; ?>" target="_blank" rel="noopener noreferrer" class="return-image-link" title="View image">
@@ -234,6 +230,8 @@ $extensions_count = mysqli_num_rows($extensions_result);
                             </div>
                         <?php endif; ?>
                     </div>
+                    <!-- Returns Pagination -->
+                    <nav class="pagination-controls is-hidden" id="returnsPagination" aria-label="Returns pagination"></nav>
                 </section>
 
 <section class="extensions-section" style="margin-top: 40px;">
@@ -274,6 +272,8 @@ $extensions_count = mysqli_num_rows($extensions_result);
                             </div>
                         <?php endif; ?>
                     </div>
+                    <!-- Extensions Pagination -->
+                    <nav class="pagination-controls is-hidden" id="extensionsPagination" aria-label="Extensions pagination"></nav>
                 </section>
             </div>
 
@@ -284,12 +284,33 @@ $extensions_count = mysqli_num_rows($extensions_result);
 </section>
 
     <script src="../../shared/js/components.js"></script>
+    <script src="../../shared/js/pagination.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof Components !== 'undefined') {
                 Components.injectSidebar('sidebarContainer', 'returns', 'client');
                 Components.injectTopbar('topbarContainer', 'Returns & Extensions');
                 Components.injectFooter('footerContainer');
+            }
+
+            // Initialize pagination for Returns (6 per page)
+            if (typeof createPagination === 'function') {
+                const returnsPagination = createPagination({
+                    containerSelector: '#returnsPagination',
+                    getItems: () => Array.from(document.querySelectorAll('.returns-grid .return-card')),
+                    itemsPerPage: 6,
+                    scrollTarget: '.returns-section'
+                });
+                returnsPagination.render();
+
+                // Initialize pagination for Extensions (6 per page)
+                const extensionsPagination = createPagination({
+                    containerSelector: '#extensionsPagination',
+                    getItems: () => Array.from(document.querySelectorAll('.extensions-grid .extension-card')),
+                    itemsPerPage: 6,
+                    scrollTarget: '.extensions-section'
+                });
+                extensionsPagination.render();
             }
         });
     </script>

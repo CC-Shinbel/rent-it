@@ -103,6 +103,7 @@ function renderOverdueItems(items) {
             emptyState.style.alignItems = 'center';
             emptyState.style.justifyContent = 'center';
             emptyState.style.padding = '3rem 1rem';
+        }
         updatePagination(0);
         return;
     }
@@ -119,9 +120,7 @@ function renderOverdueItems(items) {
     list.innerHTML = pageItems.map(item => renderOverdueCard(item)).join('');
     
     // Update pagination
-    updatePagination(items.length
-    if (emptyState) emptyState.style.display = 'none';
-    list.innerHTML = items.map(item => renderOverdueCard(item)).join('');
+    updatePagination(items.length);
 }
 
 function renderOverdueCard(rental) {
@@ -532,6 +531,10 @@ function resolveItem(orderId) {
 function addActivity(type, text) {
     const activityList = document.querySelector('.activity-list');
     if (!activityList) return;
+
+    // Hide empty state if present
+    const emptyState = document.getElementById('activityEmptyState');
+    if (emptyState) emptyState.style.display = 'none';
 
     const icons = {
         sent: `<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>`,

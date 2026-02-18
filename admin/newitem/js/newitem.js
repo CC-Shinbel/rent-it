@@ -15,6 +15,7 @@ function buildUrl(path) {
 // Edit mode state
 let isEditMode = false;
 let editItemId = null;
+let droppedFile = null; // Store file from drag & drop
 
 document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
@@ -166,6 +167,7 @@ function initImageUpload() {
         
         const files = e.dataTransfer.files;
         if (files.length > 0 && files[0].type.startsWith('image/')) {
+            droppedFile = files[0];
             handleImageFile(files[0]);
         }
     });
@@ -173,6 +175,7 @@ function initImageUpload() {
     // File input change
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
+            droppedFile = null; // Clear dropped file since user picked via input
             handleImageFile(e.target.files[0]);
         }
     });
@@ -181,6 +184,7 @@ function initImageUpload() {
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
             fileInput.value = '';
+            droppedFile = null;
             preview.style.display = 'none';
             preview.src = '';
             placeholder.style.display = 'flex';
@@ -246,6 +250,18 @@ function initFormValidation() {
         // Basic validation
         if (!form.checkValidity()) {
             form.reportValidity();
+            return;
+        }
+
+        // Image validation — require image for new items
+        const imageInput = document.getElementById('itemImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const hasFileInput = imageInput && imageInput.files.length > 0;
+        const hasDroppedFile = droppedFile !== null;
+        const hasExistingImage = imagePreview && imagePreview.style.display !== 'none' && imagePreview.src && !imagePreview.src.startsWith('data:');
+
+        if (!isEditMode && !hasFileInput && !hasDroppedFile) {
+            showNotification('Please upload an image for the item.', 'error');
             return;
         }
 
@@ -321,7 +337,7 @@ function collectFormData() {
 async function saveItemToDatabase(data) {
     // Get image file if present
     const imageInput = document.getElementById('itemImage');
-    const hasImage = imageInput && imageInput.files.length > 0;
+    const hasImage = (imageInput && imageInput.files.length > 0) || droppedFile !== null;
 
     // Determine API endpoint
     const apiEndpoint = isEditMode ? 'admin/api/update_item.php' : 'admin/api/add_item.php';
@@ -351,7 +367,8 @@ async function saveItemToDatabase(data) {
     // Use FormData if we have an image to upload
     if (hasImage) {
         const formData = new FormData();
-        formData.append('itemImage', imageInput.files[0]);
+        const imageFile = (imageInput && imageInput.files.length > 0) ? imageInput.files[0] : droppedFile;
+        formData.append('itemImage', imageFile);
         for (const [key, value] of Object.entries(apiData)) {
             if (value !== null) {
                 formData.append(key, value);

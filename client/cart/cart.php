@@ -1,11 +1,7 @@
 <?php
 session_start();
 include('../../shared/php/db_connection.php');
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $u_id = $_SESSION['user_id'];
 
@@ -132,7 +128,7 @@ $result = mysqli_query($conn, $cart_query);
             // 2. Image Path Logic
             $imagePathFromDB = !empty($row['image']) ? $row['image'] : '';
             $imageSrc = !empty($imagePathFromDB) 
-                ? "../../assets/images/" . htmlspecialchars($imagePathFromDB) 
+                ? "../../assets/images/items/" . htmlspecialchars($imagePathFromDB) 
                 : '../../assets/images/catalog-fallback.svg';
         ?>
             <div class="cart-item-card" id="card-<?php echo $row['cart_row_id']; ?>" 

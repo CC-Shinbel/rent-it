@@ -1,11 +1,7 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/client/auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -126,7 +122,7 @@ $result = $stmt->get_result();
                             <div class="pending-card">
                                 
                                 <div class="product-img-container">
-                                    <img src="<?= BASE_URL ?>/assets/images/<?php echo $order['image']; ?>" 
+                                    <img src="<?= BASE_URL ?>/assets/images/items/<?php echo $order['image']; ?>" 
                                          alt="Product" 
                                          class="item-img">
                                 </div>

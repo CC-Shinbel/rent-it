@@ -76,7 +76,7 @@ while ($customer = mysqli_fetch_assoc($result)) {
     // Get all rentals count for stats
     $statsQuery = "SELECT 
         COUNT(*) as total_rentals,
-        SUM(total_price) as total_spent,
+        SUM(CASE WHEN rental_status IN ('Active', 'Booked', 'Confirmed', 'In Transit', 'Returned', 'Completed', 'Pending Return') THEN total_price ELSE 0 END) as total_spent,
         SUM(CASE WHEN rental_status IN ('Active', 'Pending', 'Booked', 'Confirmed') THEN 1 ELSE 0 END) as active_count,
         SUM(CASE WHEN rental_status = 'Pending Return' AND end_date < ? THEN 1 ELSE 0 END) as overdue_count
     FROM rental
@@ -92,7 +92,8 @@ while ($customer = mysqli_fetch_assoc($result)) {
     // Calculate monthly revenue for this customer
     $revenueQuery = "SELECT SUM(total_price) as monthly_total
     FROM rental
-    WHERE user_id = ? AND start_date >= ? AND start_date <= ?";
+    WHERE user_id = ? AND start_date >= ? AND start_date <= ?
+    AND rental_status IN ('Active', 'Booked', 'Confirmed', 'In Transit', 'Returned', 'Completed', 'Pending Return')";
     
     $stmtRevenue = mysqli_prepare($conn, $revenueQuery);
     mysqli_stmt_bind_param($stmtRevenue, "iss", $customer['id'], $monthStart, $monthEnd);
