@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
+import './ContactPage.css';
 
 const BASE_URL = 'http://localhost/rent-it';
 
@@ -25,10 +26,10 @@ function ContactPage() {
 
   return (
     <MainLayout>
-      <section className="page-header">
+      <section className="contact-hero">
         <div className="container">
-          <h1 className="page-title">Contact Us</h1>
-          <p className="page-subtitle">
+          <h1 className="contact-hero-title">Contact Us</h1>
+          <p className="contact-hero-subtitle">
             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon
             as possible.
           </p>

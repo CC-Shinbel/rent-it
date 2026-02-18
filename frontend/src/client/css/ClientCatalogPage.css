@@ -427,7 +427,8 @@
 
 
 
-.toast-notification {
+/* Catalog page toast (success for cart & favorites) */
+.catalog-toast {
 
     position: fixed;
 
@@ -457,17 +458,32 @@
 
     border-left: 4px solid #22c55e;
 
+    opacity: 0;
+
+    transform: translateX(40px);
+
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+
 }
 
 
-.toast-success {
+.catalog-toast-success {
 
-    /* can be extended for variants; keep as hook class */
+    border-left-color: #22c55e;
 
 }
 
 
-.toast-icon {
+.catalog-toast-show {
+
+    opacity: 1;
+
+    transform: translateX(0);
+
+}
+
+
+.catalog-toast-icon {
 
     display: flex;
 
@@ -492,7 +508,7 @@
 }
 
 
-.toast-message {
+.catalog-toast-message {
 
     white-space: nowrap;
 
@@ -577,8 +593,6 @@
     border-radius: var(--radius-xl, 18px);
 
     overflow: hidden;
-
-    position: relative;
 
 }
 
@@ -2871,6 +2885,45 @@
 }
 
 
+/* Favorites modal overlay (independent from catalog modal-overlay) */
+.favorites-modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    backdrop-filter: blur(4px);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 1100;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition: var(--transition-fast);
+
+    padding: 20px;
+
+}
+
+
+.favorites-modal-overlay.active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+
 
 .product-modal {
 
@@ -2937,15 +2990,6 @@
     transition: var(--transition-fast);
 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-
-}
-
-/* Ensure close button hugs the top-right corner of the wider favorites modal card */
-.favorites-product-modal .modal-close {
-
-    top: 12px;
-
-    right: 12px;
 
 }
 

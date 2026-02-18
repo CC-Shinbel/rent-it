@@ -1,14 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import './css/ClientShellLayout.css';
 
-// Backend/API base: dev uses Vite proxy (/api), prod uses direct /rent-it path
+export const SidebarContext = createContext({ sidebarCollapsed: false });
+
+const defaultUser = {
+  full_name: '',
+  email: '',
+  membership_level: '',
+  profile_picture: null,
+};
+export const UserContext = createContext({ user: defaultUser, setUser: () => {} });
+
+const TOPBAR_TITLES = {
+  '/client/dashboard': 'Dashboard',
+  '/client/catalog': 'Catalog',
+  '/client/favorites': 'My Favorites',
+  '/client/cart': 'My Cart',
+  '/client/myrentals': 'My Rentals',
+  '/client/bookinghistory': 'My Booking History',
+  '/client/returns': 'Returns & Extensions',
+  '/client/contact': 'Contact Us',
+  '/client/profile': 'My Profile',
+};
+
+
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
-// Public base for assets and PHP pages (needs full host in dev so images load from PHP app)
+
 const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
 
+function getInitialUser() {
+  try {
+    const raw = localStorage.getItem('user');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        full_name: parsed.full_name || '',
+        email: parsed.email || '',
+        membership_level: parsed.membership_level || '',
+        profile_picture: parsed.profile_picture || null,
+      };
+    }
+  } catch (_) {
+    // ignore
+  }
+  return { full_name: '', email: '', membership_level: '', profile_picture: null };
+}
+
 function ClientShellLayout({ children, showFooter = true }) {
-  const [user, setUser] = useState({ full_name: '', membership_level: '' });
+  const location = useLocation();
+  const [user, setUser] = useState(getInitialUser);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const avatarSrc = user.profile_picture
+    ? `${PUBLIC_BASE}/assets/profile/${user.profile_picture}`
+    : null;
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const profileRef = useRef(null);
+
+  const topbarTitle = TOPBAR_TITLES[location.pathname] ?? 'Dashboard';
 
   useEffect(() => {
     fetch(`${API_BASE}/client/dashboard/dashboard.php`, {
@@ -18,11 +68,32 @@ function ClientShellLayout({ children, showFooter = true }) {
       .then((data) => {
         if (!data || !data.user) return;
         setUser(data.user);
+        try {
+          const existing = JSON.parse(localStorage.getItem('user') || '{}');
+          localStorage.setItem('user', JSON.stringify({ ...existing, ...data.user }));
+        } catch (_) {
+          // ignore
+        }
       })
       .catch(() => {
         // fail silently; layout will fall back to defaults
       });
   }, []);
+
+  useEffect(() => {
+    if (!showProfileMenu) return;
+
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileMenu]);
 
   const fullName = user.full_name || 'User';
   const roleLabel = 'customer';
@@ -34,6 +105,8 @@ function ClientShellLayout({ children, showFooter = true }) {
   };
 
   const performLogout = () => {
+    setShowLogoutModal(false);
+    setShowProfileMenu(false);
     const authKeys = ['token', 'user', 'user_role', 'user_name'];
     authKeys.forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
@@ -42,13 +115,15 @@ function ClientShellLayout({ children, showFooter = true }) {
       method: 'POST',
       credentials: 'include',
     }).finally(() => {
-      window.location.href = '/rent-it/client/auth/login.php';
+      window.location.href = '/login';
     });
   };
 
   return (
-    <div className="app-container">
-      <aside className="sidebar" id="sidebar">
+    <UserContext.Provider value={{ user, setUser }}>
+    <SidebarContext.Provider value={{ sidebarCollapsed }}>
+    <div className={`app-container${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
+      <aside className={`sidebar${sidebarCollapsed ? ' collapsed' : ''}`} id="sidebar">
         <div className="sidebar-header">
           <a
             className="sidebar-logo"
@@ -65,10 +140,12 @@ function ClientShellLayout({ children, showFooter = true }) {
             <span className="sidebar-logo-text">RentIT</span>
           </a>
           <button
+            type="button"
             className="sidebar-collapse-btn"
             id="sidebarCollapseBtn"
             aria-label="Toggle sidebar"
-            title="Collapse/expand sidebar"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => setSidebarCollapsed((prev) => !prev)}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <polyline points="15 18 9 12 15 6" />
@@ -77,67 +154,73 @@ function ClientShellLayout({ children, showFooter = true }) {
         </div>
 
         <nav className="sidebar-nav">
-          <a
-            className="nav-item active"
-            href="/client/dashboard"
+          <NavLink
+            to="/client/dashboard"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Dashboard"
           >
             <span className="nav-icon">🏠</span>
             <span className="nav-label">Dashboard</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/client/catalog"
+          </NavLink>
+          <NavLink
+            to="/client/catalog"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Browse Catalog"
           >
             <span className="nav-icon">📦</span>
             <span className="nav-label">Browse Catalog</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/client/favorites"
+          </NavLink>
+          <NavLink
+            to="/client/favorites"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Favorites"
           >
             <span className="nav-icon">❤️</span>
             <span className="nav-label">Favorites</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/rent-it/client/cart/cart.php"
+          </NavLink>
+          <NavLink
+            to="/client/cart"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="My Cart"
           >
             <span className="nav-icon">🛒</span>
             <span className="nav-label">My Cart</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/rent-it/client/myrentals/myrentals.php"
+          </NavLink>
+          <NavLink
+            to="/client/myrentals"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="My Rentals"
           >
             <span className="nav-icon">🎤</span>
             <span className="nav-label">My Rentals</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/rent-it/client/bookinghistory/bookinghistory.php"
+          </NavLink>
+          <NavLink
+            to="/client/bookinghistory"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Booking History"
           >
             <span className="nav-icon">📅</span>
             <span className="nav-label">Booking History</span>
-          </a>
-          <a
-            className="nav-item"
-            href="/rent-it/client/contactusloggedin/contactusloggedin.php"
+          </NavLink>
+          <NavLink
+            to="/client/contact"
+            className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             data-tooltip="Contact Us"
           >
             <span className="nav-icon">💬</span>
             <span className="nav-label">Contact Us</span>
-          </a>
+          </NavLink>
         </nav>
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="sidebar-user-avatar">{initial}</div>
+            <div className="sidebar-user-avatar">
+              {avatarSrc ? (
+                <img src={avatarSrc} alt="" className="sidebar-user-avatar-img" />
+              ) : (
+                initial
+              )}
+            </div>
             <div className="sidebar-user-info">
               <span className="sidebar-user-name">{fullName}</span>
               <span className="sidebar-user-role">{roleLabel}</span>
@@ -163,7 +246,7 @@ function ClientShellLayout({ children, showFooter = true }) {
             ☰
           </button>
           <h1 className="topbar-title" id="pageTitle">
-            Dashboard
+            {topbarTitle}
           </h1>
           <div className="topbar-actions">
             <button
@@ -203,15 +286,70 @@ function ClientShellLayout({ children, showFooter = true }) {
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
               </svg>
             </button>
-            <div className="client-topbar-user client-profile-wrapper">
+            <div className="client-topbar-user client-profile-wrapper" ref={profileRef}>
               <button
                 className="btn-icon client-profile-btn"
                 id="profileBtn"
                 aria-label="User menu"
                 title="Profile & settings"
+                type="button"
+                onClick={() => setShowProfileMenu((open) => !open)}
               >
-                <div className="client-topbar-user-avatar">{initial}</div>
+                <div className="client-topbar-user-avatar">
+                  {avatarSrc ? (
+                    <img src={avatarSrc} alt="" className="client-topbar-user-avatar-img" />
+                  ) : (
+                    initial
+                  )}
+                </div>
               </button>
+              {showProfileMenu && (
+                <div className="profile-dropdown open">
+                  <div className="profile-header">
+                    <div className="profile-info">
+                      <div className="name">{fullName}</div>
+                      {user.email && <div className="email">{user.email}</div>}
+                    </div>
+                  </div>
+                  <nav className="profile-menu">
+                    <NavLink to="/client/dashboard" className="profile-menu-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="3" width="7" height="9" />
+                        <rect x="14" y="3" width="7" height="5" />
+                        <rect x="14" y="12" width="7" height="9" />
+                        <rect x="3" y="16" width="7" height="5" />
+                      </svg>
+                      Dashboard
+                    </NavLink>
+                    <NavLink
+                      to="/client/profile"
+                      className="profile-menu-item"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                      My Profile
+                    </NavLink>
+                    <div className="profile-divider" />
+                    <button
+                      type="button"
+                      className="profile-menu-item danger"
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        handleLogout();
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      Sign Out
+                    </button>
+                  </nav>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -240,13 +378,16 @@ function ClientShellLayout({ children, showFooter = true }) {
                   <h4 className="client-footer-heading">Quick Links</h4>
                   <ul>
                     <li>
-                      <a href="/client/catalog">Browse Catalog</a>
+                      <NavLink to="/client/catalog">Browse Catalog</NavLink>
                     </li>
                     <li>
-                      <a href="/rent-it/client/myrentals/myrentals.php">My Rentals</a>
+                      <NavLink to="/client/myrentals">My Rentals</NavLink>
                     </li>
                     <li>
-                      <a href="/rent-it/client/bookinghistory/bookinghistory.php">Booking History</a>
+                      <NavLink to="/client/bookinghistory">Booking History</NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/client/returns">Returns &amp; Extensions</NavLink>
                     </li>
                   </ul>
                 </div>
@@ -254,7 +395,7 @@ function ClientShellLayout({ children, showFooter = true }) {
                   <h4 className="client-footer-heading">Support</h4>
                   <ul>
                     <li>
-                      <a href="/rent-it/client/contactusloggedin/contactusloggedin.php">Contact Us</a>
+                      <NavLink to="/client/contact">Contact Us</NavLink>
                     </li>
                     <li>
                       <a href="/pages/about.html">About</a>
@@ -353,6 +494,8 @@ function ClientShellLayout({ children, showFooter = true }) {
         </div>
       )}
     </div>
+    </SidebarContext.Provider>
+    </UserContext.Provider>
   );
 }
 

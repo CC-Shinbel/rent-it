@@ -6,10 +6,11 @@ const BASE_URL = 'http://localhost/rent-it';
 function MainLayout({ children }) {
   const location = useLocation();
   const isAbout = location.pathname === '/about';
+  const isContact = location.pathname === '/contact';
   const isAuthPage = location.pathname === '/login';
   const { hash } = location;
 
-  const isHomePage = !isAbout;
+  const isHomePage = !isAbout && !isContact;
   const isRentals = isHomePage && hash === '#machines';
   const isPricing = isHomePage && hash === '#pricing';
 
@@ -66,7 +67,10 @@ function MainLayout({ children }) {
             >
               About
             </Link>
-            <Link to="/contact" className="nav-link">
+            <Link
+              to="/contact"
+              className={`nav-link ${isContact ? 'active' : ''}`.trim()}
+            >
               Contact
             </Link>
           </nav>

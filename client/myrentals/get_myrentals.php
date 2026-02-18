@@ -45,9 +45,11 @@ try {
         r.order_id,
         r.order_id AS rental_code,
         GROUP_CONCAT(i.item_name SEPARATOR ', ') AS name,
+        MAX(i.image) AS image,
         r.start_date,
         r.end_date,
         r.rental_status AS rental_status,
+        r.return_reason AS return_reason,
         r.total_price AS total_amount
     FROM rental r
     LEFT JOIN rental_item ri ON r.order_id = ri.order_id

@@ -3,6 +3,13 @@ session_start();
 include('../../shared/php/db_connection.php');
 
 if (!isset($_SESSION['user_id'])) {
+    if (isset($_GET['format']) && $_GET['format'] === 'json') {
+        http_response_code(401);
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+        exit();
+    }
+
     header("Location: ../../auth/login.php");
     exit();
 }
@@ -15,6 +22,57 @@ $cart_query = "SELECT c.id AS cart_row_id, i.item_name, i.price_per_day, i.categ
                JOIN item i ON c.item_id = i.item_id 
                WHERE c.user_id = '$u_id'";
 $result = mysqli_query($conn, $cart_query);
+
+// JSON output mode for React
+if (isset($_GET['format']) && $_GET['format'] === 'json') {
+    header('Content-Type: application/json');
+
+    $items = [];
+    $subtotal = 0;
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $price = isset($row['price_per_day']) ? (float)$row['price_per_day'] : 0;
+
+            // Normalize dates and compute rental days
+            $start_date = !empty($row['start_date']) ? $row['start_date'] : date('Y-m-d');
+            $end_date = !empty($row['end_date']) ? $row['end_date'] : date('Y-m-d', strtotime('+1 day'));
+
+            $start_ts = strtotime($start_date);
+            $end_ts = strtotime($end_date);
+            if ($end_ts < $start_ts) {
+                $end_ts = $start_ts;
+                $end_date = $start_date;
+            }
+
+            $diff_days = max(1, (int)ceil(($end_ts - $start_ts) / (60 * 60 * 24)));
+            $itemSubtotal = $price * $diff_days;
+
+            $subtotal += $itemSubtotal;
+
+            $items[] = [
+                'cart_row_id'   => (int)$row['cart_row_id'],
+                'item_name'     => $row['item_name'],
+                'price_per_day' => $price,
+                'category'      => $row['category'],
+                'image'         => $row['image'],
+                'start_date'    => $start_date,
+                'end_date'      => $end_date,
+                'days'          => $diff_days,
+                'itemSubtotal'  => $itemSubtotal,
+            ];
+        }
+    }
+
+    echo json_encode([
+        'success'  => true,
+        'items'    => $items,
+        'subtotal' => $subtotal,
+        'count'    => count($items),
+    ]);
+
+    exit();
+}
 ?>
 
 <!DOCTYPE html>

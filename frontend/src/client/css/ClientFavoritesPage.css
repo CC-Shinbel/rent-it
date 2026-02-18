@@ -258,10 +258,12 @@
     text-decoration: none;
 }
 
-/* Empty State */
+/* Empty State – larger card, content centered */
 .empty-favorites {
     text-align: center;
-    padding: clamp(32px, 4vw, 56px);
+    padding: clamp(56px, 8vw, 100px);
+    min-height: 320px;
+    justify-content: center;
     animation: fadeIn 0.4s ease-out;
     background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
     border: 1px dashed var(--border-color);
@@ -271,7 +273,6 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    animation: fadeIn 0.4s ease-out;
 }
 
 .empty-icon {
@@ -341,3 +342,4 @@
 .is-hidden {
     display: none !important;
 }
+

@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { SidebarContext } from './ClientShellLayout';
 import './css/ClientCatalogPage.css';
 
-// Backend base for PHP endpoints: dev uses Vite proxy (/api), prod uses direct /rent-it path
+
 const API_BASE = import.meta.env.DEV ? '/api/rent-it' : '/rent-it';
-// Public base for asset URLs
+
 const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
 
 const ClientCatalogPage = () => {
@@ -18,9 +19,10 @@ const ClientCatalogPage = () => {
   // Lightweight toast for modal cart success (bottom-right)
   const [toast, setToast] = useState({ visible: false, message: '' });
 
-  // Client-side pagination (20 items per page, mirroring static PHP pagination layout)
+  // Client-side pagination: 10 when sidebar expanded, 12 when collapsed (more space)
+  const { sidebarCollapsed } = useContext(SidebarContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = sidebarCollapsed ? 12 : 10;
 
   // Filter state (React implementation of legacy catalog.js behavior)
   const [searchQuery, setSearchQuery] = useState('');
@@ -123,12 +125,17 @@ const ClientCatalogPage = () => {
 
   const totalPages = useMemo(() => (
     filteredItems.length > 0 ? Math.ceil(filteredItems.length / ITEMS_PER_PAGE) : 1
-  ), [filteredItems.length]);
+  ), [filteredItems.length, ITEMS_PER_PAGE]);
 
   const paginatedItems = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     return filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredItems, currentPage]);
+  }, [filteredItems, currentPage, ITEMS_PER_PAGE]);
+
+  // Keep current page valid when items-per-page or total pages change (e.g. sidebar toggle)
+  useEffect(() => {
+    setCurrentPage((p) => Math.min(Math.max(1, p), totalPages));
+  }, [ITEMS_PER_PAGE, totalPages]);
 
   // ===== Availability integration with existing admin calendar API =====
 
@@ -447,7 +454,7 @@ const ClientCatalogPage = () => {
   };
 
   return (
-    <div className="catalog-page-inner">
+    <div className="content-area fade-in-up catalog-page-inner">
       {/* Page header */}
       <div className="page-header-dashboard">
         <div className="page-header-info">
@@ -1110,12 +1117,11 @@ const ClientCatalogPage = () => {
         </div>
       </div>
 
-      {/* Local React pill-style toast for cart and favorites */}
 
       {toast.visible && (
-        <div className="toast-notification toast-success">
-          <div className="toast-icon">✓</div>
-          <div className="toast-message">{toast.message}</div>
+        <div className="catalog-toast catalog-toast-success catalog-toast-show">
+          <div className="catalog-toast-icon">✓</div>
+          <div className="catalog-toast-message">{toast.message}</div>
         </div>
       )}
     </div>

@@ -28,9 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     }
 }
 
-// User info
-$user_query = mysqli_query($conn, "SELECT full_name, membership_level FROM USERS WHERE id = $user_id");
-$user_data = mysqli_fetch_assoc($user_query) ?: ['full_name' => 'User', 'membership_level' => 'Bronze'];
+// User info (used by dashboard, contact page, and profile page)
+$user_query = mysqli_query($conn, "SELECT full_name, email, phone, address, profile_picture, created_at, membership_level FROM USERS WHERE id = $user_id");
+$user_data = mysqli_fetch_assoc($user_query) ?: [
+    'full_name'        => 'User',
+    'email'            => '',
+    'phone'            => '',
+    'address'          => '',
+    'profile_picture'  => null,
+    'created_at'       => null,
+    'membership_level' => 'Bronze',
+];
 
 // Totals
 $res_spent   = mysqli_query($conn, "SELECT SUM(total_price) AS total FROM RENTAL WHERE user_id = $user_id");
@@ -93,6 +101,8 @@ if ($res = mysqli_query($conn, $history_query)) {
 }
 
 $member_status = $user_data['membership_level'] ?? 'Bronze';
+// Member since (for profile page / UI)
+$member_since = $user_data['created_at'] ? date('F Y', strtotime($user_data['created_at'])) : null;
 
 // CORS + JSON headers for React client (dev origin)
 header('Access-Control-Allow-Origin: http://localhost:5173');
@@ -102,7 +112,12 @@ header('Content-Type: application/json');
 echo json_encode([
     'user' => [
         'full_name'        => $user_data['full_name'] ?? 'User',
+        'email'            => $user_data['email'] ?? '',
         'membership_level' => $member_status,
+        'phone'            => $user_data['phone'] ?? '',
+        'address'          => $user_data['address'] ?? '',
+        'profile_picture'  => $user_data['profile_picture'] ?? null,
+        'member_since'     => $member_since,
     ],
     'totals' => [
         'total_spent'      => $total_spent,

@@ -27,9 +27,6 @@
     padding-top: calc(var(--topbar-height) + -19px);
 }
 
-.content-area > * + * {
-    margin-top: clamp(18px, 2vw, 28px);
-}
 
 /* Do not push down the full-screen modal overlay with generic spacing */
 .content-area > .modal-overlay {
