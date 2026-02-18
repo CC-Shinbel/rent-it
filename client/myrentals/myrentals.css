@@ -694,6 +694,40 @@
     }
 }
 
+@media (max-width: 375px) {
+    .section-header {
+        gap: 4px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .card-item-image {
+        height: 100px;
+    }
+    
+    .card-title {
+        font-size: 0.85rem;
+    }
+    
+    .card-actions .btn-extend,
+    .card-actions .btn-return {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+    
+    .receipt-modal-content {
+        width: calc(100vw - 2rem);
+    }
+}
+
 /* ===== RECEIPT MODAL ===== */
 .receipt-modal-content {
     background: var(--card-bg, #fff);

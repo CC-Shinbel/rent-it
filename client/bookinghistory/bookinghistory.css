@@ -671,3 +671,32 @@
         text-align: center;
     }
 }
+
+@media (max-width: 375px) {
+    .kpi-card {
+        padding: 12px;
+    }
+    
+    .kpi-value {
+        font-size: 18px;
+    }
+    
+    .kpi-label {
+        font-size: 0.7rem;
+    }
+    
+    .tab-link {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+    
+    .page-title {
+        font-size: 1.25rem;
+    }
+}
