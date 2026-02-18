@@ -2,12 +2,7 @@
 // filepath: c:\xampp\htdocs\rent-it\client\catalog\catalog.php
 session_start();
 include '../../shared/php/db_connection.php';
-
-// Security: Redirect if not logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $query = "SELECT * FROM item";
 $result = mysqli_query($conn, $query);

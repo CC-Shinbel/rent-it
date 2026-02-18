@@ -1,11 +1,7 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../auth/login.php');
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = intval($_SESSION['user_id']);
 $user_query = mysqli_query($conn, "SELECT full_name, email, membership_level FROM USERS WHERE id = $user_id LIMIT 1");
