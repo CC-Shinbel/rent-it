@@ -532,6 +532,10 @@ function addActivity(type, text) {
     const activityList = document.querySelector('.activity-list');
     if (!activityList) return;
 
+    // Hide empty state if present
+    const emptyState = document.getElementById('activityEmptyState');
+    if (emptyState) emptyState.style.display = 'none';
+
     const icons = {
         sent: `<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>`,
         resolved: `<polyline points="20 6 9 17 4 12"/>`,
