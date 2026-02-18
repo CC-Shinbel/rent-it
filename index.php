@@ -82,11 +82,11 @@ $userName = $_SESSION['user_name'] ?? '';
             
             <!-- Desktop Navigation -->
             <nav class="main-nav">
-                <a href="http://localhost:5173/" class="nav-link active">Home</a>
+                <a href="<?= BASE_URL ?>/" class="nav-link active">Home</a>
                 <a href="#machines" class="nav-link">Rentals</a>
                 <a href="#pricing" class="nav-link">Pricing</a>
-                <a href="http://localhost:5173/about" class="nav-link">About</a>
-                <a href="http://localhost:5173/contact" class="nav-link">Contact</a>
+                <a href="<?= BASE_URL ?>/pages/aboutus.html" class="nav-link">About</a>
+                <a href="<?= BASE_URL ?>/pages/contactus.html" class="nav-link">Contact</a>
             </nav>
             
             <!-- Header Actions -->
@@ -461,9 +461,9 @@ $userName = $_SESSION['user_name'] ?? '';
                 <div class="footer-col">
                     <h5>Company</h5>
                     <nav class="footer-nav">
-                        <a href="http://localhost:5173/about" class="footer-link">About Us</a>
-                        <a href="http://localhost:5173/contact" class="footer-link">Contact</a>
-                        <a href="http://localhost:5173/terms" class="footer-link">Terms of Service</a>
+                        <a href="<?= BASE_URL ?>/pages/aboutus.html" class="footer-link">About Us</a>
+                        <a href="<?= BASE_URL ?>/pages/contactus.html" class="footer-link">Contact</a>
+                        <a href="<?= BASE_URL ?>/pages/terms.html" class="footer-link">Terms of Service</a>
                     </nav>
                 </div>
 
