@@ -12,117 +12,35 @@ export default function DispatchPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [dateRange, setDateRange] = useState("week");
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - replace with API call
+  // Fetch dispatches on mount
   useEffect(() => {
-    const mockDispatches = [
-      {
-        id: "ORD-001",
-        orderId: "ORD-001",
-        type: "delivery",
-        status: "confirmed",
-        time: "10:00 AM",
-        customerName: "Juan Dela Cruz",
-        customerPhone: "+63-917-123-4567",
-        customerAvatar: "JD",
-        address: "123 Main St, Makati City, Manila",
-        items: ["Karaoke Pro System"],
-        itemCount: 1,
-      },
-      {
-        id: "ORD-002",
-        orderId: "ORD-002",
-        type: "delivery",
-        status: "out_for_delivery",
-        time: "11:30 AM",
-        customerName: "Maria Santos",
-        customerPhone: "+63-917-234-5678",
-        customerAvatar: "MS",
-        address: "456 Oak Ave, Quezon City, Manila",
-        items: ["LED Projector", "Bluetooth Speaker"],
-        itemCount: 2,
-      },
-      {
-        id: "ORD-003",
-        orderId: "ORD-003",
-        type: "pickup",
-        status: "active",
-        time: "1:00 PM",
-        customerName: "Carlos Reyes",
-        customerPhone: "+63-917-345-6789",
-        customerAvatar: "CR",
-        address: "789 Pine Rd, Pasig City, Manila",
-        items: ["Microphone Stand Pro"],
-        itemCount: 1,
-      },
-      {
-        id: "ORD-004",
-        orderId: "ORD-004",
-        type: "delivery",
-        status: "completed",
-        time: "2:15 PM",
-        customerName: "Ana Garcia",
-        customerPhone: "+63-917-456-7890",
-        customerAvatar: "AG",
-        address: "321 Elm St, Caloocan City, Manila",
-        items: ["Portable Speaker"],
-        itemCount: 1,
-      },
-      {
-        id: "ORD-005",
-        orderId: "ORD-005",
-        type: "returning",
-        status: "return_scheduled",
-        time: "3:30 PM",
-        customerName: "Roberto Lopez",
-        customerPhone: "+63-917-567-8901",
-        customerAvatar: "RL",
-        address: "654 Maple Dr, Las Piñas City, Manila",
-        items: ["4K Projector"],
-        itemCount: 1,
-      },
-      {
-        id: "ORD-006",
-        orderId: "ORD-006",
-        type: "delivery",
-        status: "pending",
-        time: "4:45 PM",
-        customerName: "Sofia Martinez",
-        customerPhone: "+63-917-678-9012",
-        customerAvatar: "SM",
-        address: "987 Cedar Ln, Taguig City, Manila",
-        items: ["Audio Setup", "Microphone"],
-        itemCount: 2,
-      },
-      {
-        id: "ORD-007",
-        orderId: "ORD-007",
-        type: "pickup",
-        status: "returned",
-        time: "9:00 AM",
-        customerName: "Miguel Torres",
-        customerPhone: "+63-917-789-0123",
-        customerAvatar: "MT",
-        address: "111 Birch Way, Cavite City, Cavite",
-        items: ["Karaoke System"],
-        itemCount: 1,
-      },
-      {
-        id: "ORD-008",
-        orderId: "ORD-008",
-        type: "delivery",
-        status: "late",
-        time: "12:00 PM",
-        customerName: "Lucia Fernandez",
-        customerPhone: "+63-917-890-1234",
-        customerAvatar: "LF",
-        address: "222 Spruce St, Navotas City, Manila",
-        items: ["Portable Speaker"],
-        itemCount: 1,
-      },
-    ];
-    setDispatches(mockDispatches);
+    fetchDispatches();
   }, []);
+
+  const fetchDispatches = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/admin/api/get_dispatches.php", {
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to fetch dispatches");
+      const result = await response.json();
+      if (result.success) {
+        setDispatches(result.data || []);
+      } else {
+        alert(result.message || "Failed to load dispatches");
+      }
+    } catch (err) {
+      console.error("Error fetching dispatches:", err);
+      alert("Failed to load dispatches");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   // Filter and search
   useEffect(() => {
@@ -130,18 +48,20 @@ export default function DispatchPage() {
 
     // Apply status filter
     if (activeFilter !== "all") {
-      filtered = filtered.filter((d) => d.status === activeFilter);
+      filtered = filtered.filter(
+        (d) => (d.status || "").toLowerCase() === activeFilter.toLowerCase()
+      );
     }
 
     // Apply search
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (d) =>
-          d.orderId.toLowerCase().includes(term) ||
-          d.customerName.toLowerCase().includes(term) ||
-          d.address.toLowerCase().includes(term)
-      );
+      filtered = filtered.filter((d) => {
+        const orderId = String(d.orderId || d.order_id || "").toLowerCase();
+        const customerName = (d.customer?.name || d.customerName || "").toLowerCase();
+        const address = (d.address || "").toLowerCase();
+        return orderId.includes(term) || customerName.includes(term) || address.includes(term);
+      });
     }
 
     setFilteredDispatches(filtered);
@@ -361,9 +281,13 @@ export default function DispatchPage() {
 
       {/* Dispatch Cards Grid */}
       <div className="dispatch-grid" id="dispatchGrid">
-        {filteredDispatches.length > 0 ? (
+        {loading ? (
+          <div className="dispatch-empty">
+            <p>Loading dispatches...</p>
+          </div>
+        ) : filteredDispatches.length > 0 ? (
           filteredDispatches.map((dispatch) => (
-            <div key={dispatch.id} className="dispatch-card">
+            <div key={dispatch.id || dispatch.dispatch_id} className="dispatch-card">
               <div className="dispatch-card-header">
                 <div className="dispatch-type delivery">
                   <svg
@@ -382,13 +306,13 @@ export default function DispatchPage() {
                 <span
                   className={`dispatch-status ${dispatch.status}`}
                 >
-                  {dispatch.status.replace(/_/g, " ")}
+                  {(dispatch.status || "").replace(/_/g, " ")}
                 </span>
               </div>
 
               <div className="dispatch-card-body">
                 <div className="dispatch-order-info">
-                  <div className="dispatch-order-id">{dispatch.orderId}</div>
+                  <div className="dispatch-order-id">{dispatch.orderId || dispatch.order_id || dispatch.id}</div>
                   <div className="dispatch-time">
                     <svg
                       viewBox="0 0 24 24"
@@ -399,20 +323,20 @@ export default function DispatchPage() {
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
-                    {dispatch.time}
+                    {dispatch.time || dispatch.scheduledTime || ""}
                   </div>
                 </div>
 
                 <div className="dispatch-customer">
                   <div className="dispatch-customer-avatar">
-                    {dispatch.customerAvatar}
+                    {(dispatch.customerAvatar || (dispatch.customer?.name || dispatch.customerName || "").substring(0, 2).toUpperCase())}
                   </div>
                   <div className="dispatch-customer-info">
                     <div className="dispatch-customer-name">
-                      {dispatch.customerName}
+                      {dispatch.customerName || dispatch.customer?.name || ""}
                     </div>
                     <div className="dispatch-customer-phone">
-                      {dispatch.customerPhone}
+                      {dispatch.customerPhone || dispatch.customer?.phone || ""}
                     </div>
                   </div>
                 </div>
@@ -428,14 +352,14 @@ export default function DispatchPage() {
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                   <div className="dispatch-address-text">
-                    {dispatch.address}
+                    {dispatch.address || ""}
                   </div>
                 </div>
 
                 <div className="dispatch-items">
-                  {dispatch.items.map((item, idx) => (
+                  {(dispatch.items || []).map((item, idx) => (
                     <span key={idx} className="dispatch-item-tag">
-                      {item}
+                      {typeof item === "string" ? item : item.name || item}
                     </span>
                   ))}
                 </div>
@@ -443,7 +367,7 @@ export default function DispatchPage() {
 
               <div className="dispatch-card-footer">
                 <span className="dispatch-detail">
-                  {dispatch.itemCount} item{dispatch.itemCount > 1 ? "s" : ""}
+                  {(dispatch.items || []).length} item{(dispatch.items || []).length > 1 ? "s" : ""}
                 </span>
                 <div className="dispatch-actions">
                   <button
