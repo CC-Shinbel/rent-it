@@ -46,7 +46,16 @@
     box-shadow: var(--shadow-lg);
 }
 
+/* Dark theme: card and image area not white */
+[data-theme="dark"] .favorite-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
 
+[data-theme="dark"] .favorite-image-wrap {
+    background-color: var(--bg-secondary, #1e293b);
+    border-bottom-color: var(--border-color, rgba(255, 255, 255, 0.08));
+}
 
 /* 1. Balik Grid Layout (3 columns para sakto ang laki) */
 .favorites-grid {

@@ -526,23 +526,29 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
     background: transparent;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
     position: relative;
     z-index: 10;
 }
 
 .client-theme-toggle:hover {
     background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .client-theme-toggle {
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 [data-theme="dark"] .client-theme-toggle:hover {
     background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .client-theme-toggle svg {
