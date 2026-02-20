@@ -493,7 +493,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-});
 
 /**
  * Navigate to edit item page
