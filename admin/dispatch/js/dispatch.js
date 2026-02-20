@@ -39,6 +39,22 @@ function getStatusText(status) {
 }
 
 /**
+ * Get next action for a given status
+ * Returns null if no action is available (completed, cancelled, late)
+ */
+function getNextAction(status) {
+    const actionMap = {
+        'pending': 'Confirm Order',
+        'confirmed': 'Mark Out for Delivery',
+        'out_for_delivery': 'Mark Active',
+        'active': 'Schedule Return',
+        'return_scheduled': 'Mark Returned',
+        'returned': 'Mark Completed'
+    };
+    return actionMap[status] || null;
+}
+
+/**
  * Render dispatch card
  */
 function renderDispatchCard(dispatch) {
@@ -109,15 +125,8 @@ function renderDispatchCard(dispatch) {
                             <polyline points="22,6 12,13 2,6"/>
                         </svg>
                     </button>
-                    ${dispatch.type === 'returning' ? `
-                        <button class="dispatch-action-btn" title="Mark Available" onclick="markAvailable('${dispatch.orderId}')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22 4 12 14.01 9 11.01"/>
-                            </svg>
-                        </button>
-                    ` : (dispatch.status !== 'completed' && dispatch.status !== 'cancelled') ? `
-                        <button class="dispatch-action-btn" title="Mark complete" onclick="markComplete('${dispatch.id}')">
+                    ${getNextAction(dispatch.status) ? `
+                        <button class="dispatch-action-btn" title="${getNextAction(dispatch.status)}" onclick="markComplete('${dispatch.id}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"/>
                             </svg>
@@ -321,6 +330,18 @@ async function markComplete(dispatchId) {
     let confirmMessage;
     
     switch (dispatch.status) {
+        case 'pending':
+            nextStatus = 'Confirmed';
+            confirmMessage = `Confirm order for ${dispatch.customer.name}?`;
+            break;
+        case 'confirmed':
+            nextStatus = 'In Transit';
+            confirmMessage = `Mark order for ${dispatch.customer.name} as out for delivery?`;
+            break;
+        case 'out_for_delivery':
+            nextStatus = 'Active';
+            confirmMessage = `Mark order for ${dispatch.customer.name} as active?`;
+            break;
         case 'active':
             nextStatus = 'Pending Return';
             confirmMessage = `Schedule return for ${dispatch.customer.name}?`;
@@ -334,9 +355,8 @@ async function markComplete(dispatchId) {
             confirmMessage = `Mark order for ${dispatch.customer.name} as completed?`;
             break;
         default:
-            nextStatus = 'Active';
-            confirmMessage = `Mark ${dispatch.type} for ${dispatch.customer.name} as active?`;
-            break;
+            AdminComponents.showToast('No action available for this status', 'warning');
+            return;
     }
     
     if (!confirm(confirmMessage)) {
