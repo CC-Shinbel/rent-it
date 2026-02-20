@@ -4,7 +4,8 @@ session_start();
 include '../../shared/php/db_connection.php';
 include '../../shared/php/auth_check.php';
 
-$query = "SELECT * FROM item";
+// Only load visible items so the catalog mirrors admin visibility
+$query = "SELECT * FROM item WHERE is_visible = 1";
 $result = mysqli_query($conn, $query);
 ?>
 <!DOCTYPE html>
@@ -297,11 +298,26 @@ $result = mysqli_query($conn, $query);
                         </div>
 
                         <div class="products-grid">
-                        <?php while($row = mysqli_fetch_assoc($result)) { ?>
+                        <?php while($row = mysqli_fetch_assoc($result)) { 
+    // Normalize status for CSS/filters
+    $rawStatus = strtolower(trim($row['status'] ?? 'Available'));
+    $statusClass = 'available';
+    if ($rawStatus === 'booked') {
+        $statusClass = 'booked';
+    } elseif (in_array($rawStatus, ['repairing', 'maintenance', 'under repair', 'under maintenance'])) {
+        $statusClass = 'maintenance';
+    }
+    $statusLabel = $row['status'] ?? 'Available';
+    $isFeatured = isset($row['is_featured']) && (int)$row['is_featured'] === 1;
+?>
     <article class="product-card"
         data-id="<?php echo $row['item_id']; ?>"
         data-category="<?php echo htmlspecialchars($row['category']); ?>"
-        data-price="<?php echo $row['price_per_day']; ?>">
+        data-price="<?php echo $row['price_per_day']; ?>"
+        data-status="<?php echo $statusClass; ?>"
+        data-status-label="<?php echo htmlspecialchars($statusLabel); ?>"
+        data-featured="<?php echo $isFeatured ? 'true' : 'false'; ?>"
+        data-promo="<?php echo $isFeatured ? 'true' : 'false'; ?>">
                     
         <?php 
             $sampleImages = [
@@ -314,10 +330,14 @@ $result = mysqli_query($conn, $query);
                 : $sampleImages[$row['item_id'] % count($sampleImages)];
         ?>
         <div class="product-image-wrap">
-              <img src="<?php echo $imageFile; ?>"
-                      alt="<?php echo htmlspecialchars($row['item_name']); ?>"
-                      class="product-image"
-                      onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
+            <?php if ($isFeatured) { ?>
+                <span class="product-featured-pill">Featured</span>
+            <?php } ?>
+            <span class="product-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($statusLabel); ?></span>
+            <img src="<?php echo $imageFile; ?>"
+                    alt="<?php echo htmlspecialchars($row['item_name']); ?>"
+                    class="product-image"
+                    onerror="this.onerror=null;this.src='../../assets/images/catalog-fallback.svg';">
         </div>
 
         <div class="product-content">
