@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initDeliveryOptions();
     initPaymentOptions();
     initPromoCode();
-    initConfirmOrder();
-  
 });
 
 /**

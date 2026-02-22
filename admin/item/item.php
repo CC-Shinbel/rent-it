@@ -145,6 +145,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <th>Item</th>
                             <th>Category</th>
                             <th>Pricing</th>
+                            <th>Units</th>
                             <th>Status &amp; Visibility</th>
                             <th>Tags</th>
                             <th>Times Rented</th>

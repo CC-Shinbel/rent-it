@@ -71,10 +71,40 @@ if (mysqli_stmt_execute($stmt)) {
     
     // Update item availability status if returned or cancelled
     if ($newStatus === 'Returned' || $newStatus === 'Completed' || $newStatus === 'Cancelled') {
+        // Get all items in this order to recalculate their available_units
+        $getItemsQuery = "SELECT DISTINCT item_id FROM rental_item WHERE order_id = ?";
+        $stmtGetItems = mysqli_prepare($conn, $getItemsQuery);
+        mysqli_stmt_bind_param($stmtGetItems, "i", $orderId);
+        mysqli_stmt_execute($stmtGetItems);
+        $itemsResult = mysqli_stmt_get_result($stmtGetItems);
+        
+        // Recalculate available_units for each item based on actual rentals (sum quantities)
+        $recalcStmt = mysqli_prepare($conn, "
+            UPDATE item i
+            SET available_units = (
+                i.total_units - i.repairing_units - COALESCE((
+                    SELECT SUM(ri.quantity) 
+                    FROM rental_item ri 
+                    JOIN rental r ON ri.order_id = r.order_id 
+                    WHERE ri.item_id = i.item_id 
+                    AND r.rental_status IN ('Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Late')
+                ), 0)
+            )
+            WHERE item_id = ?
+        ");
+        
+        while ($itemRow = mysqli_fetch_assoc($itemsResult)) {
+            mysqli_stmt_bind_param($recalcStmt, "i", $itemRow['item_id']);
+            mysqli_stmt_execute($recalcStmt);
+        }
+        mysqli_stmt_close($recalcStmt);
+        mysqli_stmt_close($stmtGetItems);
+        
+        // Also update item status to Available if all units are returned
         $updateAvailQuery = "UPDATE item i 
                             INNER JOIN rental_item ri ON i.item_id = ri.item_id 
                             SET i.status = 'Available' 
-                            WHERE ri.order_id = ?";
+                            WHERE ri.order_id = ? AND i.available_units > 0";
         $stmtAvail = mysqli_prepare($conn, $updateAvailQuery);
         mysqli_stmt_bind_param($stmtAvail, "i", $orderId);
         mysqli_stmt_execute($stmtAvail);

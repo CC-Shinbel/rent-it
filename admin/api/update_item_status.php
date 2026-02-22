@@ -55,9 +55,10 @@ if ($stmt->execute()) {
             $created_date = date('Y-m-d');
             $eta_date = isset($data->eta_date) ? trim($data->eta_date) : date('Y-m-d', strtotime('+7 days'));
             $repair_status = 'in-progress';
+            $repair_quantity = isset($data->repair_quantity) ? intval($data->repair_quantity) : 1;
 
-            $repair_stmt = $conn->prepare("INSERT INTO repair (item_id, issue_type, priority, status, created_date, eta_date, estimated_cost, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $repair_stmt->bind_param("isssssds", $item_id, $issue_type, $priority, $repair_status, $created_date, $eta_date, $estimated_cost, $notes);
+            $repair_stmt = $conn->prepare("INSERT INTO repair (item_id, quantity, issue_type, priority, status, created_date, eta_date, estimated_cost, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $repair_stmt->bind_param("iisssssds", $item_id, $repair_quantity, $issue_type, $priority, $repair_status, $created_date, $eta_date, $estimated_cost, $notes);
             $repair_stmt->execute();
             $repair_stmt->close();
         }

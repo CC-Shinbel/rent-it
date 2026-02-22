@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
     initTagsInput();
     initFormValidation();
+    initAvailableUnitsCalculation();
 
     // Detect edit mode from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -31,6 +32,54 @@ document.addEventListener('DOMContentLoaded', function() {
         loadItemForEdit(editId);
     }
 });
+
+/**
+ * Initialize auto-calculation of available units
+ */
+function initAvailableUnitsCalculation() {
+    const totalUnitsInput = document.getElementById('totalUnits');
+    const repairingUnitsInput = document.getElementById('repairingUnits');
+    const availableUnitsInput = document.getElementById('availableUnits');
+
+    function calculateAvailableUnits() {
+        if (!totalUnitsInput || !repairingUnitsInput || !availableUnitsInput) return;
+        
+        const totalUnits = parseInt(totalUnitsInput.value) || 0;
+        const repairingUnits = parseInt(repairingUnitsInput.value) || 0;
+        
+        // In edit mode, calculate from stored original values
+        let rentedUnits = 0;
+        
+        if (isEditMode && editItemId) {
+            // Calculate rented units from the original data
+            const originalTotal = parseInt(totalUnitsInput.dataset.original || totalUnits);
+            const originalRepairing = parseInt(repairingUnitsInput.dataset.original || 0);
+            const originalAvailable = parseInt(availableUnitsInput.dataset.original || totalUnits);
+            rentedUnits = Math.max(0, originalTotal - originalAvailable - originalRepairing);
+            
+            // Update hint to show breakdown
+            const hintEl = availableUnitsInput.nextElementSibling;
+            if (hintEl && hintEl.classList.contains('form-hint')) {
+                hintEl.innerHTML = `Auto-calculated: ${totalUnits} total - ${rentedUnits} rented - ${repairingUnits} repairing = <strong>${Math.max(0, totalUnits - rentedUnits - repairingUnits)}</strong>`;
+            }
+        }
+        
+        // Calculate: Available = Total - Rented - Repairing
+        const calculatedAvailable = Math.max(0, totalUnits - rentedUnits - repairingUnits);
+        availableUnitsInput.value = calculatedAvailable;
+    }
+
+    // Add event listeners
+    if (totalUnitsInput) {
+        totalUnitsInput.addEventListener('input', calculateAvailableUnits);
+    }
+    if (repairingUnitsInput) {
+        repairingUnitsInput.addEventListener('input', calculateAvailableUnits);
+    }
+    
+    // Initial calculation
+    calculateAvailableUnits();
+}
 
 /**
  * Load item data for editing
@@ -77,6 +126,16 @@ async function loadItemForEdit(itemId) {
         setVal('depositAmount', item.deposit);
         setVal('totalUnits', item.total_units);
         setVal('availableUnits', item.available_units);
+        setVal('repairingUnits', item.repairing_units);
+        
+        // Store original values for calculation
+        const availableUnitsEl = document.getElementById('availableUnits');
+        const repairingUnitsEl = document.getElementById('repairingUnits');
+        const totalUnitsEl = document.getElementById('totalUnits');
+        if (availableUnitsEl) availableUnitsEl.dataset.original = item.available_units;
+        if (repairingUnitsEl) repairingUnitsEl.dataset.original = item.repairing_units;
+        if (totalUnitsEl) totalUnitsEl.dataset.original = item.total_units;
+        
         setSelect('itemCondition', item.condition);
         setSelect('itemStatus', item.status);
         setVal('itemTags', item.tags || '');
@@ -323,6 +382,7 @@ function collectFormData() {
         depositAmount: parseFloat(document.getElementById('depositAmount')?.value) || 0,
         totalUnits: parseInt(document.getElementById('totalUnits')?.value) || 1,
         availableUnits: parseInt(document.getElementById('availableUnits')?.value) || 1,
+        repairingUnits: parseInt(document.getElementById('repairingUnits')?.value) || 0,
         condition: document.getElementById('itemCondition')?.value || 'Good',
         status: document.getElementById('itemStatus')?.value || 'Available',
         isVisible: document.getElementById('isVisible')?.checked ? 1 : 0,
@@ -353,6 +413,7 @@ async function saveItemToDatabase(data) {
         status: data.status,
         total_units: data.totalUnits,
         available_units: data.availableUnits,
+        repairing_units: data.repairingUnits,
         is_visible: data.isVisible,
         is_featured: data.isFeatured,
         tags: data.tags || null,

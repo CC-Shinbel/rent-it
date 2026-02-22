@@ -955,6 +955,51 @@
     color: var(--text-tertiary);
 }
 
+/* Units availability row */
+.product-units-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.product-units-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    letter-spacing: 0.01em;
+}
+
+.units-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.units-available  { background: #d1fae5; color: #065f46; }
+.dot-available    { background: #10b981; }
+
+.units-repairing  { background: #fef3c7; color: #92400e; }
+.dot-repairing    { background: #f59e0b; }
+
+.units-none       { background: #fee2e2; color: #991b1b; }
+.dot-none         { background: #ef4444; }
+
+/* Disabled Rent Now button */
+.product-cta-main.product-cta-disabled,
+.product-cta-main:disabled {
+    background: var(--border-color, #e5e7eb);
+    color: var(--text-tertiary, #9ca3af);
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 .product-description {
     font-size: 13px;
     color: var(--text-secondary);
@@ -2139,4 +2184,190 @@
         transform: rotate(90deg);
         padding: 8px 0;
     }
+}
+
+/* =====================================================
+   RENT QUANTITY MODAL
+   ===================================================== */
+.rent-qty-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.rent-qty-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.rent-qty-modal {
+    background: var(--card-bg, #fff);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 400px;
+    padding: 2rem;
+    position: relative;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.25s ease;
+}
+
+.rent-qty-overlay.active .rent-qty-modal {
+    transform: scale(1) translateY(0);
+}
+
+.rent-qty-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary, #6b7280);
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.rent-qty-close:hover {
+    background: var(--hover-bg, #f3f4f6);
+    color: var(--text-primary, #111827);
+}
+
+.rent-qty-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.rent-qty-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+    margin: 0.75rem 0 0.25rem;
+}
+
+.rent-qty-item-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary, #6b7280);
+    margin: 0;
+}
+
+.rent-qty-body {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.rent-qty-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.rent-qty-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border, #d1d5db);
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-secondary, #6b7280);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.rent-qty-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.rent-qty-btn:active {
+    transform: scale(0.93);
+}
+
+.rent-qty-input {
+    width: 80px;
+    height: 50px;
+    border: 2px solid var(--border, #d1d5db);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+    background: var(--input-bg, #f9fafb);
+    -moz-appearance: textfield;
+}
+
+.rent-qty-input::-webkit-outer-spin-button,
+.rent-qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.rent-qty-available {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #6b7280);
+    margin: 0.75rem 0 0;
+}
+
+.rent-qty-footer {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.rent-qty-cancel {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--border, #d1d5db);
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+    color: var(--text-primary, #374151);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rent-qty-cancel:hover {
+    background: var(--hover-bg, #f3f4f6);
+}
+
+.rent-qty-confirm {
+    flex: 2;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.rent-qty-confirm:hover {
+    background: var(--accent-hover);
+}
+
+.rent-qty-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

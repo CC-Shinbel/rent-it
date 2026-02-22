@@ -979,17 +979,10 @@ function openProductModal(card) {
         cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
 
         newCartBtn.addEventListener('click', () => {
-            if (typeof addToCart === 'function') {
-                addToCart(productId);
-                newCartBtn.innerHTML = 'Added to Cart';
-                
-                // Trigger Toast
-                if (typeof showToast === 'function') {
-                    showToast(`${productName} added to cart`, 'success');
-                }
-
-                setTimeout(() => { newCartBtn.innerHTML = 'Add to Cart'; }, 2000);
-            }
+            // Open the quantity modal instead of adding directly
+            const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+            const available = card ? parseInt(card.dataset.availableUnits) || 1 : 1;
+            openRentQuantityModalWithData(productId, productName, available);
         });
     }
 
@@ -1108,9 +1101,11 @@ function closeProductModal() {
 }
 
 
-function addToCart(itemId) {
+function addToCart(itemId, quantity) {
+    quantity = quantity || 1;
     const formData = new FormData();
     formData.append('item_id', itemId);
+    formData.append('quantity', quantity);
 
     // Send selected calendar dates if available
     const dates = window.catalogSelectedDates;
@@ -1132,7 +1127,11 @@ function addToCart(itemId) {
         if (data.success) {
             console.log("Success adding to cart");
         } else {
-            alert("Server Error: " + (data.message || 'Unknown error'));
+            if (typeof showToast === 'function') {
+                showToast(data.message || 'Could not add to cart', 'error');
+            } else {
+                alert("Server Error: " + (data.message || 'Unknown error'));
+            }
         }
     })
     .catch(err => {
@@ -1163,7 +1162,7 @@ function showToast(message, type = 'info') {
         bottom: 24px;
         right: 24px;
         padding: 14px 24px;
-        background: ${type === 'success' ? '#10B981' : '#3B82F6'};
+        background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
         color: white;
         border-radius: 8px;
         font-size: 14px;
@@ -1181,3 +1180,139 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+
+/* =====================================================
+   RENT QUANTITY MODAL LOGIC
+   ===================================================== */
+
+// State for the quantity modal
+let rentQtyState = { itemId: null, itemName: '', maxQty: 1, currentQty: 1 };
+
+/**
+ * Called from the "Rent Now" button on each product card
+ */
+function openRentQuantityModal(buttonEl) {
+    const card = buttonEl.closest('.product-card');
+    if (!card) return;
+
+    const itemId = card.dataset.id;
+    const itemName = card.dataset.itemName || 'Item';
+    const availableUnits = parseInt(card.dataset.availableUnits) || 0;
+
+    openRentQuantityModalWithData(itemId, itemName, availableUnits);
+}
+
+/**
+ * Open the quantity modal with specific data (used by both card button and modal cart button)
+ */
+function openRentQuantityModalWithData(itemId, itemName, availableUnits) {
+    const modal = document.getElementById('rentQtyModal');
+    if (!modal) return;
+
+    if (availableUnits < 1) {
+        showToast('This item is currently out of stock', 'error');
+        return;
+    }
+
+    rentQtyState = { itemId: itemId, itemName: itemName, maxQty: availableUnits, currentQty: 1 };
+
+    document.getElementById('rentQtyItemName').textContent = itemName;
+    document.getElementById('rentQtyInput').value = 1;
+    document.getElementById('rentQtyInput').max = availableUnits;
+    document.getElementById('rentQtyAvailable').textContent = `Available: ${availableUnits} unit${availableUnits !== 1 ? 's' : ''}`;
+    document.getElementById('rentQtyConfirmBtn').disabled = false;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRentQuantityModal() {
+    const modal = document.getElementById('rentQtyModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Initialize quantity modal listeners on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('rentQtyModal');
+    const input = document.getElementById('rentQtyInput');
+    const decreaseBtn = document.getElementById('rentQtyDecrease');
+    const increaseBtn = document.getElementById('rentQtyIncrease');
+    const cancelBtn = document.getElementById('rentQtyCancelBtn');
+    const closeBtn = document.getElementById('closeRentQtyModal');
+    const confirmBtn = document.getElementById('rentQtyConfirmBtn');
+
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', () => {
+            let val = parseInt(input.value) || 1;
+            if (val > 1) {
+                input.value = val - 1;
+                rentQtyState.currentQty = val - 1;
+            }
+        });
+    }
+
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', () => {
+            let val = parseInt(input.value) || 1;
+            if (val < rentQtyState.maxQty) {
+                input.value = val + 1;
+                rentQtyState.currentQty = val + 1;
+            }
+        });
+    }
+
+    if (cancelBtn) cancelBtn.addEventListener('click', closeRentQuantityModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeRentQuantityModal);
+
+    // Close on overlay click
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeRentQuantityModal();
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            closeRentQuantityModal();
+        }
+    });
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            const qty = parseInt(input.value) || 1;
+            const itemId = rentQtyState.itemId;
+            const itemName = rentQtyState.itemName;
+
+            if (!itemId) return;
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="animation: spin 0.8s linear infinite;">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Adding...
+            `;
+
+            addToCart(itemId, qty);
+
+            // Show success and close
+            setTimeout(() => {
+                closeRentQuantityModal();
+                showToast(`${itemName} (x${qty}) added to cart!`, 'success');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    Add to Cart
+                `;
+            }, 600);
+        });
+    }
+});

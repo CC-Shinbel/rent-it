@@ -383,3 +383,41 @@
         align-items: center;
     }
 }
+
+/* =====================================================
+   UNITS INFO COLUMN
+   ===================================================== */
+.item-units-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.units-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--admin-text-muted);
+}
+
+.units-row strong {
+    color: var(--admin-text);
+    font-weight: 600;
+    min-width: 70px;
+}
+
+.units-available {
+    color: #059669;
+    font-weight: 600;
+}
+
+.units-rented {
+    color: #0284c7;
+    font-weight: 600;
+}
+
+.units-repairing {
+    color: #dc2626;
+    font-weight: 600;
+}
