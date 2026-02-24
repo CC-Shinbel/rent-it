@@ -24,6 +24,22 @@
         updateProductCount();
     }
 
+    // Normalize status strings so filters and badges stay in sync
+    function normalizeStatus(status) {
+        if (!status) return 'available';
+        const key = status.toString().toLowerCase().trim();
+        if (['repairing', 'maintenance', 'under repair', 'under maintenance'].includes(key)) return 'maintenance';
+        if (key === 'booked') return 'booked';
+        return 'available';
+    }
+
+    function getStatusLabel(status) {
+        const normalized = normalizeStatus(status);
+        if (normalized === 'maintenance') return 'Repairing';
+        if (normalized === 'booked') return 'Booked';
+        return 'Available';
+    }
+
 
     function initCatalogTabs() {
         const tabs = document.querySelectorAll('.tab-link');
@@ -47,7 +63,7 @@
             if (tabType === 'all') {
                 product.style.display = '';
             } else if (tabType === 'promos') {
-                const isPromo = product.dataset.promo === 'true';
+                const isPromo = product.dataset.featured === 'true';
                 product.style.display = isPromo ? '' : 'none';
             }
         });
@@ -144,17 +160,7 @@
             const price = parseInt(product.dataset.price);
             const name = product.querySelector('.product-name')?.textContent.toLowerCase() || '';
             const description = product.querySelector('.product-description')?.textContent.toLowerCase() || '';
-            
-        
-            const badge = product.querySelector('.product-badge');
-            let status = 'available';
-            if (badge) {
-                if (badge.classList.contains('booked') || badge.textContent.toLowerCase().includes('booked')) {
-                    status = 'booked';
-                } else if (badge.classList.contains('maintenance') || badge.textContent.toLowerCase().includes('maintenance')) {
-                    status = 'maintenance';
-                }
-            }
+            const status = normalizeStatus(product.dataset.status || 'available');
             
             let show = true;
             
@@ -940,6 +946,8 @@ function openProductModal(card) {
         : fallbackImages[productId % fallbackImages.length];
     const productPrice = card.querySelector('.product-price')?.innerHTML || '₱0';
     const productDescription = card.querySelector('.product-description')?.textContent || '';
+    const productStatus = normalizeStatus(card.dataset.status || 'available');
+    const productStatusLabel = card.dataset.statusLabel || getStatusLabel(productStatus);
 
     // 2. I-update ang UI ng Modal
     const modalImage = document.getElementById('modalProductImage');
@@ -957,6 +965,12 @@ function openProductModal(card) {
     document.getElementById('modalProductName').textContent = productName;
     document.getElementById('modalProductPrice').innerHTML = productPrice;
     document.getElementById('modalProductDescription').textContent = productDescription;
+
+    const modalBadge = document.getElementById('modalProductBadge');
+    if (modalBadge) {
+        modalBadge.textContent = productStatusLabel;
+        modalBadge.className = `modal-product-badge ${productStatus}`;
+    }
 
     // 3. ADD TO CART LOGIC (Dapat nasa LOOB ng function)
     const cartBtn = document.getElementById('modalCartBtn');

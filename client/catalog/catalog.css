@@ -908,6 +908,26 @@
     color: white;
 }
 
+.product-badge.maintenance {
+    background: rgba(245, 158, 11, 0.9);
+    color: #1f2937;
+}
+
+.product-featured-pill {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
 .product-content {
     padding: 16px;
     flex: 1;

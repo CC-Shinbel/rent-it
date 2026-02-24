@@ -40,11 +40,17 @@ if (mysqli_stmt_execute($stmt)) {
     // Also update rental_item status if needed
     $itemStatus = 'Reserved';
     switch ($newStatus) {
+        case 'Confirmed':
+            $itemStatus = 'Confirmed';
+            break;
         case 'In Transit':
             $itemStatus = 'In Transit';
             break;
         case 'Active':
             $itemStatus = 'Rented';
+            break;
+        case 'Pending Return':
+            $itemStatus = 'Pending Return';
             break;
         case 'Late':
             $itemStatus = 'Late';
