@@ -14,10 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initFavorites();
 });
 
+let favoritesPagination = null;
+
 function initFavorites() {
     attachRemoveListeners();
     attachMoveToCartListeners();
     updateFavoritesCount();
+
+    // Initialize pagination (6 cards per page)
+    if (typeof createPagination === 'function') {
+        favoritesPagination = createPagination({
+            containerSelector: '#favoritesPagination',
+            getItems: () => Array.from(document.querySelectorAll('#favoritesGrid .favorite-card')),
+            itemsPerPage: 6,
+            scrollTarget: '.favorites-section'
+        });
+        favoritesPagination.render();
+    }
 }
 
 /**
@@ -127,8 +140,12 @@ function checkEmptyState() {
     if (cards.length === 0) {
         const grid = document.getElementById('favoritesGrid');
         const emptyState = document.getElementById('emptyFavorites');
+        const paginationNav = document.getElementById('favoritesPagination');
         if (grid) grid.classList.add('is-hidden');
         if (emptyState) emptyState.classList.remove('is-hidden');
+        if (paginationNav) paginationNav.classList.add('is-hidden');
+    } else if (favoritesPagination) {
+        favoritesPagination.render();
     }
 }
 

@@ -19,6 +19,11 @@ function buildUrl(path) {
 }
 
 let overdueData = [];
+let filteredOverdueData = [];
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 // ─────────────────────────────────────────────────────
 // DATA FETCHING
@@ -43,8 +48,10 @@ async function fetchLateFees() {
         }
 
         overdueData = data.overdue || [];
+        filteredOverdueData = overdueData;
+        currentPage = 1;
         updateStats(data.stats);
-        renderOverdueItems(overdueData);
+        renderOverdueItems(filteredOverdueData);
 
     } catch (error) {
         console.error('Error fetching late fees:', error);
@@ -96,13 +103,24 @@ function renderOverdueItems(items) {
             emptyState.style.alignItems = 'center';
             emptyState.style.justifyContent = 'center';
             emptyState.style.padding = '3rem 1rem';
-            list.appendChild(emptyState);
         }
+        updatePagination(0);
         return;
     }
 
     if (emptyState) emptyState.style.display = 'none';
-    list.innerHTML = items.map(item => renderOverdueCard(item)).join('');
+
+    // Paginate
+    const totalPages = Math.ceil(items.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    list.innerHTML = pageItems.map(item => renderOverdueCard(item)).join('');
+    
+    // Update pagination
+    updatePagination(items.length);
 }
 
 function renderOverdueCard(rental) {
@@ -203,6 +221,29 @@ function attachEventListeners() {
         });
     });
 
+    // Pagination buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderOverdueItems(filteredOverdueData);
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredOverdueData.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderOverdueItems(filteredOverdueData);
+            }
+        });
+    }
+
     // Template "Edit" buttons
     document.querySelectorAll('.template-btn.edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -257,21 +298,79 @@ function attachEventListeners() {
 
 function filterOverdueItems(filter) {
     if (filter === 'all') {
-        renderOverdueItems(overdueData);
-        return;
+        filteredOverdueData = overdueData;
+    } else {
+        filteredOverdueData = overdueData.filter(item => {
+            const days = item.days_overdue;
+            switch (filter) {
+                case '1-3': return days >= 1 && days <= 3;
+                case '4-7': return days >= 4 && days <= 7;
+                case '7+':  return days > 7;
+                default:    return true;
+            }
+        });
     }
 
-    const filtered = overdueData.filter(item => {
-        const days = item.days_overdue;
-        switch (filter) {
-            case '1-3': return days >= 1 && days <= 3;
-            case '4-7': return days >= 4 && days <= 7;
-            case '7+':  return days > 7;
-            default:    return true;
-        }
-    });
+    currentPage = 1;
+    renderOverdueItems(filteredOverdueData);
+}
 
-    renderOverdueItems(filtered);
+/**
+ * Update pagination controls
+ */
+function updatePagination(totalItems) {
+    const paginationContainer = document.getElementById('overduePagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    // Update info text
+    const info = document.getElementById('paginationInfo');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} items`;
+
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Build page buttons
+    const pagesSpan = document.getElementById('paginationPages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToPage(page) {
+    currentPage = page;
+    renderOverdueItems(filteredOverdueData);
 }
 
 // ─────────────────────────────────────────────────────
@@ -412,7 +511,8 @@ function resolveItem(orderId) {
 
     // Remove from local data and re-render
     overdueData = overdueData.filter(r => Number(r.order_id) !== Number(orderId));
-    renderOverdueItems(overdueData);
+    filteredOverdueData = filteredOverdueData.filter(r => Number(r.order_id) !== Number(orderId));
+    renderOverdueItems(filteredOverdueData);
 
     // Update stats locally
     const statsOutstanding = document.getElementById('statOutstandingFees');
@@ -431,6 +531,10 @@ function resolveItem(orderId) {
 function addActivity(type, text) {
     const activityList = document.querySelector('.activity-list');
     if (!activityList) return;
+
+    // Hide empty state if present
+    const emptyState = document.getElementById('activityEmptyState');
+    if (emptyState) emptyState.style.display = 'none';
 
     const icons = {
         sent: `<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>`,

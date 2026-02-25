@@ -213,6 +213,17 @@
     align-items: center;
     gap: var(--admin-spacing-md);
     text-decoration: none;
+    padding: var(--admin-spacing-sm);
+    border-radius: var(--admin-radius-lg);
+    transition: all var(--admin-transition-fast);
+}
+
+.sidebar-logo-link:hover {
+    background: var(--admin-accent-subtle);
+}
+
+.sidebar-logo-link:hover .sidebar-logo-text {
+    color: var(--admin-accent);
 }
 
 .admin-sidebar.collapsed {
@@ -281,6 +292,10 @@
     font-weight: var(--admin-font-medium);
     transition: all var(--admin-transition-fast);
     position: relative;
+}
+
+.admin-sidebar.collapsed .sidebar-nav-item {
+    gap: 0;
 }
 
 .sidebar-nav-item:hover {
@@ -1611,17 +1626,19 @@ button.dropdown-item {
 .mobile-only-actions {
     display: none;
     flex-direction: column;
-    gap: var(--admin-spacing-sm);
-    padding-top: var(--admin-spacing-md);
-    margin-top: var(--admin-spacing-md);
+    gap: var(--admin-spacing-xs);
+    padding-top: var(--admin-spacing-sm);
+    margin-top: var(--admin-spacing-sm);
     border-top: 1px solid var(--admin-border-color);
+    overflow: hidden;
+    min-width: 0;
 }
 
 .mobile-action-item {
     display: flex;
     align-items: center;
-    gap: var(--admin-spacing-md);
-    padding: var(--admin-spacing-md) var(--admin-spacing-lg);
+    gap: var(--admin-spacing-sm);
+    padding: var(--admin-spacing-sm) var(--admin-spacing-md);
     border-radius: var(--admin-radius-md);
     background: transparent;
     border: none;
@@ -1631,6 +1648,17 @@ button.dropdown-item {
     transition: all var(--admin-transition-fast);
     width: 100%;
     text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.mobile-action-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .mobile-action-item:hover {
@@ -1652,6 +1680,11 @@ button.dropdown-item {
 .mobile-action-item .theme-icon-dark {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
+}
+
+.mobile-action-item svg {
+    flex-shrink: 0;
 }
 
 [data-theme="dark"] .mobile-action-item .theme-icon-light { display: block; }
@@ -1866,6 +1899,8 @@ button.dropdown-item {
     .admin-sidebar {
         transform: translateX(-100%);
         width: 280px;
+        overflow: hidden;
+        overflow-y: auto;
     }
 
     .admin-sidebar.open {

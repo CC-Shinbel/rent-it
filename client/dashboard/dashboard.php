@@ -1,16 +1,25 @@
 <?php
 session_start();
-include '../../shared/php/db_connection.php'; 
+include '../../shared/php/db_connection.php';
 
-// Pure JSON API for client dashboard (React frontend)
+// Determine if this is the React JSON API call
+$isJsonRequest = isset($_GET['format']) && $_GET['format'] === 'json';
+
+// Auth guard
 if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Not authenticated']);
-    exit();
+    if ($isJsonRequest) {
+        // For React JSON calls: return 401 JSON instead of redirect HTML
+        http_response_code(401);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Not authenticated']);
+        exit();
+    }
+
+    // For normal (HTML) dashboard, use shared auth check + cache headers
+    include '../../shared/php/auth_check.php';
 }
 
-$user_id = $_SESSION['user_id']; 
+$user_id = $_SESSION['user_id'];
 
 // Optional: still handle POST actions for return/extend if needed
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {

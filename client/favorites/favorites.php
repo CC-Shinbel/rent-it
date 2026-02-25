@@ -2,61 +2,63 @@
 session_start();
 include '../../shared/php/db_connection.php';
 
-// Siguraduhin na may laman ang session
-$user_id = $_SESSION['user_id'] ?? $_SESSION['id'] ?? null;
+// Detect React JSON requests
+$isJsonRequest = isset($_GET['format']) && $_GET['format'] === 'json';
 
-if (!$user_id) {
-    // For JSON consumers (React), return a structured error
-    if (isset($_GET['format']) && $_GET['format'] === 'json') {
+// Auth guard for both HTML and JSON
+if (!isset($_SESSION['user_id'])) {
+    if ($isJsonRequest) {
+        http_response_code(401);
         header('Content-Type: application/json');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Please login to view favorites.',
-            'favorites' => [],
-            'count' => 0,
-        ]);
+        echo json_encode(['error' => 'Not authenticated']);
         exit();
     }
 
-    echo "Please login to view favorites.";
-    exit();
+    include '../../shared/php/auth_check.php';
 }
 
-// SQL Query: Gamitin ang 'f.id' base sa structure mo
-$query = "SELECT 
-            f.favorite_id, 
-            i.item_id, 
-            i.item_name, 
-            i.price_per_day, 
-            i.image,
-            i.description,
-            i.status
+$user_id = $_SESSION['user_id'];
+
+// Shared query for favorites
+$query = "SELECT f.favorite_id, i.item_id, i.item_name, i.price_per_day, i.image, i.status 
           FROM favorites f 
           JOIN item i ON f.item_id = i.item_id 
           WHERE f.id = ?";
 
+// JSON API for React clients
+if ($isJsonRequest) {
+    $favorites = [];
+
+    if ($stmt = $conn->prepare($query)) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        while ($row = $res->fetch_assoc()) {
+            $favorites[] = [
+                'favorite_id'   => (int) ($row['favorite_id'] ?? 0),
+                'item_id'       => (int) ($row['item_id'] ?? 0),
+                'item_name'     => $row['item_name'] ?? '',
+                'price_per_day' => isset($row['price_per_day']) ? (float) $row['price_per_day'] : 0,
+                'image'         => $row['image'] ?? null,
+                'status'        => $row['status'] ?? null,
+            ];
+        }
+    }
+
+    header('Access-Control-Allow-Origin: http://localhost:5173');
+    header('Access-Control-Allow-Credentials: true');
+    header('Content-Type: application/json');
+    echo json_encode(['favorites' => $favorites]);
+    exit();
+}
+
+// HTML (PHP) page: run query for template rendering
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $favoritesCount = $result->num_rows;
-
-if (isset($_GET['format']) && $_GET['format'] === 'json') {
-    $favorites = [];
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $favorites[] = $row;
-        }
-    }
-
-    header('Content-Type: application/json');
-    echo json_encode([
-        'success' => true,
-        'favorites' => $favorites,
-        'count' => count($favorites),
-    ]);
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -157,7 +159,7 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
                                     <div class="favorite-image-wrap">
-                                        <img src="../../assets/images/<?php echo htmlspecialchars($row['image']); ?>" 
+                                        <img src="../../assets/images/items/<?php echo htmlspecialchars($row['image']); ?>" 
                                              alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
                                              class="favorite-image"
                                              onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
@@ -191,6 +193,8 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
                         <?php endif; ?>
                     </div>
                 </section>
+                <!-- Favorites Pagination -->
+                <nav class="pagination-controls is-hidden" id="favoritesPagination" aria-label="Favorites pagination"></nav>
                 <div class="empty-favorites <?php echo ($favoritesCount > 0) ? 'is-hidden' : ''; ?>" id="emptyFavorites">
                     <div class="empty-icon">💔</div>
                     <h2 class="empty-title">No Favorites Yet</h2>
@@ -202,6 +206,7 @@ if (isset($_GET['format']) && $_GET['format'] === 'json') {
     </div>
     
     <script src="../../shared/js/components.js"></script>
+    <script src="../../shared/js/pagination.js"></script>
     <script src="favorites.js"></script> 
 </body>
 </html>

@@ -69,6 +69,7 @@ CREATE TABLE `cart` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `item_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL
@@ -133,6 +134,7 @@ CREATE TABLE `item` (
   `total_times_rented` int(11) DEFAULT 0,
   `total_units` int(11) NOT NULL DEFAULT 1,
   `available_units` int(11) NOT NULL DEFAULT 1,
+  `repairing_units` int(11) NOT NULL DEFAULT 0,
   `is_visible` tinyint(1) NOT NULL DEFAULT 1,
   `is_featured` tinyint(1) NOT NULL DEFAULT 0,
   `tags` text DEFAULT NULL
@@ -214,6 +216,7 @@ CREATE TABLE `rental_item` (
   `rental_item_id` int(11) NOT NULL,
   `order_id` int(11) DEFAULT NULL,
   `item_id` int(11) DEFAULT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
   `item_price` decimal(10,2) DEFAULT NULL,
   `item_status` varchar(50) DEFAULT NULL,
   `start_date` date DEFAULT NULL,

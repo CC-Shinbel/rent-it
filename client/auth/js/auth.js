@@ -51,6 +51,12 @@ const Auth = {
 
         // Listen for hash changes
         window.addEventListener('hashchange', () => this.handleUrlHash());
+
+        // Prevent back button from returning to protected pages after logout
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', () => {
+            window.history.pushState(null, '', window.location.href);
+        });
     },
 
     /**

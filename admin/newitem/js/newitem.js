@@ -15,11 +15,13 @@ function buildUrl(path) {
 // Edit mode state
 let isEditMode = false;
 let editItemId = null;
+let droppedFile = null; // Store file from drag & drop
 
 document.addEventListener('DOMContentLoaded', function() {
     initImageUpload();
     initTagsInput();
     initFormValidation();
+    initAvailableUnitsCalculation();
 
     // Detect edit mode from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -30,6 +32,54 @@ document.addEventListener('DOMContentLoaded', function() {
         loadItemForEdit(editId);
     }
 });
+
+/**
+ * Initialize auto-calculation of available units
+ */
+function initAvailableUnitsCalculation() {
+    const totalUnitsInput = document.getElementById('totalUnits');
+    const repairingUnitsInput = document.getElementById('repairingUnits');
+    const availableUnitsInput = document.getElementById('availableUnits');
+
+    function calculateAvailableUnits() {
+        if (!totalUnitsInput || !repairingUnitsInput || !availableUnitsInput) return;
+        
+        const totalUnits = parseInt(totalUnitsInput.value) || 0;
+        const repairingUnits = parseInt(repairingUnitsInput.value) || 0;
+        
+        // In edit mode, calculate from stored original values
+        let rentedUnits = 0;
+        
+        if (isEditMode && editItemId) {
+            // Calculate rented units from the original data
+            const originalTotal = parseInt(totalUnitsInput.dataset.original || totalUnits);
+            const originalRepairing = parseInt(repairingUnitsInput.dataset.original || 0);
+            const originalAvailable = parseInt(availableUnitsInput.dataset.original || totalUnits);
+            rentedUnits = Math.max(0, originalTotal - originalAvailable - originalRepairing);
+            
+            // Update hint to show breakdown
+            const hintEl = availableUnitsInput.nextElementSibling;
+            if (hintEl && hintEl.classList.contains('form-hint')) {
+                hintEl.innerHTML = `Auto-calculated: ${totalUnits} total - ${rentedUnits} rented - ${repairingUnits} repairing = <strong>${Math.max(0, totalUnits - rentedUnits - repairingUnits)}</strong>`;
+            }
+        }
+        
+        // Calculate: Available = Total - Rented - Repairing
+        const calculatedAvailable = Math.max(0, totalUnits - rentedUnits - repairingUnits);
+        availableUnitsInput.value = calculatedAvailable;
+    }
+
+    // Add event listeners
+    if (totalUnitsInput) {
+        totalUnitsInput.addEventListener('input', calculateAvailableUnits);
+    }
+    if (repairingUnitsInput) {
+        repairingUnitsInput.addEventListener('input', calculateAvailableUnits);
+    }
+    
+    // Initial calculation
+    calculateAvailableUnits();
+}
 
 /**
  * Load item data for editing
@@ -76,6 +126,16 @@ async function loadItemForEdit(itemId) {
         setVal('depositAmount', item.deposit);
         setVal('totalUnits', item.total_units);
         setVal('availableUnits', item.available_units);
+        setVal('repairingUnits', item.repairing_units);
+        
+        // Store original values for calculation
+        const availableUnitsEl = document.getElementById('availableUnits');
+        const repairingUnitsEl = document.getElementById('repairingUnits');
+        const totalUnitsEl = document.getElementById('totalUnits');
+        if (availableUnitsEl) availableUnitsEl.dataset.original = item.available_units;
+        if (repairingUnitsEl) repairingUnitsEl.dataset.original = item.repairing_units;
+        if (totalUnitsEl) totalUnitsEl.dataset.original = item.total_units;
+        
         setSelect('itemCondition', item.condition);
         setSelect('itemStatus', item.status);
         setVal('itemTags', item.tags || '');
@@ -166,6 +226,7 @@ function initImageUpload() {
         
         const files = e.dataTransfer.files;
         if (files.length > 0 && files[0].type.startsWith('image/')) {
+            droppedFile = files[0];
             handleImageFile(files[0]);
         }
     });
@@ -173,6 +234,7 @@ function initImageUpload() {
     // File input change
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
+            droppedFile = null; // Clear dropped file since user picked via input
             handleImageFile(e.target.files[0]);
         }
     });
@@ -181,6 +243,7 @@ function initImageUpload() {
     if (removeBtn) {
         removeBtn.addEventListener('click', () => {
             fileInput.value = '';
+            droppedFile = null;
             preview.style.display = 'none';
             preview.src = '';
             placeholder.style.display = 'flex';
@@ -249,6 +312,18 @@ function initFormValidation() {
             return;
         }
 
+        // Image validation — require image for new items
+        const imageInput = document.getElementById('itemImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const hasFileInput = imageInput && imageInput.files.length > 0;
+        const hasDroppedFile = droppedFile !== null;
+        const hasExistingImage = imagePreview && imagePreview.style.display !== 'none' && imagePreview.src && !imagePreview.src.startsWith('data:');
+
+        if (!isEditMode && !hasFileInput && !hasDroppedFile) {
+            showNotification('Please upload an image for the item.', 'error');
+            return;
+        }
+
         // Collect form data
         const formData = collectFormData();
 
@@ -307,6 +382,7 @@ function collectFormData() {
         depositAmount: parseFloat(document.getElementById('depositAmount')?.value) || 0,
         totalUnits: parseInt(document.getElementById('totalUnits')?.value) || 1,
         availableUnits: parseInt(document.getElementById('availableUnits')?.value) || 1,
+        repairingUnits: parseInt(document.getElementById('repairingUnits')?.value) || 0,
         condition: document.getElementById('itemCondition')?.value || 'Good',
         status: document.getElementById('itemStatus')?.value || 'Available',
         isVisible: document.getElementById('isVisible')?.checked ? 1 : 0,
@@ -321,7 +397,7 @@ function collectFormData() {
 async function saveItemToDatabase(data) {
     // Get image file if present
     const imageInput = document.getElementById('itemImage');
-    const hasImage = imageInput && imageInput.files.length > 0;
+    const hasImage = (imageInput && imageInput.files.length > 0) || droppedFile !== null;
 
     // Determine API endpoint
     const apiEndpoint = isEditMode ? 'admin/api/update_item.php' : 'admin/api/add_item.php';
@@ -337,6 +413,7 @@ async function saveItemToDatabase(data) {
         status: data.status,
         total_units: data.totalUnits,
         available_units: data.availableUnits,
+        repairing_units: data.repairingUnits,
         is_visible: data.isVisible,
         is_featured: data.isFeatured,
         tags: data.tags || null,
@@ -351,7 +428,8 @@ async function saveItemToDatabase(data) {
     // Use FormData if we have an image to upload
     if (hasImage) {
         const formData = new FormData();
-        formData.append('itemImage', imageInput.files[0]);
+        const imageFile = (imageInput && imageInput.files.length > 0) ? imageInput.files[0] : droppedFile;
+        formData.append('itemImage', imageFile);
         for (const [key, value] of Object.entries(apiData)) {
             if (value !== null) {
                 formData.append(key, value);

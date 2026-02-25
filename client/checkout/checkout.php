@@ -1,10 +1,7 @@
 <?php
 session_start();
 include_once($_SERVER['DOCUMENT_ROOT'] . '/rent-it/shared/php/db_connection.php');
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -30,7 +27,7 @@ $clean_ids = implode(',', array_map('intval', $ids_array));
 
 
 
-$cart_query = "SELECT c.id as cart_row_id, i.item_name, i.category, i.price_per_day, i.image,
+$cart_query = "SELECT c.id as cart_row_id, c.quantity, i.item_name, i.category, i.price_per_day, i.image,
                       c.start_date, c.end_date 
                FROM cart c 
                JOIN item i ON c.item_id = i.item_id 
@@ -51,8 +48,10 @@ while($row = $cart_items->fetch_assoc()){
     $diff = $d1->diff($d2);
     $days = $diff->days + 1; 
 
+    $qty = isset($row['quantity']) ? intval($row['quantity']) : 1;
+    $row['quantity'] = $qty;
     $row['rental_days'] = $days;
-    $row['line_total'] = $row['price_per_day'] * $days;
+    $row['line_total'] = $row['price_per_day'] * $days * $qty;
     
     $total_subtotal += $row['line_total'];
     $items_list[] = $row;
@@ -239,7 +238,15 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
         <div class="checkout-card">
             <div class="card-header">
                 <h2>Order Items</h2>
-                <span class="item-count"><?php echo count($items_list); ?> items</span>
+                <?php
+                    $total_units = array_sum(array_column($items_list, 'quantity'));
+                    $row_count = count($items_list);
+                    if ($total_units > $row_count) {
+                        echo '<span class="item-count">' . $row_count . ' ' . ($row_count == 1 ? 'item' : 'items') . ' &middot; ' . $total_units . ' units</span>';
+                    } else {
+                        echo '<span class="item-count">' . $row_count . ' ' . ($row_count == 1 ? 'item' : 'items') . '</span>';
+                    }
+                ?>
             </div>
 
           <div class="order-items">
@@ -249,13 +256,16 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
     ?>
     <div class="order-item checkout-order-item">
         <div class="checkout-item-thumb">
-            <img src="../../assets/images/<?php echo htmlspecialchars($imgName); ?>" 
+            <img src="../../assets/images/items/<?php echo htmlspecialchars($imgName); ?>" 
                  onerror="this.src='../../assets/images/catalog-fallback.svg'">
         </div>
         
         <div class="order-item-details">
             <h4 class="order-item-name">
                 <?php echo htmlspecialchars($item['item_name']); ?>
+                <?php if ($item['quantity'] > 1): ?>
+                    <span style="font-size:0.8rem;font-weight:600;color:#6b7280;background:#f3f4f6;border-radius:6px;padding:2px 8px;margin-left:6px;">x<?php echo $item['quantity']; ?></span>
+                <?php endif; ?>
             </h4>
             
             <div class="checkout-item-dates">
@@ -266,7 +276,7 @@ $grand_total = $total_subtotal + $delivery_fee + $service_fee;
                     <span>End: <b><?php echo date('M d, Y', strtotime($item['end_date'])); ?></b></span>
                 </div>
                 <small class="checkout-rental-duration">
-                    (<?php echo $item['rental_days']; ?> <?php echo ($item['rental_days'] > 1 ? 'days' : 'day'); ?> rental)
+                    (<?php echo $item['rental_days']; ?> <?php echo ($item['rental_days'] > 1 ? 'days' : 'day'); ?> rental<?php if ($item['quantity'] > 1): ?> &times; <?php echo $item['quantity']; ?> units<?php endif; ?>)
                 </small>
             </div>
 

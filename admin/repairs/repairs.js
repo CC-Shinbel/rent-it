@@ -93,8 +93,17 @@ function renderRepairRow(repair) {
     const cost = repair.estimated_cost ? `₱${Number(repair.estimated_cost).toLocaleString('en-US', { minimumFractionDigits: 0 })}` : '₱0';
     const itemName = repair.item_name || `Item #${repair.item_id}`;
     const category = repair.category || 'Uncategorized';
+    const qty = parseInt(repair.quantity) || 1;
+    const repairingUnits = parseInt(repair.repairing_units) || 0;
 
     const actionButtons = buildActionButtons(repair, statusKey);
+
+    const qtyBadge = qty > 1
+        ? `<span style="font-size:0.7rem;font-weight:600;color:#92400e;background:#fef3c7;border-radius:4px;padding:1px 6px;margin-left:4px;">×${qty} units</span>`
+        : '';
+    const repairingInfo = repairingUnits > 0 && statusKey !== 'completed'
+        ? `<span class="equipment-repairing" style="font-size:0.7rem;color:#dc2626;">${repairingUnits} unit${repairingUnits !== 1 ? 's' : ''} repairing (total)</span>`
+        : '';
 
     return `
         <tr data-repair-id="${repair.repair_id}" data-status="${statusKey}" data-priority="${priorityKey}">
@@ -103,8 +112,9 @@ function renderRepairRow(repair) {
             </td>
             <td class="equipment-info">
                 <div class="equipment-details">
-                    <span class="equipment-name">${escapeHtml(itemName)}</span>
+                    <span class="equipment-name">${escapeHtml(itemName)}${qtyBadge}</span>
                     <span class="equipment-category">${escapeHtml(category)}</span>
+                    ${repairingInfo}
                 </div>
             </td>
             <td class="issue-type">
@@ -206,7 +216,7 @@ function handleRepairAction(repairId, action) {
             showEditRepairModal(repair);
             break;
         case 'complete':
-            confirmAction(repairId, 'complete', `Mark repair for <strong>${escapeHtml(itemName)}</strong> as completed?`, 'Mark Complete');
+            showCompleteRepairModal(repair);
             break;
         case 'available':
             confirmAction(repairId, 'available', `Complete repair and set <strong>${escapeHtml(itemName)}</strong> back to Available for rental?`, 'Set Available');
@@ -235,12 +245,57 @@ function confirmAction(repairId, action, message, confirmText, type) {
     }
 }
 
-async function executeRepairAction(repairId, action) {
+/**
+ * Show modal asking how many units have been repaired
+ */
+function showCompleteRepairModal(repair) {
+    const repairId = repair.repair_id;
+    const itemName = repair.item_name || `Item #${repair.item_id}`;
+    const qty = parseInt(repair.quantity) || 1;
+
+    if (qty <= 1) {
+        // Single unit — just confirm directly
+        confirmAction(repairId, 'complete', `Mark repair for <strong>${escapeHtml(itemName)}</strong> as completed?`, 'Mark Complete');
+        return;
+    }
+
+    if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
+        AdminComponents.showModal({
+            title: 'Complete Repair',
+            content: `
+                <p>How many units of <strong>${escapeHtml(itemName)}</strong> have been repaired?</p>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Units Repaired <span style="color: var(--admin-accent);">*</span></label>
+                    <input type="number" class="form-input" id="unitsRepairedInput" min="1" max="${qty}" value="${qty}" required>
+                    <span class="form-hint">Currently repairing: ${qty} unit${qty !== 1 ? 's' : ''} on this ticket</span>
+                </div>
+            `,
+            confirmText: 'Mark Repaired',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                const unitsRepaired = parseInt(document.getElementById('unitsRepairedInput')?.value) || qty;
+                executeRepairAction(repairId, 'complete', unitsRepaired);
+            }
+        });
+    } else {
+        const unitsRepaired = prompt(`How many units repaired? (Max: ${qty})`, String(qty));
+        if (unitsRepaired !== null && !isNaN(unitsRepaired) && parseInt(unitsRepaired) > 0) {
+            executeRepairAction(repairId, 'complete', parseInt(unitsRepaired));
+        }
+    }
+}
+
+async function executeRepairAction(repairId, action, unitsRepaired) {
+    const payload = { repair_id: repairId, action: action };
+    if (unitsRepaired !== undefined) {
+        payload.units_repaired = unitsRepaired;
+    }
+
     try {
         const response = await fetch(buildUrl('admin/api/update_repair_status.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ repair_id: repairId, action: action })
+            body: JSON.stringify(payload)
         });
         const result = await response.json();
 
