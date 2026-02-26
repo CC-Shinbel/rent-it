@@ -1,0 +1,167 @@
+@import url('../../shared/css/theme.css');
+@import url('../../shared/css/globals.css');
+@import url('../../client/auth/css/auth.css');
+@import url('../../landingpage/css/index.css');
+@import url('../../pages/aboutus.css');
+@import url('../../pages/pages-layout.css');
+
+/* Remove Vite demo layout constraints so landing page can use full width/spacing */
+#root {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: initial;
+}
+
+/* Ensure the "Choose Your Machine" section sits directly under the hero */
+.hero {
+  margin-bottom: 0 !important;
+}
+
+.choose {
+  margin-top: 0 !important;
+}
+
+/* Basic card spacing override (actual visual styles come from landing CSS) */
+.card {
+  padding: 0;
+}
+
+/* Scroll animation for elements tagged with .animate-on-scroll */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ensure WIP page in React matches legacy HTML (no white card background) */
+.wip-section .wip-content {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Ensure WIP progress bar matches legacy HTML */
+.wip-section .progress-bar {
+  margin-top: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.wip-section .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  border-radius: 999px;
+  width: 35%;
+  animation: shimmer 2s infinite linear;
+  background-size: 200% 100%;
+}
+
+/* Hard override to ensure WIP progress bar is visible */
+.wip-section .progress-bar {
+  width: 560px;
+  margin: 32px auto 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+  display: block;
+}
+
+.wip-section .progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+  border-radius: 999px;
+  width: 35%;
+  animation: wip-shimmer 2s infinite linear;
+  background-size: 200% 100%;
+}
+
+/* Override CTA section background to white (match desired design) */
+.cta-section {
+  background: #f5f7fb;
+}
+
+/* Dark theme: avoid forcing light CTA background */
+[data-theme="dark"] .cta-section {
+  background: var(--bg-secondary);
+}
+
+/* Dark theme: Home "Choose Your Machine" heading readability */
+[data-theme="dark"] .choose .section-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .choose .section-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+/* Dark theme: Contact page FAQ heading */
+[data-theme="dark"] .faq-section .section-title {
+  color: var(--text-primary) !important;
+}
+
+@keyframes wip-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Ensure WIP headline 'Work in' is white, 'Progress' stays accent via span.accent */
+.wip-title {
+  color: #ffffff;
+}
+
+/* Auth success modal overlay */
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: auth-modal-fade-in 0.22s ease-out;
+}
+
+.auth-modal-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+  text-align: center;
+}
+
+.auth-modal-card h3 {
+  margin-bottom: 8px;
+  color: #000000;
+}
+
+.auth-modal-card p {
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+@keyframes auth-modal-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
