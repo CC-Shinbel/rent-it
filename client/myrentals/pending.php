@@ -4,8 +4,7 @@ include '../../shared/php/db_connection.php';
 include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
-
-// Fetch ALL orders for this user (not just Pending)
+// Fetch ONLY Pending orders for this user
 $all_orders_query = "SELECT 
                     r.order_id, 
                     r.total_price, 
@@ -19,10 +18,9 @@ $all_orders_query = "SELECT
                   FROM rental r
                   JOIN rental_item ri ON r.order_id = ri.order_id
                   JOIN item i ON ri.item_id = i.item_id
-                  WHERE r.user_id = ? AND r.rental_status IS NOT NULL
+                  WHERE r.user_id = ? AND r.rental_status = 'Pending'
                   GROUP BY r.order_id 
                   ORDER BY r.order_id DESC";
-
 $stmt = $conn->prepare($all_orders_query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -278,35 +276,12 @@ while ($row = $result->fetch_assoc()) {
                 </div>
 
                 <div class="rentals-tabs">
-                    <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link active">My Orders</a>
+                    <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link active">Pending Rentals</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link">Active Rentals</a>
                     <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
                 </div>
 
-                <!-- Filter Tabs (like dispatch page) -->
-                <div class="order-filters">
-                    <div class="order-filter-tabs">
-                        <button class="order-filter-tab active" data-filter="all">All</button>
-                        <button class="order-filter-tab" data-filter="Pending">Pending</button>
-                        <button class="order-filter-tab" data-filter="Confirmed">Confirmed</button>
-                        <button class="order-filter-tab" data-filter="In Transit">Out for Delivery</button>
-                        <button class="order-filter-tab" data-filter="Active">Active</button>
-                        <button class="order-filter-tab" data-filter="Pending Return">Return Scheduled</button>
-                        <button class="order-filter-tab" data-filter="Returned">Returned</button>
-                        <button class="order-filter-tab" data-filter="Completed">Completed</button>
-                        <button class="order-filter-tab" data-filter="Late">Late</button>
-                        <button class="order-filter-tab" data-filter="Cancelled">Cancelled</button>
-                    </div>
-                    <div class="order-filter-search">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        <input type="text" id="orderSearchInput" placeholder="Search by order ID or item name..." />
-                    </div>
-                </div>
-
-                <div class="order-count-badge" id="orderCountBadge"></div>
 
                 <section class="order-list-section" id="orderListSection">
                     <?php if (count($orders) > 0): ?>
