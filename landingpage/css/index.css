@@ -11,7 +11,7 @@
    STRUCTURAL VARIABLES ONLY
    (Colors come from theme.css)
    ============================ */
-:root {
+   :root {
     /* Structural - these don't change with theme */
     --container-width: 1140px;
     --gutter: 20px;

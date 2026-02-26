@@ -19,12 +19,10 @@
 })();
 
 function initAdminPageSkeleton() {
-    // Skeleton is now managed by admin-theme.js in <head> for instant loading
-    // This serves as fallback if admin-theme.js wasn't loaded
-    const overlay = document.querySelector('.admin-skeleton-overlay');
+       const overlay = document.querySelector('.admin-skeleton-overlay');
     if (!overlay) return;
 
-    // If overlay still exists, admin-theme.js didn't run — hide it now
+ 
     if (!overlay.classList.contains('is-hidden')) {
         overlay.classList.add('is-hidden');
         setTimeout(() => {
@@ -360,12 +358,47 @@ const AdminComponents = {
                             <line x1="1" y1="12" x2="3" y2="12"/>
                             <line x1="21" y1="12" x2="23" y2="12"/>
                             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            
                         </svg>
                         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                         </svg>
                     </button>
+
+                    <div class="dropdown notification-wrapper" id="notificationDropdownWrapper">
+                        <button class="header-btn" id="notificationBtn" title="Notifications">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <div class="dropdown-menu notification-dropdown" id="notificationDropdown">
+                            <div class="dropdown-header">
+                                <h4>Notifications</h4>
+                                <button class="mark-read" id="markReadBtn" type="button">Mark all as read</button>
+                            </div>
+                            <div class="notification-list">
+                                <div class="notification-item unread">
+                                    <div class="notification-icon info">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                            <line x1="12" y1="12" x2="12" y2="16"/>
+                                        </svg>
+                                    </div>
+                                    <div class="notification-content">
+                                        <div class="notification-title">New booking received</div>
+                                        <div class="notification-text">A customer just placed a new rental booking.</div>
+                                        <div class="notification-time">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-footer">
+                                <a href="#">View all notifications</a>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="dropdown" id="profileDropdown">
                         <button class="header-btn profile-btn" id="profileBtn" title="Profile menu">
@@ -389,7 +422,7 @@ const AdminComponents = {
                                 </svg>
                                 Dashboard
                             </a>
-
+                        
                             <a href="${this.baseUrl('admin/settings/settings.php')}" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"/>
@@ -453,6 +486,21 @@ const AdminComponents = {
         document.addEventListener('click', () => {
             document.querySelectorAll('.dropdown.open').forEach(d => d.classList.remove('open'));
         });
+
+        // Notification: mark all as read (for header dropdown)
+        const markReadBtn = document.getElementById('markReadBtn');
+        if (markReadBtn) {
+            markReadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                });
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.style.display = 'none';
+                }
+            });
+        }
 
         // Logout
         const logoutBtn = document.getElementById('logoutBtn');
@@ -771,3 +819,4 @@ const AdminComponents = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = AdminComponents;
 }
+

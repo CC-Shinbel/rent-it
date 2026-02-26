@@ -1,4 +1,3 @@
-
 (function() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -527,6 +526,45 @@ container.innerHTML = `
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
         </button>
+
+        <div class="notification-wrapper">
+            <button class="btn-icon notification-btn" id="notificationBtn" aria-label="Notifications" title="Notifications">
+                <!-- Bell icon when there are unread notifications -->
+                <svg class="notification-icon-unread" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <!-- Outline bell icon when notifications are all read -->
+                <svg class="notification-icon-empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                </svg>
+                <span class="notification-badge">3</span>
+            </button>
+
+            <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-header">
+                    <h4>Notifications</h4>
+                    <button class="mark-read" id="markReadBtn" type="button">Mark all as read</button>
+                </div>
+                <div class="notification-list">
+                    <div class="notification-item unread">
+                        <div class="notification-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">Welcome to RentIt</div>
+                            <div class="notification-text">Your dashboard is ready to use.</div>
+                            <div class="notification-time">Just now</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification-footer">
+                    <a href="#" aria-label="View all notifications">View all</a>
+                </div>
+            </div>
+        </div>
         
         <div class="topbar-user profile-wrapper">
             <button class="btn-icon profile-btn" id="profileBtn" aria-label="User menu" title="Profile & settings">
@@ -653,6 +691,23 @@ container.innerHTML = `
         const profileDropdown = document.getElementById('profileDropdown');
         const markReadBtn = document.getElementById('markReadBtn');
 
+        const updateNotificationState = () => {
+            const hasUnread = document.querySelector('.notification-item.unread') !== null;
+            const badge = document.querySelector('.notification-badge');
+            if (!notificationBtn) return;
+
+            if (hasUnread) {
+                notificationBtn.classList.remove('no-unread');
+                if (badge) badge.style.display = '';
+            } else {
+                notificationBtn.classList.add('no-unread');
+                if (badge) badge.style.display = 'none';
+            }
+        };
+
+        // Initial icon/badge state
+        updateNotificationState();
+
         // Notification toggle
         notificationBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -673,8 +728,7 @@ container.innerHTML = `
             document.querySelectorAll('.notification-item.unread').forEach(item => {
                 item.classList.remove('unread');
             });
-            const badge = document.querySelector('.notification-badge');
-            if (badge) badge.style.display = 'none';
+            updateNotificationState();
         });
 
         // Close on outside click
