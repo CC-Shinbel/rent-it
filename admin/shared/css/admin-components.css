@@ -247,6 +247,7 @@
 .sidebar-logo-icon {
     width: 36px;
     height: 36px;
+    max-width: 36px;
     object-fit: contain;
     flex-shrink: 0;
 }
@@ -1959,6 +1960,12 @@ button.dropdown-item {
    ================================ */
 .mobile-menu-btn {
     display: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.mobile-menu-btn:hover {
+    border: none !important;
 }
 
 /* ============================
@@ -1974,7 +1981,8 @@ button.dropdown-item {
     /* Sidebar transforms to overlay drawer */
     .admin-sidebar {
         transform: translateX(-100%);
-        width: 280px;
+        width: min(280px, calc(100vw - 3rem));
+        max-width: calc(100vw - 3rem);
         overflow: hidden;
         overflow-y: auto;
     }
@@ -2038,15 +2046,15 @@ button.dropdown-item {
     .admin-header {
         padding: 0 var(--admin-spacing-md);
     }
-    
+
     .header-page-title {
         font-size: var(--admin-font-sm);
     }
-    
+
     .header-right {
         gap: var(--admin-spacing-sm);
     }
-    
+
     .header-btn {
         width: 36px;
         height: 36px;
@@ -2057,17 +2065,17 @@ button.dropdown-item {
         height: 18px;
     }
     
-    /* Sidebar almost full width on mobile */
+    /* Match client drawer width behavior on mobile */
     .admin-sidebar {
-        width: 85%;
-        max-width: 320px;
+        width: min(280px, calc(100vw - 2.75rem));
+        max-width: calc(100vw - 2.75rem);
     }
-    
+
     /* Modal full width */
     .modal {
         max-width: calc(100% - 2rem);
     }
-    
+
     /* Dropdown menu adjustments */
     .dropdown-menu {
         min-width: 160px;
@@ -2092,12 +2100,12 @@ button.dropdown-item {
         height: 56px;
     }
 
-    /* Sidebar full width on very small screens */
+    /* Keep drawer-style sidebar on very small screens */
     .admin-sidebar {
-        width: 100%;
-        max-width: none;
+        width: min(280px, calc(100vw - 2.5rem));
+        max-width: calc(100vw - 2.5rem);
     }
-    
+
     .sidebar-logo {
         padding: 0;
     }
@@ -2105,15 +2113,15 @@ button.dropdown-item {
     .sidebar-logo-link {
         padding: 16px 24px;
     }
-    
+
     .sidebar-nav {
         padding: var(--admin-spacing-md) var(--admin-spacing-sm);
     }
-    
+
     .sidebar-nav-item {
         padding: var(--admin-spacing-sm) var(--admin-spacing-md);
     }
-    
+
     .sidebar-footer {
         padding: var(--admin-spacing-md);
     }
