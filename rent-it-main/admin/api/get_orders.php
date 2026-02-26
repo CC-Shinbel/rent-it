@@ -28,7 +28,7 @@ $orders = [];
 while ($order = mysqli_fetch_assoc($result)) {
     // Fetch items for this order
     $itemsQuery = "SELECT ri.rental_item_id, ri.item_id, ri.item_price, ri.item_status,
-                          ri.start_date AS item_start_date, ri.end_date AS item_end_date,
+                          ri.quantity, ri.start_date AS item_start_date, ri.end_date AS item_end_date,
                           i.item_name, i.category, i.image
                    FROM rental_item ri
                    LEFT JOIN item i ON ri.item_id = i.item_id
@@ -45,7 +45,7 @@ while ($order = mysqli_fetch_assoc($result)) {
             'id' => $item['item_id'],
             'name' => $item['item_name'] ?? 'Unknown Item',
             'category' => $item['category'] ?? 'Equipment',
-            'quantity' => 1,
+            'quantity' => intval($item['quantity'] ?? 1),
             'price' => floatval($item['item_price']),
             'start_date' => $item['item_start_date'],
             'end_date' => $item['item_end_date']

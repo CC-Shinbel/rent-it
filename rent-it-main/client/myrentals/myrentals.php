@@ -1,12 +1,7 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
-
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/client/auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -123,6 +118,8 @@ if (!isset($_SESSION['user_id'])) {
 
                     <div class="rental-cards-row" id="activeRentalsCards">
                         </div>
+                    <!-- Active Rentals Pagination -->
+                    <nav class="pagination-controls is-hidden" id="activeRentalsPagination" aria-label="Active rentals pagination"></nav>
                 </section>
 
                 <section class="history-section">
@@ -145,6 +142,8 @@ if (!isset($_SESSION['user_id'])) {
                                 </tbody>
                         </table>
                     </div>
+                    <!-- History Pagination -->
+                    <nav class="pagination-controls is-hidden" id="myRentalsHistoryPagination" aria-label="Booking history pagination"></nav>
                 </section>
 
               
@@ -227,6 +226,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
     
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
+    <script src="<?= BASE_URL ?>/shared/js/pagination.js"></script>
     <script src="<?= BASE_URL ?>/client/myrentals/myrentals.js"></script>
 </body>
 </html>

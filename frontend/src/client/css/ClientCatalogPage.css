@@ -425,6 +425,288 @@
 }
 
 
+/* Rent quantity modal (React catalog) */
+.rent-qty-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    backdrop-filter: blur(3px);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 999;
+
+}
+
+
+.rent-qty-modal {
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    padding: 24px 28px 22px;
+
+    width: 360px;
+
+    max-width: 90%;
+
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+
+    position: relative;
+
+}
+
+
+[data-theme="dark"] .rent-qty-modal {
+
+    background: var(--bg-card);
+
+}
+
+
+.rent-qty-close {
+
+    position: absolute;
+
+    top: 12px;
+
+    right: 12px;
+
+    width: 32px;
+
+    height: 32px;
+
+    border-radius: 999px;
+
+    border: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+}
+
+
+.rent-qty-header {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-bottom: 18px;
+
+    text-align: center;
+
+}
+
+
+.rent-qty-title {
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: var(--heading-primary);
+
+    margin: 0;
+
+}
+
+
+.rent-qty-item-name {
+
+    font-size: 14px;
+
+    color: var(--text-secondary);
+
+    margin: 0;
+
+}
+
+
+.rent-qty-body {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.rent-qty-controls {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 4px;
+
+}
+
+
+.rent-qty-btn {
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 999px;
+
+    border: 1px solid var(--border-color);
+
+    background: #f9fafb;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.rent-qty-input {
+
+    width: 70px;
+
+    height: 40px;
+
+    border-radius: 999px;
+
+    border: 1px solid var(--border-color);
+
+    text-align: center;
+
+    font-size: 16px;
+
+    line-height: 40px;
+
+    padding: 0;
+
+    -moz-appearance: textfield;
+
+}
+
+
+.rent-qty-input::-webkit-inner-spin-button,
+.rent-qty-input::-webkit-outer-spin-button {
+
+    -webkit-appearance: none;
+
+    margin: 0;
+
+}
+
+
+.rent-qty-available {
+
+    font-size: 13px;
+
+    color: var(--text-secondary);
+
+}
+
+
+.rent-qty-error {
+
+    font-size: 12px;
+
+    color: #b91c1c;
+
+    margin-top: 4px;
+
+}
+
+
+.rent-qty-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+}
+
+
+.rent-qty-cancel {
+
+    padding: 10px 16px;
+
+    border-radius: 999px;
+
+    border: 1px solid var(--border-color);
+
+    background: transparent;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+}
+
+
+.rent-qty-confirm {
+
+    padding: 10px 18px;
+
+    border-radius: 999px;
+
+    border: none;
+
+    background: var(--accent);
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    cursor: pointer;
+
+}
+
+
+
 
 
 /* Catalog page toast (success for cart & favorites) */
@@ -1931,6 +2213,119 @@
     font-weight: 400;
 
     color: var(--text-tertiary);
+
+}
+
+
+/* Units availability row (match PHP catalog) */
+.product-units-row {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-bottom: 10px;
+
+}
+
+
+.product-units-pill {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    padding: 3px 9px;
+
+    border-radius: 20px;
+
+    letter-spacing: 0.01em;
+
+}
+
+
+.units-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+
+}
+
+
+.units-available {
+
+    background: #d1fae5;
+
+    color: #065f46;
+
+}
+
+
+.dot-available {
+
+    background: #10b981;
+
+}
+
+
+.units-repairing {
+
+    background: #fef3c7;
+
+    color: #92400e;
+
+}
+
+
+.dot-repairing {
+
+    background: #f59e0b;
+
+}
+
+
+.units-none {
+
+    background: #fee2e2;
+
+    color: #991b1b;
+
+}
+
+
+.dot-none {
+
+    background: #ef4444;
+
+}
+
+
+/* Disabled Rent Now button (match PHP catalog) */
+.product-cta-main.product-cta-disabled,
+.product-cta-main:disabled {
+
+    background: var(--border-color, #e5e7eb);
+
+    color: var(--text-tertiary, #9ca3af);
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+
+    opacity: 0.7;
 
 }
 

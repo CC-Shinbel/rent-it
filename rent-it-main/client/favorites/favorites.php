@@ -1,14 +1,9 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
+include '../../shared/php/auth_check.php';
 
-// Siguraduhin na may laman ang session
-$user_id = $_SESSION['user_id'] ?? $_SESSION['id'] ?? null;
-
-if (!$user_id) {
-    echo "Please login to view favorites.";
-    exit();
-}
+$user_id = $_SESSION['user_id'];
 
 // SQL Query: Gamitin ang 'f.id' base sa structure mo
 $query = "SELECT f.favorite_id, i.item_id, i.item_name, i.price_per_day, i.image, i.status 
@@ -121,7 +116,7 @@ $favoritesCount = $result->num_rows;
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <article class="favorite-card" data-id="<?php echo $row['item_id']; ?>">
                                     <div class="favorite-image-wrap">
-                                        <img src="../../assets/images/<?php echo htmlspecialchars($row['image']); ?>" 
+                                        <img src="../../assets/images/items/<?php echo htmlspecialchars($row['image']); ?>" 
                                              alt="<?php echo htmlspecialchars($row['item_name']); ?>" 
                                              class="favorite-image"
                                              onerror="this.onerror=null;this.src='/rent-it/assets/images/catalog-fallback.svg';">
@@ -155,6 +150,8 @@ $favoritesCount = $result->num_rows;
                         <?php endif; ?>
                     </div>
                 </section>
+                <!-- Favorites Pagination -->
+                <nav class="pagination-controls is-hidden" id="favoritesPagination" aria-label="Favorites pagination"></nav>
                 <div class="empty-favorites <?php echo ($favoritesCount > 0) ? 'is-hidden' : ''; ?>" id="emptyFavorites">
                     <div class="empty-icon">💔</div>
                     <h2 class="empty-title">No Favorites Yet</h2>
@@ -166,6 +163,7 @@ $favoritesCount = $result->num_rows;
     </div>
     
     <script src="../../shared/js/components.js"></script>
+    <script src="../../shared/js/pagination.js"></script>
     <script src="favorites.js"></script> 
 </body>
 </html>

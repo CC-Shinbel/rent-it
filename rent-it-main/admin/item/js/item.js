@@ -11,6 +11,11 @@ function buildUrl(path) {
 }
 
 let itemsData = [];
+let filteredItemsData = [];
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchItems();
@@ -27,7 +32,9 @@ async function fetchItems() {
         const result = await response.json();
         if (result.success) {
             itemsData = result.data || [];
-            renderItems(itemsData);
+            filteredItemsData = itemsData;
+            currentPage = 1;
+            renderItems(filteredItemsData);
         } else {
             renderError(result.message || 'Failed to load items');
         }
@@ -39,8 +46,7 @@ async function fetchItems() {
 
 function renderError(message) {
     const tbody = document.getElementById('itemsTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:1rem; color:var(--admin-text-muted);">${message}</td></tr>`;
+    updatePagination(0);
 }
 
 function renderItems(items) {
@@ -52,10 +58,20 @@ function renderItems(items) {
         return;
     }
 
-    tbody.innerHTML = items.map(renderItemRow).join('');
+    // Paginate
+    const totalPages = Math.ceil(items.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = items.slice(start, start + PAGE_SIZE);
+
+    tbody.innerHTML = pageItems.map(renderItemRow).join('');
 
     // Bind action buttons after rendering
     bindActionButtons();
+    
+    // Update pagination
+    updatePagination(items.length);
 }
 
 function renderItemRow(item) {
@@ -63,11 +79,18 @@ function renderItemRow(item) {
     const image = item.image ? `assets/images/items/${item.image}` : '';
     const price = Number(item.price_per_day || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const deposit = item.deposit ? Number(item.deposit).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : null;
+    
+    // Units info  
+    const totalUnits = parseInt(item.total_units) || 0;
+    const availableUnits = parseInt(item.available_units) || 0;
+    const repairingUnits = parseInt(item.repairing_units) || 0;
+    const rentedUnits = totalUnits - availableUnits - repairingUnits;
+    
     const normalizedStatus = (item.status || '').toLowerCase();
     const isBooked = normalizedStatus.includes('booked') || normalizedStatus.includes('reserved');
     const isRepairing = normalizedStatus.includes('repair') || normalizedStatus.includes('maintenance');
-    const isUnavailable = normalizedStatus.includes('unavailable');
-    const isAvailable = normalizedStatus.includes('available');
+    const isUnavailable = normalizedStatus === 'unavailable';
+    const isAvailable = normalizedStatus === 'available';
 
     // Visibility & Featured badges
     const isVisible = parseInt(item.is_visible) === 1;
@@ -135,6 +158,14 @@ function renderItemRow(item) {
                 <div class="item-pricing">
                     <span class="price-main">₱${price}/day</span>
                     ${deposit ? `<span class="price-deposit">Deposit: ₱${deposit}</span>` : '<span class="price-deposit">No deposit</span>'}
+                </div>
+            </td>
+            <td>
+                <div class="item-units-info">
+                    <div class="units-row"><strong>Total:</strong> ${totalUnits}</div>
+                    <div class="units-row"><strong>Available:</strong> <span class="units-available">${availableUnits}</span></div>
+                    <div class="units-row"><strong>Rented:</strong> <span class="units-rented">${rentedUnits}</span></div>
+                    <div class="units-row"><strong>Repairing:</strong> <span class="units-repairing">${repairingUnits}</span></div>
                 </div>
             </td>
             <td>
@@ -209,12 +240,20 @@ function handleItemStatusChange(itemId, newStatus) {
  * Show modal for setting item to Repairing
  */
 function showRepairingModal(itemId, itemName) {
+    const item = itemsData.find(i => String(i.item_id) === String(itemId));
+    const maxRepairableUnits = item ? (parseInt(item.total_units) - parseInt(item.repairing_units)) : 1;
+    
     if (typeof AdminComponents !== 'undefined' && AdminComponents.showModal) {
         AdminComponents.showModal({
-            title: 'Set Item to Repairing',
+            title: 'Set Units to Repairing',
             content: `
-                <p>Set <strong>${escapeHtml(itemName)}</strong> to <em>Repairing</em> status? This item will not be available for rent.</p>
+                <p>How many units of <strong>${escapeHtml(itemName)}</strong> need repair?</p>
                 <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Number of Units to Repair <span style="color: var(--admin-accent);">*</span></label>
+                    <input type="number" class="form-input" id="repairUnitsCount" placeholder="1" min="1" max="${maxRepairableUnits}" value="1" required>
+                    <span class="form-hint">Maximum: ${maxRepairableUnits} units</span>
+                </div>
+                <div class="form-group">
                     <label class="form-label">Issue Type</label>
                     <input type="text" class="form-input" id="repairIssueType" placeholder="e.g., Audio Distortion, Power Failure">
                 </div>
@@ -242,21 +281,30 @@ function showRepairingModal(itemId, itemName) {
             confirmText: 'Set to Repairing',
             cancelText: 'Cancel',
             onConfirm: () => {
+                const repairUnitsCount = parseInt(document.getElementById('repairUnitsCount')?.value) || 1;
+                const currentRepairingUnits = parseInt(item.repairing_units) || 0;
+                const newRepairingUnits = currentRepairingUnits + repairUnitsCount;
+                
                 const payload = {
                     item_id: itemId,
+                    repairing_units: newRepairingUnits,
                     status: 'Repairing',
+                    repair_quantity: repairUnitsCount,
                     issue_type: document.getElementById('repairIssueType')?.value || 'General Maintenance',
                     priority: document.getElementById('repairPriority')?.value || 'medium',
                     estimated_cost: parseFloat(document.getElementById('repairCost')?.value) || 0,
                     eta_date: document.getElementById('repairEta')?.value || '',
                     notes: document.getElementById('repairNotes')?.value || ''
                 };
-                updateItemStatus(payload);
+                updateItemRepairUnits(payload);
             }
         });
     } else {
-        if (confirm(`Set "${itemName}" to Repairing status?`)) {
-            updateItemStatus({ item_id: itemId, status: 'Repairing' });
+        const repairUnits = prompt(`How many units to repair? (Max: ${maxRepairableUnits})`, '1');
+        if (repairUnits !== null && !isNaN(repairUnits) && parseInt(repairUnits) > 0) {
+            const currentRepairingUnits = parseInt(item.repairing_units) || 0;
+            const newRepairingUnits = currentRepairingUnits + parseInt(repairUnits);
+            updateItemRepairUnits({ item_id: itemId, repairing_units: newRepairingUnits, status: 'Repairing' });
         }
     }
 }
@@ -309,6 +357,57 @@ function showAvailableModal(itemId, itemName) {
 }
 
 /**
+ * Update item repair units via dedicated API
+ */
+async function updateItemRepairUnits(payload) {
+    try {
+        const response = await fetch(buildUrl('admin/api/update_repairing_units.php'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                item_id: payload.item_id,
+                repairing_units: payload.repairing_units
+            })
+        });
+        const result = await response.json();
+        if (result.success) {
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast('Repairing units updated successfully', 'success');
+            }
+            // Create repair ticket if details provided
+            if (payload.issue_type) {
+                await updateItemStatus({
+                    item_id: payload.item_id,
+                    status: 'Repairing',
+                    repair_quantity: payload.repair_quantity || 1,
+                    issue_type: payload.issue_type,
+                    priority: payload.priority,
+                    estimated_cost: payload.estimated_cost,
+                    eta_date: payload.eta_date,
+                    notes: payload.notes
+                });
+            }
+            // Refresh the items list
+            fetchItems();
+        } else {
+            const msg = result.message || 'Failed to update repairing units';
+            if (typeof AdminComponents !== 'undefined') {
+                AdminComponents.showToast(msg, 'danger');
+            } else {
+                alert(msg);
+            }
+        }
+    } catch (err) {
+        console.error('Error updating repair units:', err);
+        if (typeof AdminComponents !== 'undefined') {
+            AdminComponents.showToast('Error updating repair units', 'danger');
+        } else {
+            alert('Error updating repair units');
+        }
+    }
+}
+
+/**
  * Send status update to the API
  */
 async function updateItemStatus(payload) {
@@ -346,10 +445,10 @@ async function updateItemStatus(payload) {
 
 function getStatusClass(status) {
     const normalized = (status || '').toLowerCase();
+    if (normalized.includes('unavailable')) return 'status-danger';
     if (normalized.includes('available')) return 'status-success';
     if (normalized.includes('booked') || normalized.includes('reserved')) return 'status-warning';
     if (normalized.includes('maintenance') || normalized.includes('repair')) return 'status-info';
-    if (normalized.includes('unavailable')) return 'status-danger';
     return 'status-default';
 }
 
@@ -388,8 +487,95 @@ function filterItems() {
         filtered = filtered.filter(item => (item.status || '').toLowerCase() === statusValue.toLowerCase());
     }
 
-    renderItems(filtered);
+    filteredItemsData = filtered;
+    currentPage = 1;
+    renderItems(filteredItemsData);
 }
+
+/**
+ * Update pagination controls
+ */
+function updatePagination(totalItems) {
+    const paginationContainer = document.querySelector('.items-pagination');
+    if (!paginationContainer) return;
+
+    if (totalItems === 0) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+    paginationContainer.style.display = 'flex';
+
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+
+    // Update info text
+    const info = paginationContainer.querySelector('.pagination-info');
+    if (info) info.textContent = `Showing ${start}-${end} of ${totalItems} items`;
+
+    // Update prev/next buttons
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+    // Build page buttons
+    const pagesSpan = paginationContainer.querySelector('.pagination-pages');
+    if (pagesSpan) {
+        let pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+
+        pagesSpan.innerHTML = pages.map(p => {
+            if (p === '...') return '<span class="page-dots">...</span>';
+            return `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+        }).join('');
+    }
+}
+
+/**
+ * Go to specific page
+ */
+function goToPage(page) {
+    currentPage = page;
+    renderItems(filteredItemsData);
+}
+
+/**
+ * Initialize pagination event listeners
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderItems(filteredItemsData);
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredItemsData.length / PAGE_SIZE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderItems(filteredItemsData);
+            }
+        });
+    }
+});
 
 /**
  * Navigate to edit item page

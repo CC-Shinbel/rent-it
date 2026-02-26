@@ -19,6 +19,7 @@ header('Content-Type: application/json');
 $query = "SELECT 
     r.repair_id,
     r.item_id,
+    r.quantity,
     r.issue_type,
     r.priority,
     r.status,
@@ -28,7 +29,10 @@ $query = "SELECT
     r.notes,
     i.item_name,
     i.category,
-    i.status AS item_status
+    i.status AS item_status,
+    i.repairing_units,
+    i.total_units,
+    i.available_units
 FROM repair r
 LEFT JOIN item i ON r.item_id = i.item_id
 ORDER BY r.repair_id DESC";
@@ -46,6 +50,10 @@ if (!$result) {
 $repairs = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $row['estimated_cost'] = $row['estimated_cost'] !== null ? floatval($row['estimated_cost']) : 0;
+    $row['quantity'] = intval($row['quantity'] ?? 1);
+    $row['repairing_units'] = intval($row['repairing_units'] ?? 0);
+    $row['total_units'] = intval($row['total_units'] ?? 0);
+    $row['available_units'] = intval($row['available_units'] ?? 0);
     $repairs[] = $row;
 }
 

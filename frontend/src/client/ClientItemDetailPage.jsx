@@ -224,7 +224,7 @@ function ClientItemDetailPage() {
   const hasHalf = (avgRatingNum - fullStars) >= 0.5;
 
   const imageUrl = item.image
-    ? `${PUBLIC_BASE}/assets/images/${item.image}`
+    ? `${PUBLIC_BASE}/assets/images/items/${item.image}`
     : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
 
   const statusClass = (item.status || 'available').toLowerCase().replace(' ', '-');

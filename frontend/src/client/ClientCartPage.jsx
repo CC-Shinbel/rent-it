@@ -263,7 +263,7 @@ const ClientCartPage = () => {
                 {items.map((row) => {
                   const id = row.cart_row_id;
                   const imageSrc = row.image
-                    ? `${PUBLIC_BASE}/assets/images/${row.image}`
+                    ? `${PUBLIC_BASE}/assets/images/items/${row.image}`
                     : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
 
                   return (

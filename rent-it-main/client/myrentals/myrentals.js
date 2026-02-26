@@ -15,6 +15,8 @@
 });
 
 let currentDailyRate = 0; 
+let activeRentalsPagination = null;
+let myRentalsHistoryPagination = null;
 
 
 async function loadMyRentals() {
@@ -31,6 +33,25 @@ async function loadMyRentals() {
 
         renderActiveRentals(data.active);
         renderBookingHistory(data.history);
+
+        // Initialize pagination after data is rendered
+        if (typeof createPagination === 'function') {
+            activeRentalsPagination = createPagination({
+                containerSelector: '#activeRentalsPagination',
+                getItems: () => Array.from(document.querySelectorAll('#activeRentalsCards .rental-card')),
+                itemsPerPage: 6,
+                scrollTarget: '.active-section'
+            });
+            activeRentalsPagination.render();
+
+            myRentalsHistoryPagination = createPagination({
+                containerSelector: '#myRentalsHistoryPagination',
+                getItems: () => Array.from(document.querySelectorAll('#historyTableBody tr:not(.history-empty)')),
+                itemsPerPage: 10,
+                scrollTarget: '.history-section'
+            });
+            myRentalsHistoryPagination.render();
+        }
     } catch (err) {
         console.error('Failed to load rentals:', err);
     }
@@ -63,7 +84,7 @@ function renderActiveRentals(rentals) {
         const daysClass = r.days_left <= 1 ? 'days-danger' : '';
         const cardExpiring = r.days_left <= 1 ? 'card-expiring' : '';
         const imageSrc = r.image
-            ? `/rent-it/assets/images/${r.image}`
+            ? `/rent-it/assets/images/items/${r.image}`
             : '/rent-it/assets/images/catalog-fallback.svg';
         
         const orderId = r.order_id;

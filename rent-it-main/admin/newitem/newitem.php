@@ -214,12 +214,20 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <div class="form-group">
                                             <label for="totalUnits" class="form-label">Total Units <span class="required">*</span></label>
                                             <input type="number" id="totalUnits" name="totalUnits" class="form-input" placeholder="1" min="1" value="1" required>
+                                            <span class="form-hint">Total number of this item you own</span>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="availableUnits" class="form-label">Available Units</label>
-                                            <input type="number" id="availableUnits" name="availableUnits" class="form-input" placeholder="1" min="0" value="1">
+                                            <input type="number" id="availableUnits" name="availableUnits" class="form-input" placeholder="1" min="0" value="1" readonly>
+                                            <span class="form-hint">Auto-calculated: Total - Rented - Repairing</span>
                                         </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="repairingUnits" class="form-label">Repairing Units</label>
+                                        <input type="number" id="repairingUnits" name="repairingUnits" class="form-input" placeholder="0" min="0" value="0">
+                                        <span class="form-hint">Number of units currently under repair</span>
                                     </div>
 
                                     <div class="form-group">

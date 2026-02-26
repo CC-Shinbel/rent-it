@@ -1,12 +1,7 @@
 <?php
 session_start();
 include '../../shared/php/db_connection.php';
-
-// Security: Redirect if not logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
-    exit();
-}
+include '../../shared/php/auth_check.php';
 
 $user_id = $_SESSION['user_id'];
 $item_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -107,7 +102,7 @@ $isInCart = $cartStmt->get_result()->num_rows > 0;
 
 // Image path
 $imagePath = !empty($item['image']) 
-    ? '../../assets/images/' . htmlspecialchars($item['image']) 
+    ? '../../assets/images/items/' . htmlspecialchars($item['image']) 
     : '../../assets/images/catalog-fallback.svg';
 
 // Status class
@@ -273,6 +268,10 @@ if (!empty($item['tags'])) {
                                 </li>
                                 <li>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Repairing units: <?php echo intval($item['repairing_units'] ?? 0); ?>
+                                </li>
+                                <li>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                     Times rented: <?php echo intval($item['total_times_rented']); ?>
                                 </li>
                             </ul>
@@ -289,6 +288,24 @@ if (!empty($item['tags'])) {
                             </div>
                         </div>
                         <?php endif; ?>
+
+                        <!-- Quantity Selector -->
+                        <div class="quantity-selector-section" style="margin-bottom: 1.5rem;">
+                            <label for="quantityInput" style="display: block; font-size: 0.95rem; font-weight: 600; color: #374151; margin-bottom: 0.75rem;">
+                                Quantity
+                            </label>
+                            <div class="quantity-controls" style="display: flex; align-items: center; gap: 1rem;">
+                                <button type="button" class="quantity-btn" id="decreaseQty" style="width: 40px; height: 40px; border: 2px solid #d1d5db; border-radius: 8px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 600; color: #6b7280; transition: all 0.2s;">-</button>
+                                <input type="number" id="quantityInput" value="1" min="1" max="<?php echo max(1, intval($item['available_units'])); ?>" readonly style="width: 80px; height: 40px; border: 2px solid #d1d5db; border-radius: 8px; text-align: center; font-size: 1rem; font-weight: 600; background: #f9fafb;" />
+                                <button type="button" class="quantity-btn" id="increaseQty" style="width: 40px; height: 40px; border: 2px solid #d1d5db; border-radius: 8px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 600; color: #6b7280; transition: all 0.2s;">+</button>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-left: 0.5rem;">
+                                    (<?php echo intval($item['available_units']); ?> available)
+                                </span>
+                            </div>
+                            <?php if (intval($item['available_units']) < 1): ?>
+                                <p style="margin-top: 0.5rem; font-size: 0.875rem; color: #ef4444;">Currently out of stock</p>
+                            <?php endif; ?>
+                        </div>
 
                         <!-- Action Bar -->
                         <div class="action-bar">
@@ -501,6 +518,30 @@ if (!empty($item['tags'])) {
 
         const itemId = <?php echo $item_id; ?>;
         const itemName = <?php echo json_encode($item['item_name']); ?>;
+        const maxAvailable = <?php echo max(1, intval($item['available_units'])); ?>;
+
+        // Quantity Controls
+        const quantityInput = document.getElementById('quantityInput');
+        const decreaseBtn = document.getElementById('decreaseQty');
+        const increaseBtn = document.getElementById('increaseQty');
+
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', function() {
+                let currentValue = parseInt(quantityInput.value) || 1;
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+        }
+
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', function() {
+                let currentValue = parseInt(quantityInput.value) || 1;
+                if (currentValue < maxAvailable) {
+                    quantityInput.value = currentValue + 1;
+                }
+            });
+        }
 
         // Add to Cart
         const btnAddToCart = document.getElementById('btnAddToCart');
@@ -511,10 +552,12 @@ if (!empty($item['tags'])) {
                     return;
                 }
                 
+                const quantity = parseInt(quantityInput.value) || 1;
+                
                 fetch('/rent-it/client/cart/add_to_cart.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'item_id=' + itemId
+                    body: 'item_id=' + itemId + '&quantity=' + quantity
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -526,7 +569,7 @@ if (!empty($item['tags'])) {
                             </svg>
                             Added to Cart
                         `;
-                        showToast(itemName + ' added to cart!', 'success');
+                        showToast(itemName + ' (x' + quantity + ') added to cart!', 'success');
                     } else {
                         showToast(data.message || 'Could not add to cart', 'error');
                     }

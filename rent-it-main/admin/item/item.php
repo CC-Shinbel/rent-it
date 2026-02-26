@@ -145,6 +145,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <th>Item</th>
                             <th>Category</th>
                             <th>Pricing</th>
+                            <th>Units</th>
                             <th>Status &amp; Visibility</th>
                             <th>Tags</th>
                             <th>Times Rented</th>
@@ -155,6 +156,24 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <!-- Items will be populated by JavaScript -->
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="items-pagination">
+                <span class="pagination-info">Showing 0 of 0 items</span>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" id="prevPageBtn" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+                    <span class="pagination-pages"></span>
+                    <button class="pagination-btn" id="nextPageBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
         <div id="footerContainer"></div>

@@ -92,7 +92,7 @@ function ClientPendingPage() {
                 <article key={order.order_id} className="pending-card">
                   <div className="pending-card-image-wrap">
                     <img
-                      src={`${PUBLIC_BASE}/assets/images/${order.image || 'catalog-fallback.svg'}`}
+                      src={`${PUBLIC_BASE}/assets/images/items/${order.image || 'catalog-fallback.svg'}`}
                       alt={order.item_name}
                       className="pending-card-image"
                       onError={(e) => {

@@ -214,10 +214,27 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <!-- Populated dynamically by latefees.js -->
                             <div class="overdue-empty" id="overdueEmpty" style="display:none;">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="48" height="48" style="opacity:0.3;margin-bottom:1rem;">
-                                    <polyline points="20 6 9 17 4 12"/>
+                    <polyline points="20 6 9 17 4 12"/>
                                 </svg>
                                 <h3 style="margin:0 0 0.5rem;color:var(--admin-text-primary);">No Overdue Rentals</h3>
                                 <p style="margin:0;color:var(--admin-text-secondary);font-size:0.875rem;">All rentals are on schedule. Great job!</p>
+                            </div>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="overdue-pagination" id="overduePagination" style="display: none;">
+                            <span class="pagination-info" id="paginationInfo">Showing 0 items</span>
+                            <div class="pagination-controls">
+                                <button class="pagination-btn" id="prevPageBtn" disabled>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                        <polyline points="15 18 9 12 15 6"/>
+                                    </svg>
+                                </button>
+                                <span class="pagination-pages" id="paginationPages"></span>
+                                <button class="pagination-btn" id="nextPageBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -308,7 +325,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         </div>
                     </div>
                     
-                    <!-- Recent Activity Card -->
+                    <!-- Recent Activity Card (populated dynamically by latefees.js) -->
                     <div class="admin-card activity-card">
                         <div class="card-header">
                             <h2 class="card-title">
@@ -319,68 +336,22 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </h2>
                         </div>
                         <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon sent">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 2L11 13"/>
-                                        <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-                                    </svg>
-                                </div>
-                                <div class="activity-info">
-                                    <span class="activity-text">Reminder sent to Michael Chen</span>
-                                    <span class="activity-time">10 minutes ago</span>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon resolved">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                </div>
-                                <div class="activity-info">
-                                    <span class="activity-text">Payment received from James Tan - ₱3,500</span>
-                                    <span class="activity-time">1 hour ago</span>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon sent">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 2L11 13"/>
-                                        <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-                                    </svg>
-                                </div>
-                                <div class="activity-info">
-                                    <span class="activity-text">Bulk reminders sent (5 customers)</span>
-                                    <span class="activity-time">2 hours ago</span>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon call">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                    </svg>
-                                </div>
-                                <div class="activity-info">
-                                    <span class="activity-text">Call logged: Sarah Williams - No answer</span>
-                                    <span class="activity-time">3 hours ago</span>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon resolved">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="20 6 9 17 4 12"/>
-                                    </svg>
-                                </div>
-                                <div class="activity-info">
-                                    <span class="activity-text">Equipment returned by Lisa Park</span>
-                                    <span class="activity-time">Yesterday</span>
-                                </div>
+                            <div class="activity-empty" id="activityEmptyState">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;opacity:0.4;margin-bottom:8px;">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                </svg>
+                                <p style="margin:0;color:var(--text-tertiary,#888);font-size:13px;">No recent activity yet. Actions like sending reminders and resolving fees will appear here.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            </div> <!-- close admin-content -->
+
+            <!-- Footer Container (injected via JS) -->
+            <div id="footerContainer"></div>
+        </main>
+    </div> <!-- close admin-wrapper -->
     
     <!-- Send Reminder Modal -->
     <div class="modal" id="reminderModal">
@@ -489,15 +460,6 @@ Sound Rental Team</textarea>
         </div>
     </div>
 
-    <!-- Footer Container (injected via JS) -->
-    <div id="footerContainer"></div>
-    </main>
-    </div>
-    
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-    
-    <!-- Scripts -->
     <script src="admin/shared/js/admin-components.js"></script>
     <script src="admin/latefees/latefees.js"></script>
 </body>

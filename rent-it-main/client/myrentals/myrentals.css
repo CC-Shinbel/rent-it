@@ -78,7 +78,7 @@
 .section-title {
     font-size: 20px;
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .units-badge {
@@ -232,7 +232,7 @@
 .card-title {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-primary);
     margin-bottom: 4px;
 }
 
@@ -330,14 +330,14 @@
 }
 
 .btn-return {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--text-tertiary);
+    color: var(--text-primary);
 }
 
 .btn-return:hover {
-    background: var(--bg-elevated);
-    border-color: var(--text-tertiary);
+    background: var(--bg-hover, var(--bg-secondary));
+    border-color: var(--text-secondary);
 }
 
 /* Booking History Section */
@@ -440,7 +440,7 @@
 .history-info .history-name {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .history-info .history-id {
@@ -450,7 +450,7 @@
 
 .period-dates {
     font-size: 13px;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .period-status {
@@ -465,7 +465,7 @@
 
 .amount-cell {
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 /* Status Pills */
@@ -691,6 +691,40 @@
     .history-table th:nth-child(2),
     .history-table td:nth-child(2) {
         display: none;
+    }
+}
+
+@media (max-width: 375px) {
+    .section-header {
+        gap: 4px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .card-item-image {
+        height: 100px;
+    }
+    
+    .card-title {
+        font-size: 0.85rem;
+    }
+    
+    .card-actions .btn-extend,
+    .card-actions .btn-return {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 8px;
+        font-size: 0.75rem;
+    }
+    
+    .receipt-modal-content {
+        width: calc(100vw - 2rem);
     }
 }
 

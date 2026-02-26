@@ -44,6 +44,7 @@ $status = mysqli_real_escape_string($conn, trim($input['status'] ?? 'Available')
 $image = mysqli_real_escape_string($conn, trim($input['image'] ?? ''));
 $total_units = isset($input['total_units']) ? intval($input['total_units']) : 1;
 $available_units = isset($input['available_units']) ? intval($input['available_units']) : $total_units;
+$repairing_units = isset($input['repairing_units']) ? intval($input['repairing_units']) : 0;
 $is_visible = isset($input['is_visible']) ? intval($input['is_visible']) : 1;
 $is_featured = isset($input['is_featured']) ? intval($input['is_featured']) : 0;
 $tags = isset($input['tags']) && trim($input['tags']) !== '' ? mysqli_real_escape_string($conn, trim($input['tags'])) : null;
@@ -82,6 +83,7 @@ $query = "INSERT INTO `item` (
     `status`, 
     `total_units`,
     `available_units`,
+    `repairing_units`,
     `is_visible`,
     `is_featured`,
     `tags`,
@@ -100,6 +102,7 @@ $query = "INSERT INTO `item` (
     '$status',
     '$total_units',
     '$available_units',
+    '$repairing_units',
     '$is_visible',
     '$is_featured',
     " . ($tags !== null ? "'$tags'" : 'NULL') . ",

@@ -811,6 +811,42 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Light theme: footer matches white shell */
+[data-theme="light"] .client-app-footer {
+    background: #ffffff;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .client-footer-brand-name {
+    color: var(--heading-primary);
+}
+
+[data-theme="light"] .client-footer-brand-tagline {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .client-footer-column a {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .client-footer-bottom {
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .client-footer-copy {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .client-footer-social-link {
+    border-color: rgba(15, 23, 42, 0.18);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .client-footer-social-link:hover {
+    background: rgba(15, 23, 42, 0.04);
+}
+
 /* =====================================================
    LOGOUT CONFIRMATION MODAL
    ===================================================== */
@@ -950,4 +986,167 @@
     background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
     transform: translateY(-1px); 
+}
+
+/* =====================================================
+   React client shell theming tweaks (white sidebar/topbar)
+   ===================================================== */
+
+.sidebar {
+    background: #ffffff;
+    color: var(--text-primary);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-header {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.sidebar-footer {
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.sidebar .nav-item {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.sidebar .nav-item:hover {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-primary);
+}
+
+.sidebar .nav-item.active {
+    background: rgba(245, 158, 11, 0.14); /* soft orange */
+    color: var(--primary-color);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
+}
+
+/* Dark theme: keep original dark sidebar look */
+[data-theme="dark"] .sidebar {
+    background: var(--secondary-color);
+    color: #ffffff;
+    border-right: none;
+}
+
+[data-theme="dark"] .sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .sidebar .nav-item {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .sidebar .nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .sidebar .nav-item.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.topbar {
+    top: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 28px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.topbar-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-btn {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--secondary-color);
+}
+
+/* Dark theme: restore original dark topbar look and make toggle visible */
+[data-theme="dark"] .topbar {
+    background: var(--secondary-color);
+    border-bottom: none;
+}
+
+[data-theme="dark"] .topbar-title {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .menu-btn {
+    color: #ffffff;
+}
+
+/* Theme toggle + profile button inside topbar */
+.topbar .client-theme-toggle,
+.topbar .client-profile-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    cursor: pointer;
+    color: var(--secondary-color);
+}
+
+.topbar .client-theme-toggle:hover,
+.topbar .client-profile-btn:hover {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.18);
+}
+
+[data-theme="dark"] .topbar .client-theme-toggle,
+[data-theme="dark"] .topbar .client-profile-btn {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .topbar .client-theme-toggle:hover,
+[data-theme="dark"] .topbar .client-profile-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.topbar .client-theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    color: #111827; /* dark icon in light mode */
+}
+
+/* Make theme toggle very visible on dark header */
+[data-theme="dark"] .topbar .client-theme-toggle {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .topbar .client-theme-toggle svg {
+    color: #ffffff; /* white icon in dark mode */
+}
+
+[data-theme="dark"] .topbar .client-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.12);
 }

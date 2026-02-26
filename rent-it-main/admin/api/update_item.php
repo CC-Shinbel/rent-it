@@ -57,7 +57,25 @@ $deposit = !empty($input['deposit']) ? floatval($input['deposit']) : null;
 $condition = mysqli_real_escape_string($conn, trim($input['condition'] ?? 'Good'));
 $status = mysqli_real_escape_string($conn, trim($input['status'] ?? 'Available'));
 $total_units = isset($input['total_units']) ? intval($input['total_units']) : 1;
-$available_units = isset($input['available_units']) ? intval($input['available_units']) : $total_units;
+$repairing_units = isset($input['repairing_units']) ? intval($input['repairing_units']) : 0;
+
+// Calculate available_units from database, don't trust input
+$rentedQuery = "SELECT COALESCE(SUM(ri.quantity), 0) as rented_count 
+                FROM rental_item ri 
+                JOIN rental r ON ri.order_id = r.order_id 
+                WHERE ri.item_id = ? 
+                AND r.rental_status IN ('Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Late')";
+$rentedStmt = $conn->prepare($rentedQuery);
+$rentedStmt->bind_param("i", $item_id);
+$rentedStmt->execute();
+$rentedResult = $rentedStmt->get_result();
+$rentedData = $rentedResult->fetch_assoc();
+$rented_units = intval($rentedData['rented_count']);
+$rentedStmt->close();
+
+// Calculate: Available = Total - Rented - Repairing
+$available_units = max(0, $total_units - $rented_units - $repairing_units);
+
 $is_visible = isset($input['is_visible']) ? intval($input['is_visible']) : 1;
 $is_featured = isset($input['is_featured']) ? intval($input['is_featured']) : 0;
 $tags = isset($input['tags']) && trim($input['tags']) !== '' ? mysqli_real_escape_string($conn, trim($input['tags'])) : null;
@@ -91,6 +109,7 @@ $query = "UPDATE `item` SET
     `status` = '$status',
     `total_units` = '$total_units',
     `available_units` = '$available_units',
+    `repairing_units` = '$repairing_units',
     `is_visible` = '$is_visible',
     `is_featured` = '$is_featured',
     `tags` = " . ($tags !== null ? "'$tags'" : 'NULL') . "

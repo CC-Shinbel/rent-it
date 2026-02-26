@@ -157,7 +157,7 @@ const ClientFavoritesPage = () => {
                 const name = fav.item_name;
                 const price = Number(fav.price_per_day || 0);
                 const imageUrl = fav.image
-                  ? `${PUBLIC_BASE}/assets/images/${fav.image}`
+                  ? `${PUBLIC_BASE}/assets/images/items/${fav.image}`
                   : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
 
                 return (

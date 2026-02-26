@@ -16,6 +16,14 @@ const ClientCatalogPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Rent quantity modal state (React version of legacy PHP rent-qty modal)
+  const [isQtyModalOpen, setIsQtyModalOpen] = useState(false);
+  const [qtyItem, setQtyItem] = useState(null);
+  const [qtyValue, setQtyValue] = useState(1);
+  const [qtyMax, setQtyMax] = useState(1);
+  const [qtySubmitting, setQtySubmitting] = useState(false);
+  const [qtyError, setQtyError] = useState('');
+
   // Lightweight toast for modal cart success (bottom-right)
   const [toast, setToast] = useState({ visible: false, message: '' });
   // Track which items are favorited in this React catalog view
@@ -43,6 +51,27 @@ const ClientCatalogPage = () => {
   const [selectingStart, setSelectingStart] = useState(true);
   // Track which items are booked in the selected date range (from admin calendar API)
   const [bookedItemIds, setBookedItemIds] = useState(new Set());
+
+  const openQtyModal = (item) => {
+    if (!item) return;
+
+    const availableUnits = Number(item.available_units || 0);
+    const safeMax = Number.isFinite(availableUnits) && availableUnits > 0 ? availableUnits : 1;
+
+    setQtyItem(item);
+    setQtyValue(1);
+    setQtyMax(safeMax);
+    setQtyError('');
+    setIsQtyModalOpen(true);
+  };
+
+  const closeQtyModal = () => {
+    if (qtySubmitting) return;
+    setIsQtyModalOpen(false);
+    setQtyItem(null);
+    setQtyValue(1);
+    setQtyError('');
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -259,6 +288,75 @@ const ClientCatalogPage = () => {
   const formatDisplayDate = (date) => {
     if (!date) return '';
     return `${shortMonthNames[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')}, ${date.getFullYear()}`;
+  };
+
+  const handleQtyDecrease = () => {
+    setQtyValue((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleQtyIncrease = () => {
+    setQtyValue((prev) => Math.min(qtyMax || 1, prev + 1));
+  };
+
+  const handleQtyChange = (e) => {
+    const raw = Number(e.target.value || 1);
+    if (!Number.isFinite(raw)) return;
+    const clamped = Math.min(Math.max(1, raw), qtyMax || 1);
+    setQtyValue(clamped);
+  };
+
+  const handleQtyConfirm = async () => {
+    if (!qtyItem || qtySubmitting) return;
+
+    const itemId = qtyItem.item_id || qtyItem.id;
+    if (!itemId) return;
+
+    const quantity = Math.min(Math.max(1, qtyValue || 1), qtyMax || 1);
+
+    setQtySubmitting(true);
+    setQtyError('');
+
+    try {
+      const formData = new URLSearchParams();
+      formData.append('item_id', String(itemId));
+      formData.append('quantity', String(quantity));
+
+      const res = await fetch(`${API_BASE}/client/cart/add_to_cart.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData,
+        credentials: 'include',
+      });
+
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (e) {
+        // ignore JSON parse errors if endpoint returns plain text
+      }
+
+      const ok = data && typeof data.success !== 'undefined' ? data.success : res.ok;
+      if (!ok) {
+        setQtyError('Unable to add to cart. Please try again.');
+        return;
+      }
+
+      closeQtyModal();
+      setToast({
+        visible: true,
+        message: 'Item added to cart.',
+      });
+
+      setTimeout(() => {
+        setToast((prev) => ({ ...prev, visible: false }));
+      }, 2500);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Add to cart (quantity modal) failed', e);
+      setQtyError('Unable to add to cart. Please try again.');
+    } finally {
+      setQtySubmitting(false);
+    }
   };
 
   const today = useMemo(() => {
@@ -873,12 +971,34 @@ const ClientCatalogPage = () => {
                   const category = item.category || 'portable';
 
                   const imageUrl = item.image
-                    ? `${PUBLIC_BASE}/assets/images/${item.image}`
+                    ? `${PUBLIC_BASE}/assets/images/items/${item.image}`
                     : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`;
 
                   const rawId = item.item_id || item.id;
                   const isUnavailableForDates =
                     bookedItemIds.size > 0 && rawId && bookedItemIds.has(Number(rawId));
+
+                  const rawStatus = String(item.status || 'Available').trim().toLowerCase();
+                  let statusClass = 'available';
+                  if (rawStatus === 'booked') {
+                    statusClass = 'booked';
+                  } else if (
+                    ['repairing', 'maintenance', 'under repair', 'under maintenance'].includes(
+                      rawStatus,
+                    )
+                  ) {
+                    statusClass = 'maintenance';
+                  }
+                  const statusLabel = item.status || 'Available';
+
+                  const availableUnits = Number(item.available_units || 0);
+                  const repairingUnits = Number(item.repairing_units || 0);
+
+                  const baseCanRent =
+                    availableUnits > 0 && rawStatus !== 'unavailable' && rawStatus !== 'booked';
+                  const canRent = baseCanRent && !isUnavailableForDates;
+
+                  const isFeatured = Number(item.is_featured || 0) === 1;
 
                   return (
                     <article
@@ -889,9 +1009,20 @@ const ClientCatalogPage = () => {
                       data-id={id}
                       data-category={category}
                       data-price={price}
+                      data-status={statusClass}
+                      data-status-label={statusLabel}
+                      data-featured={isFeatured ? 'true' : 'false'}
+                      data-promo={isFeatured ? 'true' : 'false'}
+                      data-available-units={availableUnits}
+                      data-repairing-units={repairingUnits}
+                      data-item-name={name}
                       onClick={() => openProductModal(item)}
                     >
                       <div className="product-image-wrap">
+                        {isFeatured && <span className="product-featured-pill">Featured</span>}
+
+                        <span className={`product-badge ${statusClass}`}>{statusLabel}</span>
+
                         {isUnavailableForDates && (
                           <div className="product-unavailable-badge">
                             Unavailable for selected dates
@@ -928,18 +1059,53 @@ const ClientCatalogPage = () => {
                           <span>/ day</span>
                         </div>
 
+                        <div className="product-units-row">
+                          {availableUnits > 0 ? (
+                            <span className="product-units-pill units-available">
+                              <span className="units-dot dot-available" />
+                              {availableUnits}
+                              {' '}
+                              available
+                            </span>
+                          ) : (
+                            <span className="product-units-pill units-none">
+                              <span className="units-dot dot-none" />
+                              Not available
+                            </span>
+                          )}
+
+                          {repairingUnits > 0 && (
+                            <span className="product-units-pill units-repairing">
+                              <span className="units-dot dot-repairing" />
+                              {repairingUnits}
+                              {' '}
+                              repairing
+                            </span>
+                          )}
+                        </div>
+
                         <p className="product-description">{description}</p>
 
                         <div className="product-actions">
                           <button
                             className={`product-cta-main${
-                              isUnavailableForDates ? ' btn-rent-disabled' : ''
-                            }`}
+                              !canRent ? ' product-cta-disabled' : ''
+                            }${isUnavailableForDates ? ' btn-rent-disabled' : ''}`}
                             type="button"
-                            title="Add this item to your cart"
-                            disabled={Boolean(isUnavailableForDates)}
+                            title={
+                              canRent
+                                ? 'Add this item to your cart'
+                                : 'This item is currently unavailable'
+                            }
+                            disabled={!canRent}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (canRent) {
+                                openQtyModal(item);
+                              }
+                            }}
                           >
-                            Rent Now
+                            {canRent ? 'Rent Now' : 'Unavailable'}
                           </button>
                         </div>
                       </div>
@@ -1052,7 +1218,7 @@ const ClientCatalogPage = () => {
             <div className="modal-product-image-section">
               <img
                 src={selectedItem?.image
-                  ? `${PUBLIC_BASE}/assets/images/${selectedItem.image}`
+                  ? `${PUBLIC_BASE}/assets/images/items/${selectedItem.image}`
                   : `${PUBLIC_BASE}/assets/images/catalog-fallback.svg`}
                 alt={selectedItem?.item_name || 'Catalog item image'}
                 className="modal-product-image"
@@ -1194,6 +1360,128 @@ const ClientCatalogPage = () => {
         </div>
       </div>
 
+      {/* Rent Quantity Modal (React version of legacy PHP rent-qty modal) */}
+      {isQtyModalOpen && (
+        <div
+          className="rent-qty-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-hidden={!isQtyModalOpen}
+          onClick={closeQtyModal}
+        >
+          <div
+            className="rent-qty-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="rent-qty-close"
+              type="button"
+              aria-label="Close"
+              onClick={closeQtyModal}
+              disabled={qtySubmitting}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <div className="rent-qty-header">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                width="28"
+                height="28"
+                style={{ color: 'var(--accent)' }}
+              >
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+              <h3 className="rent-qty-title">How many units do you want to rent?</h3>
+              <p className="rent-qty-item-name">
+                {qtyItem?.item_name || ''}
+              </p>
+            </div>
+
+            <div className="rent-qty-body">
+              <div className="rent-qty-controls">
+                <button
+                  type="button"
+                  className="rent-qty-btn"
+                  onClick={handleQtyDecrease}
+                  disabled={qtySubmitting || qtyValue <= 1}
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  className="rent-qty-input"
+                  min={1}
+                  max={qtyMax}
+                  value={qtyValue}
+                  onChange={handleQtyChange}
+                />
+                <button
+                  type="button"
+                  className="rent-qty-btn"
+                  onClick={handleQtyIncrease}
+                  disabled={qtySubmitting || qtyValue >= qtyMax}
+                >
+                  +
+                </button>
+              </div>
+              <p className="rent-qty-available">
+                Available:
+                {' '}
+                {qtyMax}
+                {' '}
+                {qtyMax === 1 ? 'unit' : 'units'}
+              </p>
+              {qtyError && (
+                <p className="rent-qty-error">
+                  {qtyError}
+                </p>
+              )}
+            </div>
+
+            <div
+              className="rent-qty-footer"
+              style={{
+                display: 'flex',
+                gap: '10px',
+                marginTop: '20px',
+              }}
+            >
+              <button
+                type="button"
+                className="rent-qty-cancel"
+                onClick={closeQtyModal}
+                disabled={qtySubmitting}
+                style={{ flex: 1 }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="rent-qty-confirm"
+                onClick={handleQtyConfirm}
+                disabled={qtySubmitting}
+                style={{ flex: 1 }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                {qtySubmitting ? 'Adding…' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast.visible && (
         <div className="catalog-toast catalog-toast-success catalog-toast-show">

@@ -336,3 +336,43 @@
     .contact-card { border-radius: var(--radius-lg); }
     .info-item { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 480px) {
+    .contact-card {
+        padding: 14px;
+    }
+    
+    .page-title {
+        font-size: 20px;
+    }
+    
+    .form-group label {
+        font-size: 0.8rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.75rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .page-header-contact {
+        padding: 12px;
+    }
+    
+    .page-title {
+        font-size: 18px;
+    }
+    
+    .contact-card {
+        padding: 12px;
+    }
+    
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.6rem;
+    }
+}

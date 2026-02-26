@@ -24,6 +24,22 @@
         updateProductCount();
     }
 
+    // Normalize status strings so filters and badges stay in sync
+    function normalizeStatus(status) {
+        if (!status) return 'available';
+        const key = status.toString().toLowerCase().trim();
+        if (['repairing', 'maintenance', 'under repair', 'under maintenance'].includes(key)) return 'maintenance';
+        if (key === 'booked') return 'booked';
+        return 'available';
+    }
+
+    function getStatusLabel(status) {
+        const normalized = normalizeStatus(status);
+        if (normalized === 'maintenance') return 'Repairing';
+        if (normalized === 'booked') return 'Booked';
+        return 'Available';
+    }
+
 
     function initCatalogTabs() {
         const tabs = document.querySelectorAll('.tab-link');
@@ -47,7 +63,7 @@
             if (tabType === 'all') {
                 product.style.display = '';
             } else if (tabType === 'promos') {
-                const isPromo = product.dataset.promo === 'true';
+                const isPromo = product.dataset.featured === 'true';
                 product.style.display = isPromo ? '' : 'none';
             }
         });
@@ -144,17 +160,7 @@
             const price = parseInt(product.dataset.price);
             const name = product.querySelector('.product-name')?.textContent.toLowerCase() || '';
             const description = product.querySelector('.product-description')?.textContent.toLowerCase() || '';
-            
-        
-            const badge = product.querySelector('.product-badge');
-            let status = 'available';
-            if (badge) {
-                if (badge.classList.contains('booked') || badge.textContent.toLowerCase().includes('booked')) {
-                    status = 'booked';
-                } else if (badge.classList.contains('maintenance') || badge.textContent.toLowerCase().includes('maintenance')) {
-                    status = 'maintenance';
-                }
-            }
+            const status = normalizeStatus(product.dataset.status || 'available');
             
             let show = true;
             
@@ -940,6 +946,8 @@ function openProductModal(card) {
         : fallbackImages[productId % fallbackImages.length];
     const productPrice = card.querySelector('.product-price')?.innerHTML || '₱0';
     const productDescription = card.querySelector('.product-description')?.textContent || '';
+    const productStatus = normalizeStatus(card.dataset.status || 'available');
+    const productStatusLabel = card.dataset.statusLabel || getStatusLabel(productStatus);
 
     // 2. I-update ang UI ng Modal
     const modalImage = document.getElementById('modalProductImage');
@@ -958,6 +966,12 @@ function openProductModal(card) {
     document.getElementById('modalProductPrice').innerHTML = productPrice;
     document.getElementById('modalProductDescription').textContent = productDescription;
 
+    const modalBadge = document.getElementById('modalProductBadge');
+    if (modalBadge) {
+        modalBadge.textContent = productStatusLabel;
+        modalBadge.className = `modal-product-badge ${productStatus}`;
+    }
+
     // 3. ADD TO CART LOGIC (Dapat nasa LOOB ng function)
     const cartBtn = document.getElementById('modalCartBtn');
     if (cartBtn) {
@@ -965,17 +979,10 @@ function openProductModal(card) {
         cartBtn.parentNode.replaceChild(newCartBtn, cartBtn);
 
         newCartBtn.addEventListener('click', () => {
-            if (typeof addToCart === 'function') {
-                addToCart(productId);
-                newCartBtn.innerHTML = 'Added to Cart';
-                
-                // Trigger Toast
-                if (typeof showToast === 'function') {
-                    showToast(`${productName} added to cart`, 'success');
-                }
-
-                setTimeout(() => { newCartBtn.innerHTML = 'Add to Cart'; }, 2000);
-            }
+            // Open the quantity modal instead of adding directly
+            const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+            const available = card ? parseInt(card.dataset.availableUnits) || 1 : 1;
+            openRentQuantityModalWithData(productId, productName, available);
         });
     }
 
@@ -1094,9 +1101,11 @@ function closeProductModal() {
 }
 
 
-function addToCart(itemId) {
+function addToCart(itemId, quantity) {
+    quantity = quantity || 1;
     const formData = new FormData();
     formData.append('item_id', itemId);
+    formData.append('quantity', quantity);
 
     // Send selected calendar dates if available
     const dates = window.catalogSelectedDates;
@@ -1118,7 +1127,11 @@ function addToCart(itemId) {
         if (data.success) {
             console.log("Success adding to cart");
         } else {
-            alert("Server Error: " + (data.message || 'Unknown error'));
+            if (typeof showToast === 'function') {
+                showToast(data.message || 'Could not add to cart', 'error');
+            } else {
+                alert("Server Error: " + (data.message || 'Unknown error'));
+            }
         }
     })
     .catch(err => {
@@ -1127,52 +1140,14 @@ function addToCart(itemId) {
 }
 
 /**
- * Get mock bookings for a product
+ * Get bookings for a product from the server
  */
 function getProductBookings(productId) {
-    // Mock booking data - in real app, this would come from an API
-    const bookings = {
-        '1': [
-            { start: 'Feb 15, 2026', end: 'Feb 17, 2026' },
-            { start: 'Mar 5, 2026', end: 'Mar 7, 2026' }
-        ],
-        '2': [],
-        '3': [
-            { start: 'Feb 20, 2026', end: 'Feb 22, 2026' }
-        ],
-        '4': [],
-        '5': [],
-        '6': [
-            { start: 'Feb 12, 2026', end: 'Feb 12, 2026' }
-        ]
-    };
-    return bookings[productId] || [];
+    return []; // TODO: Fetch from API (e.g. ../catalog/get_bookings.php?item_id=productId)
 }
 
 function getProductReviews(productId) {
-    // Mock review data - in real app, this would come from an API
-    const reviews = {
-        '1': [
-            { author: 'Maria Santos', rating: 5, date: 'Jan 28, 2026', text: 'Amazing sound quality! The dual-mic setup was perfect for our family reunion. Highly recommend!' },
-            { author: 'Juan Dela Cruz', rating: 4, date: 'Jan 20, 2026', text: 'Great machine, lots of songs. Only wish it had more OPM classics.' },
-            { author: 'Anna Reyes', rating: 5, date: 'Jan 15, 2026', text: 'Professional quality! Made our birthday party unforgettable.' }
-        ],
-        '2': [
-            { author: 'Pedro Garcia', rating: 5, date: 'Jan 25, 2026', text: 'Perfect for small gatherings. Easy to carry and set up!' }
-        ],
-        '3': [
-            { author: 'Rosa Mendoza', rating: 4, date: 'Jan 22, 2026', text: 'Good value for money. Kids loved it!' }
-        ],
-        '4': [],
-        '5': [
-            { author: 'Carlos Tan', rating: 5, date: 'Jan 18, 2026', text: 'Concert-level sound! Worth every peso.' },
-            { author: 'Liza Aquino', rating: 5, date: 'Jan 10, 2026', text: 'Used for our wedding reception. Absolutely perfect!' }
-        ],
-        '6': [
-            { author: 'Miguel Santos', rating: 4, date: 'Jan 5, 2026', text: 'Industrial quality, great for large venues.' }
-        ]
-    };
-    return reviews[productId] || [];
+    return []; // TODO: Fetch from API (e.g. ../catalog/get_reviews.php?item_id=productId)
 }
 function showToast(message, type = 'info') {
     const existing = document.querySelector('.toast-notification');
@@ -1187,7 +1162,7 @@ function showToast(message, type = 'info') {
         bottom: 24px;
         right: 24px;
         padding: 14px 24px;
-        background: ${type === 'success' ? '#10B981' : '#3B82F6'};
+        background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
         color: white;
         border-radius: 8px;
         font-size: 14px;
@@ -1205,3 +1180,139 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
+
+
+/* =====================================================
+   RENT QUANTITY MODAL LOGIC
+   ===================================================== */
+
+// State for the quantity modal
+let rentQtyState = { itemId: null, itemName: '', maxQty: 1, currentQty: 1 };
+
+/**
+ * Called from the "Rent Now" button on each product card
+ */
+function openRentQuantityModal(buttonEl) {
+    const card = buttonEl.closest('.product-card');
+    if (!card) return;
+
+    const itemId = card.dataset.id;
+    const itemName = card.dataset.itemName || 'Item';
+    const availableUnits = parseInt(card.dataset.availableUnits) || 0;
+
+    openRentQuantityModalWithData(itemId, itemName, availableUnits);
+}
+
+/**
+ * Open the quantity modal with specific data (used by both card button and modal cart button)
+ */
+function openRentQuantityModalWithData(itemId, itemName, availableUnits) {
+    const modal = document.getElementById('rentQtyModal');
+    if (!modal) return;
+
+    if (availableUnits < 1) {
+        showToast('This item is currently out of stock', 'error');
+        return;
+    }
+
+    rentQtyState = { itemId: itemId, itemName: itemName, maxQty: availableUnits, currentQty: 1 };
+
+    document.getElementById('rentQtyItemName').textContent = itemName;
+    document.getElementById('rentQtyInput').value = 1;
+    document.getElementById('rentQtyInput').max = availableUnits;
+    document.getElementById('rentQtyAvailable').textContent = `Available: ${availableUnits} unit${availableUnits !== 1 ? 's' : ''}`;
+    document.getElementById('rentQtyConfirmBtn').disabled = false;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRentQuantityModal() {
+    const modal = document.getElementById('rentQtyModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Initialize quantity modal listeners on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('rentQtyModal');
+    const input = document.getElementById('rentQtyInput');
+    const decreaseBtn = document.getElementById('rentQtyDecrease');
+    const increaseBtn = document.getElementById('rentQtyIncrease');
+    const cancelBtn = document.getElementById('rentQtyCancelBtn');
+    const closeBtn = document.getElementById('closeRentQtyModal');
+    const confirmBtn = document.getElementById('rentQtyConfirmBtn');
+
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', () => {
+            let val = parseInt(input.value) || 1;
+            if (val > 1) {
+                input.value = val - 1;
+                rentQtyState.currentQty = val - 1;
+            }
+        });
+    }
+
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', () => {
+            let val = parseInt(input.value) || 1;
+            if (val < rentQtyState.maxQty) {
+                input.value = val + 1;
+                rentQtyState.currentQty = val + 1;
+            }
+        });
+    }
+
+    if (cancelBtn) cancelBtn.addEventListener('click', closeRentQuantityModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeRentQuantityModal);
+
+    // Close on overlay click
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeRentQuantityModal();
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            closeRentQuantityModal();
+        }
+    });
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            const qty = parseInt(input.value) || 1;
+            const itemId = rentQtyState.itemId;
+            const itemName = rentQtyState.itemName;
+
+            if (!itemId) return;
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="animation: spin 0.8s linear infinite;">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                Adding...
+            `;
+
+            addToCart(itemId, qty);
+
+            // Show success and close
+            setTimeout(() => {
+                closeRentQuantityModal();
+                showToast(`${itemName} (x${qty}) added to cart!`, 'success');
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    Add to Cart
+                `;
+            }, 600);
+        });
+    }
+});

@@ -33,25 +33,23 @@ function initFilterDropdown() {
 /**
  * Initialize pagination controls
  */
+let historyPagination = null;
+
 function initPagination() {
-    const paginationBtns = document.querySelectorAll('.pagination-btn');
-    
-    paginationBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (!this.disabled) {
-                const action = this.textContent.trim().toLowerCase();
-                
-                // Update pagination info (placeholder)
-                const info = document.querySelector('.pagination-info');
-                
-                if (action === 'next') {
-                    alert('Loading next page...\n\nPagination would load the next set of results.');
-                } else if (action === 'previous') {
-                    alert('Loading previous page...\n\nPagination would load the previous set of results.');
-                }
-            }
-        });
+    if (typeof createPagination !== 'function') return;
+
+    historyPagination = createPagination({
+        containerSelector: '#historyPagination',
+        getItems: () => {
+            // Return only non-filtered rows (filtered rows have data-filtered attribute)
+            return Array.from(document.querySelectorAll('#historyTableBody tr:not(.history-empty)'))
+                .filter(row => !row.dataset.filtered);
+        },
+        itemsPerPage: 10,
+        scrollTarget: '.history-section'
     });
+
+    historyPagination.render();
 }
 
 /**
@@ -106,18 +104,30 @@ function initTableActions() {
  * @param {string} status - Status to filter by
  */
 function filterByStatus(status) {
-    const rows = document.querySelectorAll('.history-table tbody tr');
+    const rows = document.querySelectorAll('.history-table tbody tr:not(.history-empty)');
     
     rows.forEach(row => {
         const statusPill = row.querySelector('.status-pill');
         
         if (status === 'all') {
             row.style.display = '';
+            delete row.dataset.filtered;
         } else {
             const rowStatus = statusPill?.textContent.toLowerCase().trim();
-            row.style.display = rowStatus === status ? '' : 'none';
+            if (rowStatus === status) {
+                row.style.display = '';
+                delete row.dataset.filtered;
+            } else {
+                row.style.display = 'none';
+                row.dataset.filtered = 'true';
+            }
         }
     });
+    
+    // Reset pagination to page 1 after filtering
+    if (historyPagination) {
+        historyPagination.reset();
+    }
     
     updatePaginationInfo();
 }

@@ -7,8 +7,10 @@ require_once __DIR__ . '/../../config.php';
 
 header('Content-Type: application/json');
 
-$query = "SELECT i.item_id, i.item_name, i.description, i.category, i.image, i.price_per_day, i.deposit, i.`condition`, i.status, i.maintenance_notes, i.total_times_rented, i.rating, i.reviews, i.total_units, i.available_units, i.is_visible, i.is_featured, i.tags,
-          COALESCE(completed_counts.completed_count, 0) AS completed_rentals
+$query = "SELECT i.item_id, i.item_name, i.description, i.category, i.image, i.price_per_day, i.deposit, i.`condition`, i.status, i.maintenance_notes, i.total_times_rented, i.rating, i.reviews, i.total_units, i.repairing_units, i.is_visible, i.is_featured, i.tags,
+          COALESCE(completed_counts.completed_count, 0) AS completed_rentals,
+          COALESCE(rented_counts.rented_count, 0) AS currently_rented,
+          GREATEST(0, i.total_units - i.repairing_units - COALESCE(rented_counts.rented_count, 0)) AS available_units
           FROM item i
           LEFT JOIN (
               SELECT ri.item_id, COUNT(DISTINCT ri.order_id) AS completed_count
@@ -17,6 +19,13 @@ $query = "SELECT i.item_id, i.item_name, i.description, i.category, i.image, i.p
               WHERE r.rental_status IN ('Completed', 'Returned')
               GROUP BY ri.item_id
           ) completed_counts ON i.item_id = completed_counts.item_id
+          LEFT JOIN (
+              SELECT ri.item_id, COALESCE(SUM(ri.quantity), 0) AS rented_count
+              FROM rental_item ri
+              JOIN rental r ON ri.order_id = r.order_id
+              WHERE r.rental_status IN ('Pending', 'Booked', 'Confirmed', 'In Transit', 'Active', 'Pending Return', 'Late')
+              GROUP BY ri.item_id
+          ) rented_counts ON i.item_id = rented_counts.item_id
           ORDER BY i.item_id DESC";
 
 $result = mysqli_query($conn, $query);

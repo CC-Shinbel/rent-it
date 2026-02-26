@@ -283,7 +283,7 @@ function ClientMyRentalsPage() {
                   <div className="card-image">
                     {r.image && (
                       <img
-                        src={`${PUBLIC_BASE}/assets/images/${r.image}`}
+                        src={`${PUBLIC_BASE}/assets/images/items/${r.image}`}
                         alt={r.name}
                         onError={(e) => {
                           // Hide broken image and fall back to CSS background

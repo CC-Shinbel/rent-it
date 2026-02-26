@@ -19,15 +19,15 @@ try {
     
     switch ($dateRange) {
         case 'today':
-            $dateCondition = "AND (r.start_date = '$today' OR r.end_date = '$today')";
+            $dateCondition = "AND (r.start_date = '$today' OR r.end_date = '$today' OR r.rental_status IN ('Late', 'Cancelled'))";
             break;
         case 'tomorrow':
             $tomorrow = date('Y-m-d', strtotime('+1 day'));
-            $dateCondition = "AND (r.start_date = '$tomorrow' OR r.end_date = '$tomorrow')";
+            $dateCondition = "AND (r.start_date = '$tomorrow' OR r.end_date = '$tomorrow' OR r.rental_status IN ('Late', 'Cancelled'))";
             break;
         case 'week':
             $weekEnd = date('Y-m-d', strtotime('+7 days'));
-            $dateCondition = "AND (r.start_date BETWEEN '$today' AND '$weekEnd' OR r.end_date BETWEEN '$today' AND '$weekEnd')";
+            $dateCondition = "AND (r.start_date BETWEEN '$today' AND '$weekEnd' OR r.end_date BETWEEN '$today' AND '$weekEnd' OR r.rental_status IN ('Late', 'Cancelled'))";
             break;
         case 'all':
         default:

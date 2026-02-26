@@ -1212,7 +1212,7 @@
    COLLAPSIBLE SIDEBAR
    ===================================================== */
 :root {
-    --sidebar-width: 280px;
+    --sidebar-width: 240px;
     --sidebar-collapsed-width: 72px;
 }
 

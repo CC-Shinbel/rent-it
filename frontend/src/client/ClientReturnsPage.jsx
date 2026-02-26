@@ -171,7 +171,7 @@ function ClientReturnsContent() {
                   <div className="returns-item">
                     <div className="returns-item-image">
                       <img
-                        src={`${PUBLIC_BASE}/assets/images/${row.image || 'default.png'}`}
+                        src={`${PUBLIC_BASE}/assets/images/items/${row.image || 'default.png'}`}
                         alt="Item"
                       />
                     </div>
