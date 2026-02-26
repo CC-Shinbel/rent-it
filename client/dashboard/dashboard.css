@@ -1851,6 +1851,27 @@
     position: relative;
 }
 
+.topbar .notification-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.notification-btn .notification-icon-unread {
+    display: block;
+}
+
+.notification-btn .notification-icon-empty {
+    display: none;
+}
+
+.notification-btn.no-unread .notification-icon-unread {
+    display: none;
+}
+
+.notification-btn.no-unread .notification-icon-empty {
+    display: block;
+}
+
 .btn-icon {
     background: transparent;
     border: none;
