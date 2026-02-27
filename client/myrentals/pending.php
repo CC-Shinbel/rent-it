@@ -36,14 +36,15 @@ while ($row = $result->fetch_assoc()) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders - RentIt</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/theme.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/shared/css/globals.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/client/dashboard/dashboard.css">
@@ -63,6 +64,7 @@ while ($row = $result->fetch_assoc()) {
             margin-bottom: 24px;
             flex-wrap: wrap;
         }
+
         .order-filter-tabs {
             display: flex;
             background: var(--bg-secondary, #f1f5f9);
@@ -76,7 +78,11 @@ while ($row = $result->fetch_assoc()) {
             white-space: nowrap;
             flex-shrink: 0;
         }
-        .order-filter-tabs::-webkit-scrollbar { display: none; }
+
+        .order-filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
         .order-filter-tab {
             padding: 8px 16px;
             border: none;
@@ -91,13 +97,16 @@ while ($row = $result->fetch_assoc()) {
             flex-shrink: 0;
             font-family: inherit;
         }
+
         .order-filter-tab:hover {
             color: var(--text-primary);
         }
+
         .order-filter-tab.active {
             background: var(--accent, #E67E22);
             color: white;
         }
+
         .order-filter-search {
             display: flex;
             align-items: center;
@@ -110,14 +119,17 @@ while ($row = $result->fetch_assoc()) {
             max-width: 350px;
             transition: all 0.2s ease;
         }
+
         .order-filter-search:focus-within {
             border-color: var(--accent, #E67E22);
             box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
         }
+
         .order-filter-search svg {
             color: var(--text-muted, #94a3b8);
             flex-shrink: 0;
         }
+
         .order-filter-search input {
             flex: 1;
             border: none;
@@ -127,6 +139,7 @@ while ($row = $result->fetch_assoc()) {
             outline: none;
             font-family: inherit;
         }
+
         .order-filter-search input::placeholder {
             color: var(--text-muted, #94a3b8);
         }
@@ -145,10 +158,12 @@ while ($row = $result->fetch_assoc()) {
             align-items: flex-start;
             transition: all 0.2s ease;
         }
+
         .order-card:hover {
             border-color: var(--accent, #f97316);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
+
         .item-img {
             width: 100px;
             height: 100px;
@@ -169,32 +184,59 @@ while ($row = $result->fetch_assoc()) {
             display: inline-block;
             letter-spacing: 0.3px;
         }
+
         .status-pill.pending {
-            background: #fffbeb; color: #92400e; border: 1px solid #fde68a;
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
         }
+
         .status-pill.confirmed {
-            background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
         }
+
         .status-pill.in-transit {
-            background: #f0f9ff; color: #0369a1; border: 1px solid #7dd3fc;
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
         }
+
         .status-pill.active {
-            background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
         }
+
         .status-pill.pending-return {
-            background: #fdf4ff; color: #86198f; border: 1px solid #e879f9;
+            background: #fdf4ff;
+            color: #86198f;
+            border: 1px solid #e879f9;
         }
+
         .status-pill.returned {
-            background: #f5f3ff; color: #5b21b6; border: 1px solid #c4b5fd;
+            background: #f5f3ff;
+            color: #5b21b6;
+            border: 1px solid #c4b5fd;
         }
+
         .status-pill.completed {
-            background: #f0fdf4; color: #166534; border: 1px solid #86efac;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
         }
+
         .status-pill.cancelled {
-            background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
+
         .status-pill.late {
-            background: #fef2f2; color: #dc2626; border: 1px solid #f87171;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #f87171;
         }
 
         /* ============================
@@ -207,14 +249,17 @@ while ($row = $result->fetch_assoc()) {
             border-radius: 12px;
             border: 2px dashed var(--border-color);
         }
+
         .no-data-container p {
             color: var(--text-secondary);
         }
+
         .order-count-badge {
             font-size: 0.8rem;
             color: var(--text-secondary);
             margin-bottom: 16px;
         }
+
         .order-count-badge strong {
             color: var(--text-primary);
         }
@@ -237,24 +282,30 @@ while ($row = $result->fetch_assoc()) {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .order-filter-tabs {
                 justify-content: flex-start;
             }
+
             .order-filter-tab {
                 font-size: 0.72rem;
                 padding: 6px 12px;
             }
+
             .order-filter-search {
                 max-width: 100%;
             }
+
             .order-card {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .order-card .item-img {
                 width: 100%;
                 height: 150px;
             }
+
             .order-status-col {
                 text-align: left !important;
                 min-width: auto !important;
@@ -262,13 +313,14 @@ while ($row = $result->fetch_assoc()) {
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <div id="sidebarContainer"></div>
-        
+
         <main class="main-content">
             <div id="topbarContainer"></div>
-            
+
             <div class="content-area">
                 <div class="page-header-dashboard">
                     <div class="page-header-info">
@@ -280,8 +332,8 @@ while ($row = $result->fetch_assoc()) {
                 <div class="rentals-tabs">
                     <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link active">My Orders</a>
                     <a href="<?= BASE_URL ?>/client/myrentals/myrentals.php" class="tab-link">Active Rentals</a>
-                    <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
                     <a href="<?= BASE_URL ?>/client/returns/returns.php" class="tab-link">Returns & Extensions</a>
+                    <a href="<?= BASE_URL ?>/client/bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
                 </div>
 
                 <!-- Filter Tabs (like dispatch page) -->
@@ -290,6 +342,7 @@ while ($row = $result->fetch_assoc()) {
                         <button class="order-filter-tab active" data-filter="all">All</button>
                         <button class="order-filter-tab" data-filter="Pending">Pending</button>
                         <button class="order-filter-tab" data-filter="Confirmed">Confirmed</button>
+                        <button class="order-filter-tab" data-filter="Booked">Booked</button>
                         <button class="order-filter-tab" data-filter="In Transit">Out for Delivery</button>
                         <button class="order-filter-tab" data-filter="Active">Active</button>
                         <button class="order-filter-tab" data-filter="Pending Return">Return Scheduled</button>
@@ -300,7 +353,8 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                     <div class="order-filter-search">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
                         <input type="text" id="orderSearchInput" placeholder="Search by order ID or item name..." />
                     </div>
@@ -310,7 +364,7 @@ while ($row = $result->fetch_assoc()) {
 
                 <section class="order-list-section" id="orderListSection">
                     <?php if (count($orders) > 0): ?>
-                        <?php foreach ($orders as $order): 
+                        <?php foreach ($orders as $order):
                             $status = $order['rental_status'];
                             // CSS class for pill
                             $pillClass = 'pending';
@@ -359,15 +413,15 @@ while ($row = $result->fetch_assoc()) {
                         ?>
                             <div class="order-card" data-status="<?= htmlspecialchars($status) ?>">
                                 <div class="product-img-container">
-                                    <img src="<?= BASE_URL ?>/assets/images/items/<?= htmlspecialchars($order['image']) ?>" 
-                                         alt="Product" 
-                                         class="item-img"
-                                         onerror="this.src='<?= BASE_URL ?>/assets/images/catalog-fallback.svg'">
+                                    <img src="<?= BASE_URL ?>/assets/images/items/<?= htmlspecialchars($order['image']) ?>"
+                                        alt="Product"
+                                        class="item-img"
+                                        onerror="this.src='<?= BASE_URL ?>/assets/images/catalog-fallback.svg'">
                                 </div>
 
                                 <div class="order-info" style="flex-grow: 1;">
                                     <h4 style="margin-bottom: 8px; color: var(--text-primary);"><?= htmlspecialchars($order['item_names']) ?></h4>
-                                    
+
                                     <div class="order-meta" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
                                         <div>
                                             <p style="color: var(--text-secondary); margin: 2px 0;">Start Date: <span style="color: var(--text-primary); font-weight: 600;"><?= date('M d, Y', strtotime($order['start_date'])) ?></span></p>
@@ -378,7 +432,7 @@ while ($row = $result->fetch_assoc()) {
                                             <p style="color: var(--text-secondary); margin: 2px 0;">Items: <span style="color: var(--text-primary); font-weight: 600;"><?= $order['item_count'] ?> item(s)</span></p>
                                         </div>
                                     </div>
-                                    
+
                                     <div style="margin-top: 12px; font-size: 1rem; color: #f97316; font-weight: 700;">
                                         Total Amount: ₱<?= number_format($order['total_price'], 2) ?>
                                     </div>
@@ -412,86 +466,87 @@ while ($row = $result->fetch_assoc()) {
 
     <script src="<?= BASE_URL ?>/shared/js/components.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inject sidebar, topbar, footer
-        if (typeof Components !== 'undefined') {
-            Components.injectSidebar('sidebarContainer', 'myrentals', 'client');
-            Components.injectTopbar('topbarContainer', 'My Orders');
-            Components.injectFooter('footerContainer');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inject sidebar, topbar, footer
+            if (typeof Components !== 'undefined') {
+                Components.injectSidebar('sidebarContainer', 'myrentals', 'client');
+                Components.injectTopbar('topbarContainer', 'My Orders');
+                Components.injectFooter('footerContainer');
+            }
 
-        const allCards = Array.from(document.querySelectorAll('.order-card'));
-        const filterTabs = document.querySelectorAll('.order-filter-tab');
-        const searchInput = document.getElementById('orderSearchInput');
-        const countBadge = document.getElementById('orderCountBadge');
-        const orderSection = document.getElementById('orderListSection');
-        const filterEmpty = document.getElementById('filterEmptyState');
+            const allCards = Array.from(document.querySelectorAll('.order-card'));
+            const filterTabs = document.querySelectorAll('.order-filter-tab');
+            const searchInput = document.getElementById('orderSearchInput');
+            const countBadge = document.getElementById('orderCountBadge');
+            const orderSection = document.getElementById('orderListSection');
+            const filterEmpty = document.getElementById('filterEmptyState');
 
-        function getActiveFilter() {
-            const active = document.querySelector('.order-filter-tab.active');
-            return active ? active.dataset.filter : 'all';
-        }
+            function getActiveFilter() {
+                const active = document.querySelector('.order-filter-tab.active');
+                return active ? active.dataset.filter : 'all';
+            }
 
-        function filterOrders() {
-            const status = getActiveFilter();
-            const search = (searchInput?.value || '').toLowerCase().trim();
-            let visibleCount = 0;
+            function filterOrders() {
+                const status = getActiveFilter();
+                const search = (searchInput?.value || '').toLowerCase().trim();
+                let visibleCount = 0;
 
-            allCards.forEach(card => {
-                const cardStatus = card.dataset.status;
-                const cardText = card.textContent.toLowerCase();
+                allCards.forEach(card => {
+                    const cardStatus = card.dataset.status;
+                    const cardText = card.textContent.toLowerCase();
 
-                const matchesStatus = (status === 'all') || (cardStatus === status);
-                const matchesSearch = !search || cardText.includes(search);
+                    const matchesStatus = (status === 'all') || (cardStatus === status);
+                    const matchesSearch = !search || cardText.includes(search);
 
-                if (matchesStatus && matchesSearch) {
-                    card.style.display = '';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
+                    if (matchesStatus && matchesSearch) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Show/hide empty states
+                if (allCards.length > 0) {
+                    if (visibleCount === 0) {
+                        filterEmpty.style.display = '';
+                        orderSection.style.display = 'none';
+                    } else {
+                        filterEmpty.style.display = 'none';
+                        orderSection.style.display = '';
+                    }
                 }
-            });
 
-            // Show/hide empty states
-            if (allCards.length > 0) {
-                if (visibleCount === 0) {
-                    filterEmpty.style.display = '';
-                    orderSection.style.display = 'none';
-                } else {
-                    filterEmpty.style.display = 'none';
-                    orderSection.style.display = '';
+                // Update count badge
+                if (countBadge) {
+                    const label = status === 'all' ? 'All Orders' : document.querySelector('.order-filter-tab.active')?.textContent || status;
+                    countBadge.innerHTML = `Showing <strong>${visibleCount}</strong> of <strong>${allCards.length}</strong> orders` + (status !== 'all' ? ` — <strong>${label}</strong>` : '');
                 }
             }
 
-            // Update count badge
-            if (countBadge) {
-                const label = status === 'all' ? 'All Orders' : document.querySelector('.order-filter-tab.active')?.textContent || status;
-                countBadge.innerHTML = `Showing <strong>${visibleCount}</strong> of <strong>${allCards.length}</strong> orders` + (status !== 'all' ? ` — <strong>${label}</strong>` : '');
-            }
-        }
-
-        // Tab click
-        filterTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                filterTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                filterOrders();
+            // Tab click
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    filterOrders();
+                });
             });
+
+            // Search
+            if (searchInput) {
+                let debounce;
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(debounce);
+                    debounce = setTimeout(filterOrders, 250);
+                });
+            }
+
+            // Initial render
+            filterOrders();
         });
-
-        // Search
-        if (searchInput) {
-            let debounce;
-            searchInput.addEventListener('input', () => {
-                clearTimeout(debounce);
-                debounce = setTimeout(filterOrders, 250);
-            });
-        }
-
-        // Initial render
-        filterOrders();
-    });
     </script>
 
 </body>
+
 </html>
