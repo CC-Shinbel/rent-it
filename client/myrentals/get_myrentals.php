@@ -39,7 +39,8 @@ try {
     FROM rental r
     LEFT JOIN rental_item ri ON r.order_id = ri.order_id
     LEFT JOIN item i ON ri.item_id = i.item_id 
-    WHERE r.user_id = ? AND r.rental_status IN ('Active','Rented','Booked','Pending Extension')
+    WHERE r.user_id = ?
+    AND r.rental_status IN ('Booked', 'In Transit', 'Active')
     ";
 
     $stmtActive = $conn->prepare($activeQuery);
@@ -102,7 +103,6 @@ try {
         'history' => $history,
         'pending' => $pending
     ]);
-
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
@@ -110,4 +110,3 @@ try {
         'message' => $e->getMessage()
     ]);
 }
-?>
