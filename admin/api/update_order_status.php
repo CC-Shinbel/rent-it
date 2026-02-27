@@ -31,6 +31,15 @@ if (!in_array($newStatus, $validStatuses)) {
     exit;
 }
 
+// Get user_id for this order to send notification
+$userQuery = "SELECT user_id FROM rental WHERE order_id = ?";
+$stmtUser = mysqli_prepare($conn, $userQuery);
+mysqli_stmt_bind_param($stmtUser, "i", $orderId);
+mysqli_stmt_execute($stmtUser);
+$userResult = mysqli_stmt_get_result($stmtUser);
+$userData = mysqli_fetch_assoc($userResult);
+$userId = $userData ? $userData['user_id'] : null;
+
 // Update the order status
 $updateQuery = "UPDATE rental SET rental_status = ? WHERE order_id = ?";
 $stmt = mysqli_prepare($conn, $updateQuery);
@@ -109,10 +118,27 @@ if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_bind_param($stmtAvail, "i", $orderId);
         mysqli_stmt_execute($stmtAvail);
     }
+// Insert notification for the client
+if ($userId) {
+    $notifTitle = "Order Status Updated";
+    $notifMessage = "Your order #$orderId is now $newStatus.";
+    $notifType = "order_status_updated";
+    $notifLink = "/rent-it/client/dashboard/index.php?order_id=$orderId";
     
-    echo json_encode(['success' => true, 'message' => 'Order status updated successfully']);
+    // Dagdagan natin ng 'created_at' kung manual ang table mo, 
+    // pero kung auto-timestamp ito, okay na yung query sa ibaba.
+    $notifQuery = "INSERT INTO notifications (user_id, title, message, type, link_url, is_read, created_at) VALUES (?, ?, ?, ?, ?, 0, NOW())";
+    $stmtNotif = mysqli_prepare($conn, $notifQuery);
+    mysqli_stmt_bind_param($stmtNotif, "issss", $userId, $notifTitle, $notifMessage, $notifType, $notifLink);
+    
+    if (!mysqli_stmt_execute($stmtNotif)) {
+         // Kung ayaw pumasok, i-check natin ang database error
+         error_log("Notification Insert Failed: " . mysqli_error($conn));
+    }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . mysqli_error($conn)]);
+    // Kung walang nakuha na userId mula sa rental table
+    error_log("Notification skipped: No userId found for order #$orderId");
+}
 }
 
 mysqli_close($conn);

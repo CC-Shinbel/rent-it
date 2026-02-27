@@ -18,6 +18,64 @@
     }
 })();
 
+function loadNotifications() {
+     fetch('/rent-it/api/get_notifications.php?role=admin')
+     .then(res => res.json())
+     .then(data => {
+     if (data.status === 'success') {
+     const list = document.getElementById('notifList');
+     const badge = document.querySelector('.notification-badge');
+     if(badge) {
+     badge.innerText = data.unread_count;
+     badge.style.display = data.unread_count > 0 ? 'block' : 'none';
+     }
+     if(list) {
+     list.innerHTML = '';
+     if (data.data.length === 0) {
+     list.innerHTML = '<div class="notification-item">No  notification</div>';
+     return;
+     }
+        
+        data.data.forEach(notif => {
+            const isUnread = notif.is_read == 0 ? 'unread' : '';
+            const orderLink = '/rent-it/admin/orders/orders.php'; 
+            
+            list.innerHTML += `
+            <div class="notification-item ${isUnread}" 
+                 onclick="markAsRead(${notif.id}, '${orderLink}')" 
+                 style="cursor: pointer; padding: 10px; border-bottom: 1px solid #eee;">
+                <div class="notification-content">
+                    <div class="notification-title" style="font-weight: bold;">${notif.title}</div>
+                    <div class="notification-text">${notif.message}</div>
+                    <div class="notification-time" style="font-size: 0.8rem; color: #888;">${notif.created_at}</div>
+                </div>
+            </div>
+        `;
+                    });
+          }
+         }
+     });
+    }setInterval(loadNotifications, 10000);loadNotifications();
+
+    window.markAsRead = function(id, redirectUrl) {
+        fetch('/rent-it/api/mark_notification_read.php', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, role: 'admin' })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("Success:", data);
+            window.location.href = redirectUrl;
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            window.location.href = redirectUrl;
+        });
+    }
+
 function initAdminPageSkeleton() {
        const overlay = document.querySelector('.admin-skeleton-overlay');
     if (!overlay) return;
@@ -373,32 +431,23 @@ const AdminComponents = {
                             </svg>
                             <span class="notification-badge">3</span>
                         </button>
-                        <div class="dropdown-menu notification-dropdown" id="notificationDropdown">
-                            <div class="dropdown-header">
-                                <h4>Notifications</h4>
-                                <button class="mark-read" id="markReadBtn" type="button">Mark all as read</button>
-                            </div>
-                            <div class="notification-list">
-                                <div class="notification-item unread">
-                                    <div class="notification-icon info">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10"/>
-                                            <line x1="12" y1="8" x2="12.01" y2="8"/>
-                                            <line x1="12" y1="12" x2="12" y2="16"/>
-                                        </svg>
-                                    </div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">New booking received</div>
-                                        <div class="notification-text">A customer just placed a new rental booking.</div>
-                                        <div class="notification-time">Just now</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="notification-footer">
-                                <a href="#">View all notifications</a>
-                            </div>
+                       <div class="dropdown-menu notification-dropdown" id="notificationDropdown">
+ <div class="dropdown-header">
+ <h4>Notifications</h4>
+ <button class="mark-read" id="markReadBtn" type="button">Mark all as read</button>
+ </div>
+ <div class="notification-list" id="notifList">
+
+ <div class="notification-item">
+ <div class="notification-content">Loading...</div>
+ </div>
+ </div>
+ <div class="notification-footer">
+ <a href="#">View all notifications</a>
+ </div>
+</div>
                         </div>
-                    </div>
+                  
                     
                     <div class="dropdown" id="profileDropdown">
                         <button class="header-btn profile-btn" id="profileBtn" title="Profile menu">

@@ -104,10 +104,22 @@ try {
     $stmt_delete->bind_param("i", $user_id);
     $stmt_delete->execute();
 
-    $conn->commit();
-    echo json_encode(['status' => 'success', 'order_id' => $order_id]);
+        // 5. Insert notification for admin
+        $notif_title = "New Order Placed";
+        $notif_message = "User #$user_id placed a new order #$order_id.";
+        $notif_type = "order_placed";
+        $notif_link = "/rent-it/admin/dashboard/index.php?order_id=$order_id";
 
-} catch (Exception $e) {
-    if (isset($conn)) $conn->rollback();
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-}
+        $notif_query = "INSERT INTO notifications (user_id, title, message, type, link_url, is_read) VALUES (NULL, ?, ?, ?, ?, 0)";
+        $stmt_notif = $conn->prepare($notif_query);
+
+        $stmt_notif->bind_param("ssss", $notif_title, $notif_message, $notif_type, $notif_link);
+        $stmt_notif->execute();
+        
+        $conn->commit();
+        echo json_encode(['status' => 'success', 'order_id' => $order_id]);
+
+    } catch (Exception $e) {
+        if (isset($conn)) $conn->rollback();
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+    }
