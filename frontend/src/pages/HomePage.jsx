@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 
 const BASE_URL = '/rent-it';
+const PUBLIC_BASE = import.meta.env.DEV ? 'http://localhost/rent-it' : '/rent-it';
 
 const MACHINES = [
   {
@@ -11,7 +12,7 @@ const MACHINES = [
     title: 'Mini Star',
     subtitle: 'Budget friendly & compact',
     price: '₱800',
-    image: 'http://localhost/rent-it/assets/images/ministar.jpg',
+    image: `${PUBLIC_BASE}/assets/images/ministar.jpg`,
     alt: 'Mini Star Videoke Machine',
     specs: [
       '30,000+ Classic Songs',
@@ -27,7 +28,7 @@ const MACHINES = [
     title: 'Platinum Pro',
     subtitle: 'Crystal clear acoustics',
     price: '₱1,500',
-    image: 'http://localhost/rent-it/assets/images/platinumpro.webp',
+    image: `${PUBLIC_BASE}/assets/images/platinumpro.webp`,
     alt: 'Platinum Pro Videoke Machine',
     specs: [
       '50,000+ Songs (Updated Monthly)',
@@ -43,7 +44,7 @@ const MACHINES = [
     title: 'Party Box X',
     subtitle: 'For large gatherings',
     price: '₱2,500',
-    image: 'http://localhost/rent-it/assets/images/partyboxx.webp',
+    image: `${PUBLIC_BASE}/assets/images/partyboxx.webp`,
     alt: 'Party Box X Videoke Machine',
     specs: [
       '70,000+ Songs (Full HD Video)',
@@ -268,19 +269,151 @@ function HomePage() {
               </div>
             </div>
             <div className="delivery-right animate-on-scroll">
-              <div className="delivery-visual">
+              <div className="delivery-illustration">
                 <svg
-                  viewBox="0 0 24 24"
+                  viewBox="0 0 200 160"
                   xmlns="http://www.w3.org/2000/svg"
                   className="delivery-truck-icon"
                 >
+                  {/* Road */}
+                  <rect x="0" y="130" width="200" height="6" rx="3" fill="rgba(255,255,255,0.15)" />
+                  <rect x="20" y="132" width="18" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
+                  <rect x="60" y="132" width="30" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
+                  <rect x="120" y="132" width="14" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
+                  <rect x="155" y="132" width="24" height="2" rx="1" fill="rgba(255,255,255,0.3)" />
+
+                  {/* Truck body */}
+                  <rect x="50" y="70" width="80" height="55" rx="6" fill="currentColor" opacity="0.9" />
+
+                  {/* Cab */}
                   <path
-                    d="M3 5h11v9H3z M14 8h4l3 4v5h-7z M5.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M18.5 20a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"
-                    fill="none"
-                    stroke="white"
+                    d="M130 85 L155 85 L165 105 L165 125 L130 125 Z"
+                    fill="currentColor"
+                    opacity="0.75"
+                  />
+
+                  {/* Windshield */}
+                  <path
+                    d="M133 88 L152 88 L160 104 L133 104 Z"
+                    fill="rgba(255,255,255,0.2)"
+                  />
+
+                  {/* Cargo area detail */}
+                  <rect x="55" y="78" width="70" height="4" rx="2" fill="rgba(255,255,255,0.15)" />
+                  <rect x="55" y="86" width="40" height="3" rx="1.5" fill="rgba(255,255,255,0.1)" />
+
+                  {/* Music notes floating from cargo */}
+                  <text
+                    x="72"
+                    y="60"
+                    fontSize="16"
+                    fill="currentColor"
+                    opacity="0.7"
+                    className="note-1"
+                  >
+                    ♪
+                  </text>
+                  <text
+                    x="95"
+                    y="48"
+                    fontSize="20"
+                    fill="currentColor"
+                    opacity="0.5"
+                    className="note-2"
+                  >
+                    ♫
+                  </text>
+                  <text
+                    x="110"
+                    y="55"
+                    fontSize="14"
+                    fill="currentColor"
+                    opacity="0.6"
+                    className="note-3"
+                  >
+                    ♪
+                  </text>
+
+                  {/* Headlight */}
+                  <circle cx="163" cy="115" r="4" fill="#FFC107" opacity="0.9" />
+                  <circle cx="163" cy="115" r="6" fill="#FFC107" opacity="0.2" />
+
+                  {/* Wheels */}
+                  <circle
+                    cx="75"
+                    cy="130"
+                    r="12"
+                    fill="#1a1a2e"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  />
+                  <circle cx="75" cy="130" r="5" fill="currentColor" opacity="0.3" />
+                  <circle
+                    cx="150"
+                    cy="130"
+                    r="12"
+                    fill="#1a1a2e"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  />
+                  <circle cx="150" cy="130" r="5" fill="currentColor" opacity="0.3" />
+
+                  {/* Speed lines */}
+                  <rect
+                    x="15"
+                    y="100"
+                    width="25"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                    opacity="0.3"
+                    className="speed-1"
+                  />
+                  <rect
+                    x="10"
+                    y="110"
+                    width="30"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                    opacity="0.2"
+                    className="speed-2"
+                  />
+                  <rect
+                    x="20"
+                    y="120"
+                    width="20"
+                    height="2"
+                    rx="1"
+                    fill="currentColor"
+                    opacity="0.25"
+                    className="speed-3"
+                  />
+
+                  {/* Package icon on truck */}
+                  <rect
+                    x="85"
+                    y="95"
+                    width="24"
+                    height="22"
+                    rx="3"
+                    fill="rgba(255,255,255,0.2)"
+                  />
+                  <line
+                    x1="97"
+                    y1="95"
+                    x2="97"
+                    y2="117"
+                    stroke="rgba(255,255,255,0.3)"
                     strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  />
+                  <line
+                    x1="85"
+                    y1="106"
+                    x2="109"
+                    y2="106"
+                    stroke="rgba(255,255,255,0.3)"
+                    strokeWidth="1.5"
                   />
                 </svg>
               </div>

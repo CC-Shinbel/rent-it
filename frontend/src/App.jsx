@@ -8,107 +8,221 @@ import TermsPage from './pages/TermsPage';
 import WipPage from './pages/WipPage';
 import HomePage from './pages/HomePage';
 import ClientLoginPage from './client/ClientLoginPage';
-import ClientShellLayout from './client/ClientShellLayout';
-import ClientDashboardPage from './client/ClientDashboardPage';
-import ClientCatalogPage from './client/ClientCatalogPage';
+import ClientShellLayout from './client/ClientShellLayout.jsx';
+import ClientDashboardPage from './client/ClientDashboardPage.jsx';
+import ClientCatalogPage from './client/ClientCatalogPage.jsx';
+import ClientCartPage from './client/ClientCartPage.jsx';
+import ClientFavoritesPage from './client/ClientFavoritesPage';
+import ClientMyRentalsPage from './client/ClientMyRentalsPage.jsx';
+import ClientCheckoutPage from './client/ClientCheckoutPage.jsx';
+import ClientBookingHistoryPage from './client/ClientBookingHistoryPage.jsx';
+import ClientReturnsPage from './client/ClientReturnsPage.jsx';
+import ClientPendingPage from './client/ClientPendingPage.jsx';
+import ClientProfilePage from './client/ClientProfilePage.jsx';
+import ClientContactPage from './client/ClientContactPage.jsx';
+import ClientItemDetailPage from './client/ClientItemDetailPage.jsx';
 
-// Admin imports
-import { AdminAuthProvider } from './admin/context/AdminAuthContext';
-import AdminLoginPage from './admin/pages/AdminLoginPage';
-import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
-import AdminLayout from './admin/components/AdminLayout';
-import AdminDashboardPage from './admin/pages/AdminDashboardPage';
-import AdminCalendarPage from './admin/pages/AdminCalendarPage';
-import NewItemPage from './admin/pages/NewItemPage';
-import ItemsPage from './admin/pages/ItemsPage';
-import OrdersPage from './admin/pages/OrdersPage';
-import DispatchPage from './admin/pages/DispatchPage';
-import CustomersPage from './admin/pages/CustomersPage';
-import RepairsPage from './admin/pages/RepairsPage';
-import LateFeesPage from './admin/pages/LateFeesPage';
-import HistoryPage from './admin/pages/HistoryPage';
-import SettingsPage from './admin/pages/SettingsPage';
+const THEME_KEY = 'rentit-theme';
+
+function applyTheme(theme) {
+  const value = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', value);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || 'light';
+  applyTheme(saved);
+}
 
 function ScrollToTopOnRouteChange() {
   const location = useLocation();
-
   React.useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
   }, [location.pathname]);
-
   return null;
 }
 
+
+
 function App() {
+  React.useEffect(() => {
+    initTheme();
+  }, []);
+
   return (
     <>
       <ScrollToTopOnRouteChange />
+
       <Routes>
+
         <Route path="/" element={<HomePage />} />
+
         <Route path="/about" element={<AboutPage />} />
+
         <Route path="/contact" element={<ContactPage />} />
+
         <Route path="/terms" element={<TermsPage />} />
+
         <Route path="/wip" element={<WipPage />} />
+
         <Route path="/login" element={<ClientLoginPage />} />
 
 
+
+
+
         <Route
+
           path="/client/dashboard"
+
+          element={(
+
+            <ClientShellLayout>
+
+              <ClientDashboardPage />
+
+            </ClientShellLayout>
+
+          )}
+
+        />
+
+        <Route
+
+          path="/client/catalog"
+
+          element={(
+
+            <ClientShellLayout>
+
+              <ClientCatalogPage />
+
+            </ClientShellLayout>
+
+          )}
+
+        />
+
+
+
+        <Route
+
+          path="/client/cart"
+
+          element={(
+
+            <ClientShellLayout>
+
+              <ClientCartPage />
+
+            </ClientShellLayout>
+
+          )}
+
+        />
+
+
+
+        <Route
+
+          path="/client/checkout"
+
+          element={(
+
+            <ClientShellLayout>
+
+              <ClientCheckoutPage />
+
+            </ClientShellLayout>
+
+          )}
+
+        />
+
+
+
+        <Route
+          path="/client/myrentals"
           element={(
             <ClientShellLayout>
-              <ClientDashboardPage />
+              <ClientMyRentalsPage />
             </ClientShellLayout>
           )}
         />
+
         <Route
-          path="/client/catalog"
+          path="/client/bookinghistory"
+          element={(
+            <ClientBookingHistoryPage />
+          )}
+        />
+        <Route
+          path="/client/returns"
+          element={(
+            <ClientReturnsPage />
+          )}
+        />
+        <Route
+          path="/client/pending"
           element={(
             <ClientShellLayout>
-              <ClientCatalogPage />
+              <ClientPendingPage />
+            </ClientShellLayout>
+          )}
+        />
+
+        <Route
+          path="/client/favorites"
+          element={(
+            <ClientShellLayout>
+              <ClientFavoritesPage />
+            </ClientShellLayout>
+          )}
+        />
+
+        <Route
+          path="/client/item/:id"
+          element={(
+            <ClientShellLayout>
+              <ClientItemDetailPage />
+            </ClientShellLayout>
+          )}
+        />
+
+        <Route
+          path="/client/profile"
+          element={(
+            <ClientShellLayout>
+              <ClientProfilePage />
+            </ClientShellLayout>
+          )}
+        />
+
+        <Route
+          path="/client/contact"
+          element={(
+            <ClientShellLayout>
+              <ClientContactPage />
             </ClientShellLayout>
           )}
         />
 
         <Route path="/dashboard" element={<DashboardPage />} />
 
-        {/* ===== Admin Routes ===== */}
-        <Route path="/admin/login" element={
-          <AdminAuthProvider>
-            <AdminLoginPage />
-          </AdminAuthProvider>
-        } />
-
-        <Route path="/admin/*" element={
-          <AdminAuthProvider>
-            <Routes>
-                <Route element={<AdminProtectedRoute />}>
-                  <Route element={<AdminLayout />}>
-                    <Route index element={<AdminDashboardPage />} />
-                    <Route path="calendar" element={<AdminCalendarPage />} />
-                    <Route path="newitem" element={<NewItemPage />} />
-                    <Route path="items" element={<ItemsPage />} />
-                    <Route path="orders" element={<OrdersPage />} />
-                    <Route path="dispatch" element={<DispatchPage />} />
-                    <Route path="customers" element={<CustomersPage />} />
-                    <Route path="repairs" element={<RepairsPage />} />
-                    <Route path="latefees" element={<LateFeesPage />} />
-                    <Route path="history" element={<HistoryPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                    {/* Future admin pages go here */}
-                  </Route>
-                </Route>
-            </Routes>
-          </AdminAuthProvider>
-        } />
-
         <Route path="*" element={<HomePage />} />
+
       </Routes>
+
     </>
+
   );
+
 }
+
+
 
 export default App;
 

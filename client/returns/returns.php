@@ -31,6 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $stmt->execute();
     }
 
+    // AJAX/fetch from React: return JSON and do not redirect
+    $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    if ($is_ajax) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Request processed']);
+        exit();
+    }
     header("Location: returns.php");
     exit();
 }
@@ -564,7 +571,7 @@ $total_count = count($orders);
                 </div>
 
                 <div class="rentals-tabs">
-                    <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">My Orders</a>
+                    <a href="<?= BASE_URL ?>/client/myrentals/pending.php" class="tab-link">Pending Rentals</a>
                     <a href="../myrentals/myrentals.php" class="tab-link">Active Rentals</a>
                     <a href="returns.php" class="tab-link active">Returns & Extensions</a>
                     <a href="../bookinghistory/bookinghistory.php" class="tab-link">Booking History</a>
