@@ -31,6 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $stmt->execute();
     }
 
+    // AJAX/fetch from React: return JSON and do not redirect
+    $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    if ($is_ajax) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true, 'message' => 'Request processed']);
+        exit();
+    }
     header("Location: returns.php");
     exit();
 }

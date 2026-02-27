@@ -526,46 +526,27 @@ container.innerHTML = `
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
             </svg>
         </button>
+<div class="notification-wrapper">
+    <button class="btn-icon notification-btn" id="notificationBtn" aria-label="Notifications" title="Notifications">
+        <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        
+        <span class="notification-badge" id="clientNotifBadge" style="display: none;">0</span>
+    </button>
 
-        <div class="notification-wrapper">
-            <button class="btn-icon notification-btn" id="notificationBtn" aria-label="Notifications" title="Notifications">
-                <!-- Bell icon when there are unread notifications -->
-                <svg class="notification-icon-unread" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-                <!-- Outline bell icon when notifications are all read -->
-                <svg class="notification-icon-empty" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                </svg>
-                <span class="notification-badge">3</span>
-            </button>
-
-            <div class="notification-dropdown" id="notificationDropdown">
-                <div class="notification-header">
-                    <h4>Notifications</h4>
-                    <button class="mark-read" id="markReadBtn" type="button">Mark all as read</button>
-                </div>
-                <div class="notification-list">
-                    <div class="notification-item unread">
-                        <div class="notification-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <div class="notification-content">
-                            <div class="notification-title">Welcome to RentIt</div>
-                            <div class="notification-text">Your dashboard is ready to use.</div>
-                            <div class="notification-time">Just now</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="notification-footer">
-                    <a href="#" aria-label="View all notifications">View all</a>
-                </div>
-            </div>
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h4>Notifications</h4>
         </div>
         
+        <div class="notification-list" id="clientNotifList">
+            <div class="notification-item">Loading notifications...</div>
+        </div>
+
+    </div>
+</div>
         <div class="topbar-user profile-wrapper">
             <button class="btn-icon profile-btn" id="profileBtn" aria-label="User menu" title="Profile & settings">
                 <div class="topbar-user-avatar">${avatarContent}</div>
@@ -1349,3 +1330,54 @@ if (typeof window !== 'undefined') {
         _hideSkeleton();
     }
 }
+
+function loadClientNotifications() {
+    // Siguraduhin na tama ang path ng get_notifications.php mo
+    fetch('/rent-it/api/get_notifications.php?role=client')
+        .then(res => res.json())
+        .then(data => {
+            const list = document.getElementById('clientNotifList');
+            const badge = document.getElementById('clientNotifBadge');
+
+            if (data.status === 'success') {
+                // 1. Update ang Badge
+                if (badge) {
+                    badge.innerText = data.unread_count;
+                    badge.style.display = data.unread_count > 0 ? 'block' : 'none';
+                }
+
+                // 2. Update ang Listahan
+                if (list) {
+                    list.innerHTML = ''; // Burahin ang "Loading..."
+
+                    if (data.data.length === 0) {
+                        list.innerHTML = '<div class="notification-item">No new notifications</div>';
+                        return;
+                    }
+
+                    data.data.forEach(notif => {
+                        const isUnread = notif.is_read == 0 ? 'unread' : '';
+                        // Ang redirectUrl ay galing sa link_url sa database
+                        const redirectUrl = notif.link_url || '#';
+
+                        list.innerHTML += `
+                            <div class="notification-item ${isUnread}" 
+                                 onclick="markAsRead(${notif.id}, '${redirectUrl}')" 
+                                 style="cursor: pointer;">
+                                <div class="notification-content">
+                                    <div class="notification-title" style="font-weight: bold;">${notif.title}</div>
+                                    <div class="notification-text">${notif.message}</div>
+                                    <div class="notification-time" style="font-size: 0.8rem; color: #888;">${notif.created_at}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        })
+        .catch(err => console.error('Error loading client notifications:', err));
+}
+
+// Tawagin ang function agad at i-set ang refresh rate (halimbawa, every 10 seconds)
+loadClientNotifications();
+setInterval(loadClientNotifications, 10000);
